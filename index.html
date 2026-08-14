@@ -546,7 +546,7 @@
         <header class="top-bar">
             <div class="app-title">SENHOR FAGUNDES // NEURAL CORE</div>
             <div class="api-input-box">
-                <input type="password" id="apiKeyInput" placeholder="Cole chave Google Gemini aqui...">
+                <input type="password" id="apiKeyInput" placeholder="Cole chave Groq (gsk_...) aqui...">
                 <button id="btnSaveKey">Salvar</button>
             </div>
         </header>
@@ -917,13 +917,13 @@
         async function processUserCommand(prompt) {
             const apiKey = getActiveApiKey();
             if (!apiKey) {
-                const err = "Por favor, insira sua chave de API do Google no topo da página.";
+                const err = "Por favor, insira sua chave Groq no topo da página.";
                 dialogueAssistant.innerText = `${CONFIG.name}: ${err}`;
-                speakText("Insira sua chave de API do Google na barra superior.");
+                speakText("Insira sua chave Groq na barra superior.");
                 return;
             }
 
-            console.log("Chave API usada:", apiKey.substring(0, 10) + "...");
+            console.log("Chave Groq usada:", apiKey.substring(0, 10) + "...");
             
             isBusy = true;
             statusBadge.innerText = "Pensando...";
@@ -936,43 +936,41 @@
             SECOND BRAIN (Notas atuais de ${CONFIG.address}):
             ${notesText}`;
 
-            const fullPrompt = systemPrompt + "\n\nComando do usuário: " + prompt;
-
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                     method: "POST",
                     headers: {
+                        "Authorization": `Bearer ${apiKey}`,
                         "content-type": "application/json"
                     },
                     body: JSON.stringify({
-                        contents: [
+                        model: "mixtral-8x7b-32768",
+                        messages: [
+                            {
+                                role: "system",
+                                content: systemPrompt
+                            },
                             {
                                 role: "user",
-                                parts: [
-                                    {
-                                        text: fullPrompt
-                                    }
-                                ]
+                                content: prompt
                             }
                         ],
-                        generationConfig: {
-                            maxOutputTokens: 400,
-                            temperature: 0.7
-                        }
+                        max_tokens: 400,
+                        temperature: 0.7
                     })
                 });
 
-                console.log("Status da resposta:", response.status, response.statusText);
+                console.log("Status da resposta Groq:", response.status, response.statusText);
                 
                 if (!response.ok) {
                     const errData = await response.json();
-                    console.error("Erro Gemini:", errData);
-                    throw new Error(errData.error?.message || "Erro na API do Google");
+                    console.error("Erro Groq:", errData);
+                    throw new Error(errData.error?.message || "Erro na API Groq");
                 }
 
                 const data = await response.json();
-                console.log("Resposta Gemini:", data);
-                let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sem resposta do sistema.";
+                console.log("Resposta Groq:", data);
+                let rawText = data.choices?.[0]?.message?.content || "Sem resposta do sistema.";
 
                 const saveRegex = /\[\[SAVE:([a-z_]+)\|([^|]+)\|([\s\S]+?)\]\]/;
                 const match = rawText.match(saveRegex);
@@ -987,9 +985,9 @@
 
             } catch (error) {
                 console.error("Erro completo:", error);
-                const errText = "Erro ao comunicar com a API do Google. Verifique sua chave.";
+                const errText = "Erro ao comunicar com Groq. Verifique sua chave.";
                 dialogueAssistant.innerText = `${CONFIG.name}: ${errText}`;
-                speakText("Falha de conexão. Verifique sua chave de API do Google.");
+                speakText("Falha de conexão. Verifique sua chave Groq.");
                 isBusy = false;
                 statusBadge.innerText = "Ocioso";
                 reactorCore.style.background = "radial-gradient(circle, var(--primary) 0%, rgba(0, 153, 255, 0.2) 70%, transparent 100%)";
