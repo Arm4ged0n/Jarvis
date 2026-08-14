@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jarvis // Official MCU Neural HUD</title>
+    <title>Jarvis // MCU Official Neural HUD</title>
     <style>
         :root {
-            --bg-base: #020408;
-            --panel-bg: rgba(0, 15, 30, 0.85);
-            --border-color: rgba(0, 243, 255, 0.4);
-            --primary: #00f3ff;
+            --bg-base: #000000;
+            --panel-bg: rgba(2, 6, 12, 0.85);
+            --border-color: rgba(0, 162, 255, 0.35);
+            --primary: #00a2ff;
             --accent: #ffb700;
-            --primary-glow: rgba(0, 243, 255, 0.5);
+            --primary-glow: rgba(0, 162, 255, 0.4);
             --text-main: #e2e8f0;
             --text-dim: #64748b;
             --danger: #ff3d00;
@@ -21,31 +21,31 @@
         html, body { background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
         ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: #020408; }
-        ::-webkit-scrollbar-thumb { background: rgba(0, 243, 255, 0.4); border-radius: 2px; }
+        ::-webkit-scrollbar-track { background: #000000; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 162, 255, 0.3); border-radius: 2px; }
 
-        /* CANVAS MATRIX & TEIAS NEURAIS (BIOLOGICAL WEBS + MATRIX RAIN) */
+        /* CANVAS DE REDE NEURAL E MATRIX */
         #matrixCanvas {
             position: fixed;
             inset: 0;
             z-index: 0;
             pointer-events: none;
-            opacity: 0.95;
+            opacity: 0.9;
         }
 
-        /* BOOT SCREEN COM HUD OFICIAL JARVIS / ARC REACTOR & MATRIX */
+        /* TELA 1 — BOOT */
         #bootScreen {
             position: fixed;
             inset: 0;
-            background: #020408;
+            background: #000000;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             z-index: 1000;
-            gap: 30px;
+            gap: 20px;
             opacity: 1;
-            transition: opacity 1s ease-out;
+            transition: opacity 0.8s ease-out;
         }
 
         #bootScreen.fade-out {
@@ -53,82 +53,49 @@
             pointer-events: none;
         }
 
-        .mcu-hud-loader {
-            width: 210px;
-            height: 210px;
-            border-radius: 50%;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 90px rgba(0, 243, 255, 0.2), inset 0 0 45px rgba(255, 183, 0, 0.15);
+        .boot-title {
+            font-size: 3rem;
+            font-weight: bold;
+            letter-spacing: 4px;
+            background: linear-gradient(90deg, var(--primary), #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
         }
 
-        .hud-ring-gold {
-            position: absolute;
-            inset: 0;
-            border: 2px dashed var(--accent);
-            border-radius: 50%;
-            animation: spinClockwise 14s linear infinite;
+        .boot-hr {
+            width: 250px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
         }
-
-        .hud-ring-blue {
-            position: absolute;
-            inset: 16px;
-            border: 2px solid var(--primary);
-            border-top: 2px solid transparent;
-            border-bottom: 2px solid transparent;
-            border-radius: 50%;
-            animation: spinCounter 8s linear infinite;
-        }
-
-        .hud-ring-dots {
-            position: absolute;
-            inset: 36px;
-            border: 1px dotted rgba(255, 255, 255, 0.8);
-            border-radius: 50%;
-            animation: spinClockwise 6s linear infinite;
-        }
-
-        .hud-core-reactor {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: radial-gradient(circle, var(--accent) 0%, var(--primary) 50%, rgba(0,243,255,0.2) 80%, transparent 100%);
-            box-shadow: 0 0 60px var(--accent), inset 0 0 20px #ffffff;
-            animation: corePulse 1.5s infinite ease-in-out;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-        }
-
-        @keyframes spinClockwise { to { transform: rotate(360deg); } }
-        @keyframes spinCounter { to { transform: rotate(-360deg); } }
-        @keyframes corePulse { 0%, 100% { transform: scale(0.92); opacity: 0.8; } 50% { transform: scale(1.08); opacity: 1; box-shadow: 0 0 90px var(--accent); } }
 
         .boot-status {
-            font-size: 0.9rem;
-            letter-spacing: 4px;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
             color: var(--primary);
-            text-shadow: 0 0 15px var(--primary-glow);
             animation: blink 1s infinite;
         }
 
         @keyframes blink { 0%, 49%, 100% { opacity: 1; } 50%, 99% { opacity: 0.3; } }
 
-        /* ACTIVATION SCREEN */
+        .boot-version {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+        }
+
+        /* TELA 2 — ATIVAÇÃO */
         #activationScreen {
             position: fixed;
             inset: 0;
-            background: rgba(2, 4, 8, 0.97);
+            background: rgba(0, 0, 0, 0.96);
             backdrop-filter: blur(14px);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             z-index: 999;
-            gap: 40px;
+            gap: 30px;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.6s ease-in;
@@ -139,24 +106,40 @@
             pointer-events: all;
         }
 
+        .activation-title {
+            font-size: 3rem;
+            font-weight: bold;
+            letter-spacing: 4px;
+            background: linear-gradient(90deg, var(--primary), #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
         .activation-btn {
-            padding: 18px 50px;
-            font-size: 1.1rem;
+            padding: 16px 44px;
+            font-size: 1rem;
             letter-spacing: 3px;
-            color: var(--accent);
-            background: rgba(255, 183, 0, 0.1);
-            border: 2px solid var(--accent);
+            color: #fff;
+            background: rgba(0, 162, 255, 0.15);
+            border: 2px solid var(--primary);
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
             transition: all 0.3s;
-            box-shadow: 0 0 45px rgba(255, 183, 0, 0.3), inset 0 0 20px rgba(255, 183, 0, 0.2);
+            box-shadow: 0 0 35px rgba(0, 162, 255, 0.3);
         }
 
         .activation-btn:hover {
-            background: rgba(255, 183, 0, 0.3);
-            box-shadow: 0 0 80px var(--accent), inset 0 0 40px var(--accent);
+            background: rgba(0, 162, 255, 0.35);
+            box-shadow: 0 0 60px var(--primary);
             transform: scale(1.04);
+        }
+
+        .activation-hint {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            letter-spacing: 1px;
         }
 
         /* MAIN APP */
@@ -188,14 +171,14 @@
             backdrop-filter: blur(14px);
             flex-wrap: wrap;
             gap: 10px;
-            box-shadow: 0 0 35px rgba(0, 243, 255, 0.1);
+            box-shadow: 0 0 35px rgba(0, 162, 255, 0.1);
         }
 
         .app-title {
             font-weight: bold;
             color: var(--accent);
             letter-spacing: 2px;
-            text-shadow: 0 0 12px rgba(255, 183, 0, 0.5);
+            text-shadow: 0 0 10px rgba(255, 183, 0, 0.4);
         }
 
         .api-input-box {
@@ -218,7 +201,7 @@
         }
 
         .api-input-box button {
-            background: rgba(0, 243, 255, 0.2);
+            background: rgba(0, 162, 255, 0.2);
             border: 1px solid var(--primary);
             color: #fff;
             padding: 6px 14px;
@@ -229,7 +212,7 @@
         }
 
         .api-input-box button:hover {
-            background: rgba(0, 243, 255, 0.4);
+            background: rgba(0, 162, 255, 0.4);
         }
 
         .main-grid {
@@ -252,7 +235,7 @@
             flex-direction: column;
             position: relative;
             backdrop-filter: blur(16px);
-            box-shadow: inset 0 0 30px rgba(0, 243, 255, 0.08), 0 0 35px rgba(0, 0, 0, 0.8);
+            box-shadow: inset 0 0 30px rgba(0, 162, 255, 0.08), 0 0 35px rgba(0, 0, 0, 0.8);
         }
 
         .interaction-panel {
@@ -262,9 +245,10 @@
             min-height: 480px;
         }
 
-        .hud-center-reactor {
-            width: 170px;
-            height: 170px;
+        /* ORBE / REATOR CENTRAL SCI-FI */
+        .reactor-container {
+            width: 160px;
+            height: 160px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -272,15 +256,41 @@
             position: relative;
             cursor: pointer;
             margin: 15px 0;
-            background: radial-gradient(circle, rgba(255,183,0,0.15) 0%, rgba(0,243,255,0.05) 60%, transparent 100%);
-            box-shadow: 0 0 60px rgba(255,183,0,0.3), inset 0 0 30px rgba(0,243,255,0.2);
-            transition: all 0.4s;
         }
 
-        .hud-center-reactor:hover {
-            box-shadow: 0 0 90px rgba(255,183,0,0.7), inset 0 0 45px rgba(0,243,255,0.5);
-            transform: scale(1.04);
+        .reactor-core {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--accent) 0%, var(--primary) 60%, transparent 100%);
+            box-shadow: 0 0 50px var(--accent);
+            animation: reactorPulse 3s infinite ease-in-out;
+            transition: all 0.3s;
         }
+
+        .reactor-ring {
+            position: absolute;
+            inset: 0;
+            border: 2px dashed rgba(0, 162, 255, 0.6);
+            border-radius: 50%;
+            animation: spinClockwise 12s linear infinite;
+        }
+
+        .reactor-ring-2 {
+            position: absolute;
+            inset: -12px;
+            border: 1px solid rgba(255, 183, 0, 0.4);
+            border-radius: 50%;
+            animation: spinCounter 16s linear infinite;
+        }
+
+        @keyframes reactorPulse {
+            0%, 100% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 30px var(--primary); }
+            50% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 65px var(--accent); }
+        }
+
+        @keyframes spinClockwise { to { transform: rotate(360deg); } }
+        @keyframes spinCounter { to { transform: rotate(-360deg); } }
 
         .status-badge {
             font-size: 0.75rem;
@@ -296,7 +306,7 @@
         .dialogue-box {
             width: 100%;
             text-align: left;
-            background: rgba(2, 8, 16, 0.9);
+            background: rgba(2, 6, 12, 0.9);
             padding: 14px 18px;
             border-radius: 8px;
             border-left: 3px solid var(--accent);
@@ -338,7 +348,7 @@
         }
 
         .action-btn {
-            background: rgba(0, 243, 255, 0.15);
+            background: rgba(0, 162, 255, 0.15);
             border: 1px solid var(--primary);
             color: #fff;
             padding: 10px 18px;
@@ -349,7 +359,7 @@
         }
 
         .action-btn:hover {
-            background: rgba(0, 243, 255, 0.35);
+            background: rgba(0, 162, 255, 0.35);
             box-shadow: 0 0 20px var(--primary-glow);
         }
 
@@ -399,7 +409,7 @@
         }
 
         .icon-btn {
-            background: rgba(0, 243, 255, 0.1);
+            background: rgba(0,162,255,0.1);
             border: 1px solid var(--border-color);
             color: var(--primary);
             width: 28px;
@@ -415,7 +425,7 @@
         }
 
         .icon-btn:hover {
-            background: rgba(0, 243, 255, 0.3);
+            background: rgba(0,162,255,0.3);
             box-shadow: 0 0 12px var(--primary-glow);
         }
 
@@ -471,7 +481,7 @@
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(2, 4, 8, 0.92);
+            background: rgba(0, 0, 0, 0.92);
             z-index: 200;
             display: none;
             align-items: center;
@@ -491,7 +501,7 @@
             max-width: 480px;
             padding: 24px;
             border-radius: 10px;
-            box-shadow: 0 0 60px rgba(0, 243, 255, 0.4);
+            box-shadow: 0 0 60px rgba(0, 162, 255, 0.4);
             display: flex;
             flex-direction: column;
             gap: 14px;
@@ -534,35 +544,29 @@
 </head>
 <body>
 
-    <!-- CANVAS DE TEIAS NEURAIS (BIOLOGICAL WEBS + MATRIX RAIN) -->
+    <!-- CANVAS DE TEIA NEURAL & MATRIX -->
     <canvas id="matrixCanvas"></canvas>
 
-    <!-- BOOT SCREEN COM HUD OFICIAL JARVIS ROTATIVO -->
+    <!-- TELA 1 — BOOT -->
     <div id="bootScreen">
-        <div class="mcu-hud-loader">
-            <div class="hud-ring-gold"></div>
-            <div class="hud-ring-blue"></div>
-            <div class="hud-ring-dots"></div>
-            <div class="hud-core-reactor">⚡</div>
-        </div>
-        <div class="boot-status">INICIALIZANDO HUD OFICIAL JARVIS...</div>
+        <div class="boot-title">JARVIS</div>
+        <div class="boot-hr"></div>
+        <div class="boot-status">SINCRONIZANDO DADOS...</div>
+        <div class="boot-version">v5.0 · REBUILD</div>
     </div>
 
-    <!-- ACTIVATION SCREEN -->
+    <!-- TELA 2 — ATIVAÇÃO -->
     <div id="activationScreen">
-        <div class="mcu-hud-loader" style="width: 150px; height: 150px;">
-            <div class="hud-ring-gold"></div>
-            <div class="hud-ring-blue"></div>
-            <div class="hud-ring-dots"></div>
-            <div class="hud-core-reactor" style="font-size: 1.3rem;">🧠</div>
-        </div>
-        <button class="activation-btn" id="btnActivate">ATIVAR SISTEMA OFICIAL</button>
+        <div class="activation-title">JARVIS</div>
+        <div style="font-size: 0.85rem; letter-spacing: 2px; color: var(--text-dim); text-align: center;">SISTEMA PRONTO PARA INICIALIZAÇÃO</div>
+        <button class="activation-btn" id="btnActivate">► ATIVAR SISTEMA</button>
+        <div class="activation-hint">CLIQUE PARA INICIAR</div>
     </div>
 
     <!-- MAIN APP -->
     <div id="app">
         <header class="top-bar">
-            <div class="app-title">JARVIS // MCU OFFICIAL NEURAL HUD</div>
+            <div class="app-title">JARVIS // NEURAL CORE</div>
             <div class="api-input-box">
                 <input type="password" id="apiKeyInput" placeholder="Cole sua Anthropic API Key...">
                 <button id="btnSaveKey">Salvar</button>
@@ -577,20 +581,20 @@
                     <span id="statusBadge" class="status-badge">Ocioso</span>
                 </div>
 
-                <div class="hud-center-reactor" id="reactorOrb" title="Clique para interagir com Jarvis">
-                    <div class="hud-ring-gold"></div>
-                    <div class="hud-ring-blue"></div>
-                    <div class="hud-core-reactor">⚡</div>
+                <div class="reactor-container" id="reactorOrb" title="Clique para ativar escuta">
+                    <div class="reactor-ring"></div>
+                    <div class="reactor-ring-2"></div>
+                    <div class="reactor-core" id="reactorCore"></div>
                 </div>
 
                 <div class="dialogue-box">
                     <div id="dialogueUser" class="dialogue-user">Você: --</div>
-                    <div id="dialogueAssistant" class="dialogue-assistant">Jarvis: Sistemas operacionais ativos, Sandro. Como posso auxiliá-lo?</div>
+                    <div id="dialogueAssistant" class="dialogue-assistant">Jarvis: Sistemas online, Sandro.</div>
                 </div>
 
                 <div class="controls-row">
-                    <input type="text" id="textInput" placeholder="Faça uma pergunta ou dê uma ordem..."/>
-                    <button id="btnMic" class="action-btn" title="Falar por voz">🎙️ Falar</button>
+                    <input type="text" id="textInput" placeholder="Ou digite e tecle Enter..."/>
+                    <button id="btnMic" class="action-btn" title="Microfone">🎙️</button>
                     <button id="btnStopSpeech" class="action-btn btn-danger">Parar Fala</button>
                 </div>
             </section>
@@ -612,7 +616,7 @@
 
                 <div class="brain-footer">
                     <div class="legend-list" id="legendList"></div>
-                    <div class="injected-status" id="injectedStatus">✓ teias neurais ativas com Claude API</div>
+                    <div class="injected-status" id="injectedStatus">✓ contexto injetado no assistente</div>
                 </div>
             </section>
         </div>
@@ -645,6 +649,7 @@
         const CONFIG = {
             name: "Jarvis",
             address: "Sandro",
+            wakeWord: "jarvis",
             model: "claude-3-5-sonnet-20241022",
             persona: "formal britânico (mordomo)"
         };
@@ -652,7 +657,7 @@
         const AREA = {
             meta: { label: "Identidade", color: "#64748b" },
             metas: { label: "Metas", color: "#38bdf8" },
-            trabalho: { label: "Carreira", color: "#00f3ff" },
+            trabalho: { label: "Carreira", color: "#00a2ff" },
             projetos: { label: "Projetos", color: "#ffb700" },
             financas: { label: "Finanças", color: "#f7931a" },
             aprendizado: { label: "Aprendizado", color: "#38bdf8" },
@@ -665,7 +670,7 @@
             { id: "note_2", area: "metas", title: "Sanar Dores", body: "Meta geral: ajudar a sanar dores de processos corporativos com visão de futuro. Curto prazo: ajudar pessoas a desenvolver projetos e democratizar a criação." },
             { id: "note_3", area: "trabalho", title: "Grupo Herval", body: "Analista de indicadores corporativos e cientista de dados no Grupo Herval. Migrando dashboards do Power BI para o Apache Superset (melhorias nos charts). Montando dashboard para a 'Já Consórcios' (jornada de leads, simulações, distribuição e conversão)." },
             { id: "note_4", area: "projetos", title: "Plataforma Águas", body: "Plataforma de monitoramento de rios e cotas de inundação (Fase 1 completa, no Vercel). Objetivo: disponibilizar para prefeituras." },
-            { id: "note_5", area: "projetos", title: "Motor IA com Voz", body: "Jarvis personal assistent — assistente inteligente operado por voz e texto integrado ao Second Brain neural." },
+            { id: "note_5", area: "projetos", title: "Motor IA com Voz", body: "Jarvis personal assistant — assistente inteligente operado por voz e texto integrado ao Second Brain neural." },
             { id: "note_6", area: "financas", title: "Investimentos", body: "Objetivos financeiros: aproveitar o dinheiro investindo em Bitcoin, Tesouro Direto, imóveis, viagens (Argentina, Patagônia e Cordilheira dos Andes)." },
             { id: "note_7", area: "aprendizado", title: "Estudos & IA", body: "Estuda veias culturais (com foco na asiática), livros de empreendedorismo, LLMs, IA, RPA, MCP, Cloud." },
             { id: "note_8", area: "saude", title: "Rotina & Família", body: "Acorda às 06:00, alongamento, fruta, cuida do filho, leva à escola, assiste desenho. Trabalho em outra cidade (carro). Sábados: bicicleta, caminhada e trilha. Adora boa comida e passeios com a família (esposa e filhos Heitor e Melissa)." }
@@ -680,14 +685,15 @@
 
         let chatHistory = [];
         let isBusy = false;
-        let highlightedNoteId = null;
+        let isListening = false;
         let recognition = null;
+        let highlightedNoteId = null;
 
-        // CANVAS DE TEIA NEURAL COMPLEXA E CÓDIGO MATRIX EM CASCATA
+        // CANVAS DE TEIA NEURAL & MATRIX
         const canvas = document.getElementById('matrixCanvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
-        let matrixChars = "0101010101010101JARVISMCUARK";
+        let matrixChars = "0101010101010101JARVISNEURAL";
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -696,7 +702,7 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        for (let i = 0; i < 90; i++) {
+        for (let i = 0; i < 80; i++) {
             particles.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
@@ -709,10 +715,9 @@
 
         function drawNeuralWebs() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#020408';
+            ctx.fillStyle = '#000000';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Desenhar teias de aranha / conexões neurais inteligentes
             for (let i = 0; i < particles.length; i++) {
                 let p = particles[i];
                 p.x += p.vx;
@@ -721,8 +726,7 @@
                 if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
                 if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
 
-                // Efeito Matrix de caracteres digitais discretos flutuando
-                ctx.fillStyle = "rgba(0, 243, 255, 0.15)";
+                ctx.fillStyle = "rgba(0, 162, 255, 0.15)";
                 ctx.font = "10px monospace";
                 ctx.fillText(p.char, p.x, p.y);
 
@@ -732,12 +736,11 @@
                     let dy = p.y - p2.y;
                     let dist = Math.sqrt(dx * dx + dy * dy);
 
-                    // Formação de teias neurais (malha geométrica intrincada)
                     if (dist < 150) {
                         ctx.beginPath();
                         ctx.moveTo(p.x, p.y);
                         ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = `rgba(0, 243, 255, ${(1 - dist / 150) * 0.3})`;
+                        ctx.strokeStyle = `rgba(0, 162, 255, ${(1 - dist / 150) * 0.35})`;
                         ctx.lineWidth = 0.7;
                         ctx.stroke();
                     }
@@ -745,9 +748,9 @@
 
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                ctx.fillStyle = '#00f3ff';
-                ctx.shadowBlur = 15;
-                ctx.shadowColor = '#00f3ff';
+                ctx.fillStyle = '#00a2ff';
+                ctx.shadowBlur = 14;
+                ctx.shadowColor = '#00a2ff';
                 ctx.fill();
                 ctx.shadowBlur = 0;
             }
@@ -764,6 +767,7 @@
         const apiKeyInput = document.getElementById("apiKeyInput");
         const btnSaveKey = document.getElementById("btnSaveKey");
         const reactorOrb = document.getElementById("reactorOrb");
+        const reactorCore = document.getElementById("reactorCore");
         const statusBadge = document.getElementById("statusBadge");
         const dialogueUser = document.getElementById("dialogueUser");
         const dialogueAssistant = document.getElementById("dialogueAssistant");
@@ -788,6 +792,7 @@
         window.addEventListener("DOMContentLoaded", () => {
             apiKeyInput.value = localStorage.getItem("anthropic_key") || "";
             editNoteArea.innerHTML = Object.entries(AREA).map(([k, v]) => `<option value="${k}">${v.label}</option>`).join("");
+            
             setTimeout(() => {
                 bootScreen.classList.add("fade-out");
                 setTimeout(() => {
@@ -805,53 +810,139 @@
             return apiKeyInput.value.trim() || localStorage.getItem("anthropic_key") || "";
         }
 
+        // TELA 2 — ATIVAÇÃO (Gesto do Usuário)
         btnActivate.addEventListener("click", () => {
             activationScreen.classList.remove("show");
             app.classList.add("active");
             renderGraph();
             initVoiceRecognition();
-            speakText("Sistemas operacionais ativos. À sua inteira disposição, Sandro.");
+            
+            const welcomeText = `Sistemas online. Estou ouvindo, ${CONFIG.address}.`;
+            dialogueAssistant.innerText = `${CONFIG.name}: ${welcomeText}`;
+            speakText(welcomeText);
         });
 
-        function initVoiceRecognition() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) return;
+        // VOZ NATIVA (Web Speech API) COM PROTEÇÃO ANTI-LOOP E VOZ MASCULINA METÁLICA
+        function speakText(text) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "pt-BR";
+            utterance.rate = 0.92;
+            utterance.pitch = 0.55; // Tom grave e sintético / metálico
+            
+            const voices = window.speechSynthesis.getVoices();
+            let maleButlerVoice = voices.find(v => 
+                v.lang.includes("pt") && (
+                    v.name.toLowerCase().includes("male") ||
+                    v.name.toLowerCase().includes("antonio") ||
+                    v.name.toLowerCase().includes("daniel") ||
+                    v.name.toLowerCase().includes("lucas") ||
+                    v.name.toLowerCase().includes("david")
+                )
+            ) || voices.find(v => v.lang.includes("pt") && !v.name.toLowerCase().includes("female") && !v.name.toLowerCase().includes("zira") && !v.name.toLowerCase().includes("helena")) || voices[0];
 
-            recognition = new SpeechRecognition();
-            recognition.lang = "pt-BR";
-            recognition.continuous = false;
-            recognition.interimResults = false;
+            if (maleButlerVoice) utterance.voice = maleButlerVoice;
 
-            recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript.trim();
-                if (transcript) {
-                    dialogueUser.innerText = `Você: ${transcript}`;
-                    processClaudeCommand(transcript);
+            utterance.onstart = () => {
+                isBusy = true;
+                statusBadge.innerText = "Falando";
+                reactorCore.style.background = "radial-gradient(circle, #38bdf8 0%, rgba(56,189,248,0.3) 70%, transparent 100%)";
+                if (recognition) {
+                    try { recognition.stop(); } catch(e){}
                 }
             };
 
-            recognition.onerror = () => { statusBadge.innerText = "Ocioso"; };
-            recognition.onend = () => { statusBadge.innerText = "Ocioso"; };
+            utterance.onend = () => {
+                isBusy = false;
+                statusBadge.innerText = "Ocioso";
+                reactorCore.style.background = "radial-gradient(circle, var(--accent) 0%, var(--primary) 60%, transparent 100%)";
+                if (recognition && !isListening) {
+                    try { recognition.start(); } catch(e){}
+                }
+            };
+
+            window.speechSynthesis.speak(utterance);
         }
 
-        function triggerListening() {
-            if (recognition && !isBusy) {
-                try {
-                    recognition.start();
+        function initVoiceRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                statusBadge.innerText = "STT Indisponível";
+                return;
+            }
+
+            try {
+                recognition = new SpeechRecognition();
+                recognition.lang = "pt-BR";
+                recognition.continuous = true;
+                recognition.interimResults = false;
+
+                let activated = false;
+
+                recognition.onstart = () => {
+                    isListening = true;
                     statusBadge.innerText = "Ouvindo...";
-                } catch(e) {
-                    console.error(e);
-                }
+                };
+
+                recognition.onresult = (event) => {
+                    if (isBusy) return; // Proteção contra loop de áudio
+                    const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
+                    
+                    if (!activated) {
+                        if (transcript.includes(CONFIG.wakeWord)) {
+                            activated = true;
+                            statusBadge.innerText = "Ativado (Ouvindo comando)";
+                            speakText("Sim, senhor?");
+                            setTimeout(() => { activated = false; }, 12000);
+                        }
+                    } else {
+                        dialogueUser.innerText = `Você: ${transcript}`;
+                        processClaudeCommand(transcript);
+                        activated = false;
+                        statusBadge.innerText = "Ocioso";
+                    }
+                };
+
+                recognition.onerror = (e) => {
+                    if (e.error === "not-allowed") {
+                        statusBadge.innerText = "Microfone Negado";
+                    }
+                };
+
+                recognition.onend = () => {
+                    isListening = false;
+                    if (!isBusy) {
+                        try { recognition.start(); } catch(err){}
+                    }
+                };
+
+                recognition.start();
+            } catch(e) {
+                console.error(e);
             }
         }
 
-        btnMic.addEventListener("click", triggerListening);
-        reactorOrb.addEventListener("click", triggerListening);
+        btnMic.addEventListener("click", () => {
+            if (recognition && !isListening) {
+                try { recognition.start(); } catch(e){}
+            } else if (recognition && isListening) {
+                try { recognition.stop(); } catch(e){}
+            }
+        });
+
+        reactorOrb.addEventListener("click", () => {
+            if (recognition && !isListening) {
+                try { recognition.start(); } catch(e){}
+            } else if (recognition && isListening) {
+                try { recognition.stop(); } catch(e){}
+            }
+        });
 
         btnStopSpeech.addEventListener("click", () => {
             window.speechSynthesis.cancel();
             isBusy = false;
             statusBadge.innerText = "Ocioso";
+            reactorCore.style.background = "radial-gradient(circle, var(--accent) 0%, var(--primary) 60%, transparent 100%)";
         });
 
         textInput.addEventListener("keydown", (e) => {
@@ -863,38 +954,22 @@
             }
         });
 
-        function speakText(text) {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = "pt-BR";
-            utterance.rate = 1.0;
-            utterance.pitch = 0.75;
-            
-            const voices = window.speechSynthesis.getVoices();
-            let maleVoice = voices.find(v => v.lang.includes("pt") && !v.name.toLowerCase().includes("female")) || voices[0];
-            if (maleVoice) utterance.voice = maleVoice;
-
-            utterance.onstart = () => { isBusy = true; statusBadge.innerText = "Falando"; };
-            utterance.onend = () => { isBusy = false; statusBadge.innerText = "Ocioso"; };
-            
-            window.speechSynthesis.speak(utterance);
-        }
-
-        // INTEGRAÇÃO COM A API DO CLAUDE & SECOND BRAIN VIVO
+        // INTEGRAÇÃO COM CLAUDE API E SECOND BRAIN
         async function processClaudeCommand(prompt) {
             const apiKey = getActiveApiKey();
             if (!apiKey) {
-                const err = "Por favor, insira sua chave da Anthropic API no topo da página.";
+                const err = "Por favor, insira sua chave da Anthropic API no topo.";
                 dialogueAssistant.innerText = `${CONFIG.name}: ${err}`;
-                speakText("Insira sua chave de API na barra superior, senhor.");
+                speakText("Insira sua chave de API, senhor.");
                 return;
             }
 
             isBusy = true;
-            statusBadge.innerText = "Processando no Claude...";
+            statusBadge.innerText = "Pensando...";
+            reactorCore.style.background = "radial-gradient(circle, #fbbf24 0%, rgba(251,191,36,0.3) 70%, transparent 100%)";
 
             let notesText = NOTES.map(n => `- [${n.area.toUpperCase()}] ${n.title}: ${n.body}`).join("\n");
-            const systemPrompt = `Você é o ${CONFIG.name}, um assistente pessoal com personalidade de ${CONFIG.persona}. Você atende ${CONFIG.address}. Suas respostas devem ser curtas (2-4 frases), faladas, sem emojis nem markdown em português do Brasil. 
+            const systemPrompt = `Você é o ${CONFIG.name}, um assistente pessoal com personalidade de ${CONFIG.persona}. Você atende ${CONFIG.address}. Suas respostas devem ser curtas (2-4 frases), faladas, sem emojis nem markdown em português do Brasil, mantendo tom executivo e cerimonioso. 
             Regra de Memória Viva: Se o usuário revelar algo novo e duradouro, TERMINE a resposta com uma linha no formato EXATO [[SAVE:area|titulo|texto]] (area ∈ meta, metas, trabalho, projetos, financas, aprendizado, saude, relacoes).
             
             SECOND BRAIN (Notas atuais de ${CONFIG.address}):
@@ -917,7 +992,7 @@
                     })
                 });
 
-                if (!response.ok) throw new Error("Erro na API Key ou de comunicação.");
+                if (!response.ok) throw new Error("Erro na API Key.");
 
                 const data = await response.json();
                 let rawText = data.content?.[0]?.text || "Sem resposta do sistema.";
@@ -938,11 +1013,12 @@
 
             } catch (error) {
                 console.error(error);
-                const errText = "Erro ao comunicar com o Claude. Verifique sua chave de API.";
+                const errText = "Erro de conexão com o Claude. Verifique sua chave.";
                 dialogueAssistant.innerText = `${CONFIG.name}: ${errText}`;
                 speakText("Falha de conexão com a API, senhor.");
                 isBusy = false;
                 statusBadge.innerText = "Ocioso";
+                reactorCore.style.background = "radial-gradient(circle, var(--accent) 0%, var(--primary) 60%, transparent 100%)";
             }
         }
 
@@ -1003,11 +1079,11 @@
                 <defs>
                     <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
                         <stop offset="0%" stop-color="#ffb700" stop-opacity="0.8"/>
-                        <stop offset="100%" stop-color="#00f3ff" stop-opacity="0"/>
+                        <stop offset="100%" stop-color="#00a2ff" stop-opacity="0"/>
                     </radialGradient>
                     <linearGradient id="edgeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" stop-color="#ffb700"/>
-                        <stop offset="100%" stop-color="#00f3ff"/>
+                        <stop offset="100%" stop-color="#00a2ff"/>
                     </linearGradient>
                 </defs>
             `;
@@ -1023,18 +1099,18 @@
             });
 
             Object.values(nodeCoords).forEach(node => {
-                const color = AREA[node.note.area]?.color || '#00f3ff';
+                const color = AREA[node.note.area]?.color || '#00a2ff';
                 svgContent += `<line x1="${cx}" y1="${cy}" x2="${node.x}" y2="${node.y}" stroke="${color}" stroke-width="0.8" opacity="0.3"/>`;
             });
 
             svgContent += `
                 <circle cx="${cx}" cy="${cy}" r="38" fill="url(#coreGlow)"/>
-                <circle cx="${cx}" cy="${cy}" r="22" fill="#020810" stroke="#ffb700" stroke-width="2"/>
+                <circle cx="${cx}" cy="${cy}" r="22" fill="#000814" stroke="#ffb700" stroke-width="2"/>
                 <text x="${cx}" y="${cy + 5}" fill="#fff" font-size="14" text-anchor="middle" font-weight="bold">🧠</text>
             `;
 
             Object.values(nodeCoords).forEach(node => {
-                const color = AREA[node.note.area]?.color || '#00f3ff';
+                const color = AREA[node.note.area]?.color || '#00a2ff';
                 const size = Math.min(18, 10 + (connCounts[node.note.id] || 1) * 1.5);
                 const isHighlighted = node.note.id === highlightedNoteId;
 
@@ -1044,7 +1120,7 @@
                         <circle cx="${node.x}" cy="${node.y}" r="${size + 4}" fill="${color}" opacity="0.25">
                             <animate attributeName="r" values="${size};${size+5};${size}" dur="3s" repeatCount="indefinite"/>
                         </circle>
-                        <circle cx="${node.x}" cy="${node.y}" r="${size}" fill="#020408" stroke="${color}" stroke-width="2"/>
+                        <circle cx="${node.x}" cy="${node.y}" r="${size}" fill="#000000" stroke="${color}" stroke-width="2"/>
                         <text x="${node.x}" y="${node.y + size + 14}" fill="#e2e8f0" font-size="10" text-anchor="middle" font-weight="500">${node.note.title}</text>
                     </g>
                 `;
@@ -1105,7 +1181,7 @@
             localStorage.setItem("jarvis_notes", JSON.stringify(NOTES));
             modalOverlay.classList.remove("open");
             renderGraph();
-            speakText("Nota integrada no Second Brain, senhor.");
+            speakText("Nota salva no Second Brain, senhor.");
         });
 
         btnDeleteNote.addEventListener("click", () => {
