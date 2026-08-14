@@ -501,23 +501,23 @@
     <div id="bootScreen">
         <div class="boot-title">SENHOR FAGUNDES</div>
         <div class="boot-line"></div>
-        <div class="boot-status">CARREGANDO SISTEMA NEURAL AUTÓNOMO...</div>
-        <div class="boot-version">v6.0 · OFFLINE READY</div>
+        <div class="boot-status">CARREGANDO MOTOR SEMÂNTICO LOCAL...</div>
+        <div class="boot-version">v6.1 · DYNAMIC MEMORY</div>
     </div>
 
     <!-- ACTIVATION SCREEN -->
     <div id="activationScreen">
         <div class="activation-title">SENHOR FAGUNDES</div>
-        <div class="activation-subtitle">NÚCLEO PRONTO PARA INTERAÇÃO</div>
+        <div class="activation-subtitle">MEMÓRIA NEURAL DINÂMICA PRONTA</div>
         <button class="activation-btn" id="btnActivate">► ATIVAR SISTEMA</button>
-        <div class="activation-hint">CLIQUE PARA LIBERTAR O ÁUDIO E O MOTOR</div>
+        <div class="activation-hint">CLIQUE PARA INICIAR INTERAÇÃO INTELIGENTE</div>
     </div>
 
     <!-- MAIN APP -->
     <div id="app">
         <header class="top-bar">
-            <div class="app-title">SENHOR FAGUNDES // AUTONOMOUS CORE</div>
-            <div class="status-info">● MODO AUTÓNOMO ATIVO (SEM API)</div>
+            <div class="app-title">SENHOR FAGUNDES // NEURAL CORE</div>
+            <div class="status-info">● SECOND BRAIN DINÂMICO ATIVO</div>
         </header>
 
         <div class="main-grid">
@@ -536,11 +536,11 @@
 
                 <div class="dialogue-box">
                     <div id="dialogueUser" class="dialogue-user">Você: --</div>
-                    <div id="dialogueAssistant" class="dialogue-assistant">Senhor Fagundes: Sistemas online, Sandro. Diga ou digite um comando.</div>
+                    <div id="dialogueAssistant" class="dialogue-assistant">Senhor Fagundes: Sistemas online, Sandro. Pergunte-me qualquer coisa sobre os seus projetos ou vida.</div>
                 </div>
 
                 <div class="controls-row">
-                    <input type="text" id="textInput" placeholder="Ex: 'como estão meus investimentos?', 'abrir youtube'..."/>
+                    <input type="text" id="textInput" placeholder="Pergunte sobre seus projetos, metas, finanças..."/>
                     <button id="btnMic" class="action-btn" title="Falar por voz">🎙️ Falar</button>
                     <button id="btnStopSpeech" class="action-btn btn-danger">Parar Fala</button>
                 </div>
@@ -563,7 +563,7 @@
 
                 <div class="brain-footer">
                     <div class="legend-list" id="legendList"></div>
-                    <div class="injected-status" id="injectedStatus">✓ contexto total incorporado</div>
+                    <div class="injected-status" id="injectedStatus">✓ motor semântico local ativo</div>
                 </div>
             </section>
         </div>
@@ -596,8 +596,7 @@
         const CONFIG = {
             name: "Senhor Fagundes",
             address: "Sandro",
-            persona: "formal britânico (mordomo)",
-            wakeWord: "ei fagundes"
+            persona: "formal britânico (mordomo)"
         };
 
         const AREA = {
@@ -677,14 +676,12 @@
             app.classList.add("active");
             renderGraph();
             initVoiceRecognition();
-            speakText(`Sistemas autónomos online. À sua disposição, ${CONFIG.address}.`);
+            speakText(`Sistemas ativos com memória dinâmica atualizada. À sua disposição, ${CONFIG.address}.`);
         });
 
         function initVoiceRecognition() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                return;
-            }
+            if (!SpeechRecognition) return;
 
             recognition = new SpeechRecognition();
             recognition.lang = "pt-BR";
@@ -695,7 +692,7 @@
                 const transcript = event.results[0][0].transcript.trim();
                 if (transcript) {
                     dialogueUser.innerText = `Você: ${transcript}`;
-                    processAutonomousCommand(transcript);
+                    processSemanticQuery(transcript);
                 }
             };
 
@@ -737,7 +734,7 @@
                 const query = textInput.value.trim();
                 textInput.value = "";
                 dialogueUser.innerText = `Você: ${query}`;
-                processAutonomousCommand(query);
+                processSemanticQuery(query);
             }
         });
 
@@ -767,41 +764,55 @@
             window.speechSynthesis.speak(utterance);
         }
 
-        // MOTOR NEURAL INTELIGENTE LOCAL (AUTÓNOMO SEM API)
-        function processAutonomousCommand(prompt) {
+        // MOTOR DE BUSCA E ASSOCIAÇÃO SEMÂNTICA LOCAL INTELIGENTE (BASE DE DADOS DINÂMICA)
+        function processSemanticQuery(prompt) {
             isBusy = true;
-            statusBadge.innerText = "Processando...";
+            statusBadge.innerText = "Analisando Second Brain...";
             reactorCore.style.background = "radial-gradient(circle, #fbbf24 0%, rgba(251,191,36,0.3) 70%, transparent 100%)";
 
             setTimeout(() => {
-                const lower = prompt.toLowerCase();
+                const queryWords = prompt.toLowerCase().replace(/[^\w\sÀ-ÿ]/gi, '').split(/\s+/).filter(w => w.length > 2);
+                
+                // Pontuar cada nota com base na correspondência de palavras-chave da pergunta
+                let scoredNotes = NOTES.map(note => {
+                    let score = 0;
+                    const textContent = (note.title + " " + note.body + " " + note.area).toLowerCase();
+                    
+                    queryWords.forEach(word => {
+                        if (textContent.includes(word)) {
+                            score += word.length > 4 ? 3 : 1;
+                        }
+                    });
+
+                    return { note, score };
+                });
+
+                // Ordenar por relevância
+                scoredNotes.sort((a, b) => b.score - a.score);
+
+                let bestMatch = scoredNotes[0];
                 let responseText = "";
 
-                if (lower.includes("investimento") || lower.includes("finança") || lower.includes("dinheiro")) {
-                    const note = NOTES.find(n => n.area === "financas");
-                    responseText = `Com certeza, senhor. Atualmente o senhor investe em Tesouro Direto, Ouro, CDB, CDI e Bitcoin. O objetivo principal é juntar capital para a viagem pela Argentina e Patagônia.`;
-                } else if (lower.includes("trabalho") || lower.includes("herval") || lower.includes("dashboard")) {
-                    const note = NOTES.find(n => n.area === "trabalho");
-                    responseText = `No Grupo Herval, o senhor atua como cientista de dados, desenvolvendo painéis analíticos em Power BI e Superset para orientar as decisões da diretoria.`;
-                } else if (lower.includes("água") || lower.includes("rio") || lower.includes("enchente") || lower.includes("plataforma")) {
-                    const note = NOTES.find(n => n.id === "note_4");
-                    responseText = `A plataforma de monitoramento de rios e cotas de inundação está com a Fase 1 completa e ativa no Vercel, pronta para apoiar prefeituras em risco.`;
-                } else if (lower.includes("saúde") || lower.includes("treino") || lower.includes("exercício")) {
-                    responseText = `Senhor, o seu registro aponta o desejo de retomar a rotina fitness aos 40 anos, relembrando calistenia, trilhas e pedaladas com o seu filho.`;
-                } else if (lower.includes("abrir youtube") || lower.includes("youtube")) {
+                if (prompt.toLowerCase().includes("abrir youtube")) {
                     window.open("https://youtube.com", "_blank");
-                    responseText = `Abrindo o YouTube para o senhor imediatamente.`;
-                } else if (lower.includes("abrir spotify") || lower.includes("spotify")) {
+                    responseText = `Abrindo o YouTube imediatamente, ${CONFIG.address}.`;
+                } else if (prompt.toLowerCase().includes("abrir spotify")) {
                     window.open("https://open.spotify.com", "_blank");
-                    responseText = `Acessando o Spotify, senhor.`;
+                    responseText = `Acessando o seu Spotify, senhor.`;
+                } else if (bestMatch && bestMatch.score > 0) {
+                    // Destaque visual temporário no nó correspondente do grafo
+                    highlightedNoteId = bestMatch.note.id;
+                    renderGraph();
+                    setTimeout(() => { highlightedNoteId = null; renderGraph(); }, 4000);
+
+                    responseText = `Com base no seu Second Brain (${bestMatch.note.title}): ${bestMatch.note.body}`;
                 } else {
-                    // Resposta geral baseada nas notas gravadas
-                    responseText = `Compreendido perfeitamente, ${CONFIG.address}. Analisei os registros do seu Second Brain sobre "${prompt}" e mantenho todos os indicadores sob o meu controlo formal.`;
+                    responseText = `Senhor Sandro, consultei os registos do seu Second Brain, mas não encontrei menção exata sobre "${prompt}". O senhor pode adicionar uma nota clicando no botão de mais na área neural.`;
                 }
 
                 dialogueAssistant.innerText = `${CONFIG.name}: ${responseText}`;
                 speakText(responseText);
-            }, 600);
+            }, 500);
         }
 
         function upsertNote(area, title, body) {
@@ -963,7 +974,7 @@
             localStorage.setItem("jarvis_notes", JSON.stringify(NOTES));
             modalOverlay.classList.remove("open");
             renderGraph();
-            speakText("Nota salva no Second Brain, senhor.");
+            speakText("Nota salva e integrada ao Second Brain, senhor.");
         });
 
         btnDeleteNote.addEventListener("click", () => {
@@ -974,7 +985,7 @@
                 localStorage.setItem("jarvis_notes", JSON.stringify(NOTES));
                 modalOverlay.classList.remove("open");
                 renderGraph();
-                speakText("Nota removida, senhor.");
+                speakText("Nota removida.");
             }
         });
 
