@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Senhor Fagundes — Jarvis HUD Core</title>
+    <title>Jarvis // Deep Dark Neural Core</title>
     <style>
         :root {
-            --bg-base: #000402;
-            --panel-bg: rgba(0, 255, 128, 0.02);
-            --border-color: rgba(0, 255, 128, 0.45);
-            --primary: #00ff80;
-            --primary-glow: rgba(0, 255, 128, 0.35);
+            --bg-base: #000000;
+            --panel-bg: rgba(5, 10, 20, 0.75);
+            --border-color: rgba(0, 162, 255, 0.35);
+            --primary: #00a2ff;
+            --primary-glow: rgba(0, 162, 255, 0.4);
             --text-main: #e2e8f0;
-            --text-dim: #8fa39b;
+            --text-dim: #64748b;
             --danger: #ff3d00;
         }
 
@@ -20,23 +20,23 @@
         html, body { background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
         ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: rgba(0, 10, 5, 0.9); }
-        ::-webkit-scrollbar-thumb { background: rgba(0, 255, 128, 0.4); border-radius: 2px; }
+        ::-webkit-scrollbar-track { background: #000000; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 162, 255, 0.3); border-radius: 2px; }
 
-        /* CANVAS MATRIX & NEURAL BACKGROUND */
-        #matrixCanvas {
+        /* CANVAS DE REDE NEURAL PROFUNDA (AZUL ELÉTRICO & DEEP DARK) */
+        #neuralCanvas {
             position: fixed;
             inset: 0;
             z-index: 0;
             pointer-events: none;
-            opacity: 0.75;
+            opacity: 0.9;
         }
 
-        /* TELA DE INICIALIZAÇÃO HOLOGRÁFICA (JARVIS HUD & MATRIX) */
+        /* BOOT SCREEN COM HUD DARK AZUL ELÉTRICO ROTATIVA */
         #bootScreen {
             position: fixed;
             inset: 0;
-            background: #000402;
+            background: #000000;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -52,58 +52,65 @@
             pointer-events: none;
         }
 
-        /* HOLOGRAPHIC HUD ROTATING SPHERE */
-        .jarvis-hud-loader {
-            width: 180px;
-            height: 180px;
+        .dark-hud-loader {
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 50px rgba(0, 255, 128, 0.2);
+            box-shadow: 0 0 80px rgba(0, 162, 255, 0.15), inset 0 0 40px rgba(0, 162, 255, 0.1);
         }
 
-        .hud-ring-outer {
+        .hud-ring-1 {
             position: absolute;
             inset: 0;
-            border: 2px dashed rgba(0, 255, 128, 0.7);
+            border: 2px dashed rgba(0, 162, 255, 0.6);
             border-radius: 50%;
-            animation: spinClockwise 10s linear infinite;
+            animation: spinClockwise 12s linear infinite;
         }
 
-        .hud-ring-inner {
+        .hud-ring-2 {
             position: absolute;
-            inset: 15px;
-            border: 2px solid rgba(0, 255, 128, 0.4);
+            inset: 18px;
+            border: 2px solid rgba(0, 162, 255, 0.3);
             border-top: 2px solid transparent;
             border-bottom: 2px solid transparent;
             border-radius: 50%;
-            animation: spinCounter 6s linear infinite;
+            animation: spinCounter 7s linear infinite;
         }
 
-        .hud-core-glow {
-            width: 70px;
-            height: 70px;
+        .hud-ring-3 {
+            position: absolute;
+            inset: 38px;
+            border: 1px dotted rgba(255, 255, 255, 0.7);
             border-radius: 50%;
-            background: radial-gradient(circle, #00ff80 0%, rgba(0,255,128,0.2) 70%, transparent 100%);
-            box-shadow: 0 0 35px #00ff80;
-            animation: corePulse 1.8s infinite ease-in-out;
+            animation: spinClockwise 5s linear infinite;
+        }
+
+        .hud-core-sphere {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #00a2ff 0%, rgba(0,162,255,0.2) 70%, transparent 100%);
+            box-shadow: 0 0 50px #00a2ff, inset 0 0 15px #ffffff;
+            animation: corePulse 1.6s infinite ease-in-out;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
         }
 
         @keyframes spinClockwise { to { transform: rotate(360deg); } }
         @keyframes spinCounter { to { transform: rotate(-360deg); } }
-        @keyframes corePulse { 0%, 100% { transform: scale(0.9); opacity: 0.7; } 50% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 55px #00ff80; } }
+        @keyframes corePulse { 0%, 100% { transform: scale(0.92); opacity: 0.75; } 50% { transform: scale(1.08); opacity: 1; box-shadow: 0 0 80px #00a2ff; } }
 
         .boot-status {
             font-size: 0.85rem;
-            letter-spacing: 3px;
-            color: #00ff80;
-            text-shadow: 0 0 12px rgba(0, 255, 128, 0.6);
+            letter-spacing: 4px;
+            color: #00a2ff;
+            text-shadow: 0 0 15px rgba(0, 162, 255, 0.8);
             animation: blink 1s infinite;
         }
 
@@ -113,8 +120,8 @@
         #activationScreen {
             position: fixed;
             inset: 0;
-            background: rgba(0, 4, 2, 0.95);
-            backdrop-filter: blur(12px);
+            background: rgba(0, 0, 0, 0.97);
+            backdrop-filter: blur(14px);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -135,19 +142,19 @@
             padding: 18px 50px;
             font-size: 1.1rem;
             letter-spacing: 3px;
-            color: #00ff80;
-            background: rgba(0, 255, 128, 0.1);
-            border: 2px solid #00ff80;
+            color: #00a2ff;
+            background: rgba(0, 162, 255, 0.1);
+            border: 2px solid #00a2ff;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
             transition: all 0.3s;
-            box-shadow: 0 0 40px rgba(0, 255, 128, 0.3), inset 0 0 20px rgba(0, 255, 128, 0.2);
+            box-shadow: 0 0 45px rgba(0, 162, 255, 0.3), inset 0 0 20px rgba(0, 162, 255, 0.2);
         }
 
         .activation-btn:hover {
-            background: rgba(0, 255, 128, 0.3);
-            box-shadow: 0 0 70px #00ff80, inset 0 0 35px #00ff80;
+            background: rgba(0, 162, 255, 0.3);
+            box-shadow: 0 0 80px #00a2ff, inset 0 0 40px #00a2ff;
             transform: scale(1.04);
         }
 
@@ -180,7 +187,7 @@
             backdrop-filter: blur(14px);
             flex-wrap: wrap;
             gap: 10px;
-            box-shadow: 0 0 30px rgba(0, 255, 128, 0.1);
+            box-shadow: 0 0 35px rgba(0, 162, 255, 0.1);
         }
 
         .app-title {
@@ -194,7 +201,7 @@
             font-size: 0.8rem;
             color: var(--primary);
             letter-spacing: 1px;
-            text-shadow: 0 0 10px rgba(0, 255, 128, 0.4);
+            text-shadow: 0 0 10px rgba(0, 162, 255, 0.4);
         }
 
         .main-grid {
@@ -217,7 +224,7 @@
             flex-direction: column;
             position: relative;
             backdrop-filter: blur(16px);
-            box-shadow: inset 0 0 25px rgba(0, 255, 128, 0.1), 0 0 30px rgba(0, 0, 0, 0.5);
+            box-shadow: inset 0 0 30px rgba(0, 162, 255, 0.08), 0 0 35px rgba(0, 0, 0, 0.8);
         }
 
         .interaction-panel {
@@ -227,10 +234,9 @@
             min-height: 480px;
         }
 
-        /* HUD CENTRAL DO ASSISTENTE */
         .hud-center-sphere {
-            width: 150px;
-            height: 150px;
+            width: 160px;
+            height: 160px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -238,13 +244,13 @@
             position: relative;
             cursor: pointer;
             margin: 15px 0;
-            background: radial-gradient(circle, rgba(0,255,128,0.15) 0%, rgba(0,100,50,0.05) 60%, transparent 100%);
-            box-shadow: 0 0 40px rgba(0,255,128,0.25), inset 0 0 25px rgba(0,255,128,0.2);
+            background: radial-gradient(circle, rgba(0,162,255,0.15) 0%, rgba(0,50,100,0.05) 60%, transparent 100%);
+            box-shadow: 0 0 50px rgba(0,162,255,0.3), inset 0 0 30px rgba(0,162,255,0.2);
             transition: all 0.4s;
         }
 
         .hud-center-sphere:hover {
-            box-shadow: 0 0 70px rgba(0,255,128,0.6), inset 0 0 40px rgba(0,255,128,0.4);
+            box-shadow: 0 0 80px rgba(0,162,255,0.7), inset 0 0 45px rgba(0,162,255,0.5);
             transform: scale(1.04);
         }
 
@@ -253,16 +259,16 @@
             letter-spacing: 2px;
             text-transform: uppercase;
             color: var(--text-dim);
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.8);
             padding: 5px 14px;
             border-radius: 14px;
-            border: 1px solid rgba(0,255,128,0.3);
+            border: 1px solid rgba(0,162,255,0.35);
         }
 
         .dialogue-box {
             width: 100%;
             text-align: left;
-            background: rgba(0, 6, 3, 0.85);
+            background: rgba(2, 6, 12, 0.9);
             padding: 14px 18px;
             border-radius: 8px;
             border-left: 3px solid var(--primary);
@@ -273,11 +279,11 @@
             flex-direction: column;
             justify-content: center;
             gap: 6px;
-            box-shadow: inset 0 0 15px rgba(0,255,128,0.05);
+            box-shadow: inset 0 0 20px rgba(0,162,255,0.05);
         }
 
         .dialogue-user { color: var(--text-dim); }
-        .dialogue-assistant { color: var(--primary); font-weight: 500; text-shadow: 0 0 8px rgba(0,255,128,0.3); }
+        .dialogue-assistant { color: var(--primary); font-weight: 500; text-shadow: 0 0 10px rgba(0,162,255,0.4); }
 
         .controls-row {
             display: flex;
@@ -288,7 +294,7 @@
 
         .controls-row input {
             flex-grow: 1;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.85);
             border: 1px solid var(--border-color);
             color: var(--text-main);
             padding: 10px 14px;
@@ -300,11 +306,11 @@
 
         .controls-row input:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 15px rgba(0,255,128,0.3);
+            box-shadow: 0 0 20px rgba(0,162,255,0.4);
         }
 
         .action-btn {
-            background: rgba(0, 255, 128, 0.15);
+            background: rgba(0, 162, 255, 0.15);
             border: 1px solid var(--primary);
             color: #fff;
             padding: 10px 18px;
@@ -315,8 +321,8 @@
         }
 
         .action-btn:hover {
-            background: rgba(0, 255, 128, 0.35);
-            box-shadow: 0 0 15px rgba(0,255,128,0.4);
+            background: rgba(0, 162, 255, 0.35);
+            box-shadow: 0 0 20px rgba(0,162,255,0.5);
         }
 
         .btn-danger {
@@ -327,7 +333,7 @@
 
         .btn-danger:hover {
             background: rgba(255, 61, 0, 0.4);
-            box-shadow: 0 0 15px rgba(255,61,0,0.4);
+            box-shadow: 0 0 20px rgba(255,61,0,0.4);
         }
 
         .brain-panel {
@@ -340,7 +346,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 12px;
-            border-bottom: 1px solid rgba(0,255,128,0.2);
+            border-bottom: 1px solid rgba(0,162,255,0.25);
             padding-bottom: 8px;
         }
 
@@ -365,7 +371,7 @@
         }
 
         .icon-btn {
-            background: rgba(0,255,128,0.1);
+            background: rgba(0,162,255,0.1);
             border: 1px solid var(--border-color);
             color: var(--primary);
             width: 28px;
@@ -381,17 +387,17 @@
         }
 
         .icon-btn:hover {
-            background: rgba(0,255,128,0.3);
-            box-shadow: 0 0 10px rgba(0,255,128,0.4);
+            background: rgba(0,162,255,0.3);
+            box-shadow: 0 0 12px rgba(0,162,255,0.5);
         }
 
         .svg-container {
             flex-grow: 1;
             width: 100%;
             min-height: 340px;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.6);
             border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.05);
             position: relative;
             overflow: hidden;
             display: flex;
@@ -429,7 +435,7 @@
         }
 
         .injected-status {
-            color: #10b981;
+            color: #00a2ff;
             font-weight: 500;
         }
 
@@ -437,7 +443,7 @@
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,4,2,0.88);
+            background: rgba(0, 0, 0, 0.92);
             z-index: 200;
             display: none;
             align-items: center;
@@ -451,13 +457,13 @@
         }
 
         .modal-card {
-            background: rgba(0, 15, 8, 0.96);
+            background: rgba(2, 12, 24, 0.96);
             border: 1px solid var(--primary);
             width: 100%;
             max-width: 480px;
             padding: 24px;
             border-radius: 10px;
-            box-shadow: 0 0 50px rgba(0, 255, 128, 0.4);
+            box-shadow: 0 0 60px rgba(0, 162, 255, 0.4);
             display: flex;
             flex-direction: column;
             gap: 14px;
@@ -475,7 +481,7 @@
         }
 
         .modal-card input, .modal-card select, .modal-card textarea {
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.85);
             border: 1px solid var(--border-color);
             color: var(--text-main);
             padding: 9px 12px;
@@ -500,34 +506,36 @@
 </head>
 <body>
 
-    <!-- CANVAS MATRIX DIGITAL RAIN & NEURAL NETWORK -->
-    <canvas id="matrixCanvas"></canvas>
+    <!-- CANVAS DE REDE NEURAL PROFUNDA (AZUL ELÉTRICO E DEEP DARK) -->
+    <canvas id="neuralCanvas"></canvas>
 
-    <!-- BOOT SCREEN COM HOLOGRAMA ROTATIVO ESTILO JARVIS/MATRIX -->
+    <!-- BOOT SCREEN COM HUD DARK AZUL ELÉTRICO ROTATIVA -->
     <div id="bootScreen">
-        <div class="jarvis-hud-loader">
-            <div class="hud-ring-outer"></div>
-            <div class="hud-ring-inner"></div>
-            <div class="hud-core-glow">🌐</div>
+        <div class="dark-hud-loader">
+            <div class="hud-ring-1"></div>
+            <div class="hud-ring-2"></div>
+            <div class="hud-ring-3"></div>
+            <div class="hud-core-sphere">🧠</div>
         </div>
-        <div class="boot-status">ESTABELECENDO LIGAÇÃO HOLOGRÁFICA...</div>
+        <div class="boot-status">ESTABELECENDO LIGAÇÃO NEURAL PROFUNDA...</div>
     </div>
 
     <!-- ACTIVATION SCREEN -->
     <div id="activationScreen">
-        <div class="jarvis-hud-loader" style="width: 130px; height: 130px;">
-            <div class="hud-ring-outer"></div>
-            <div class="hud-ring-inner"></div>
-            <div class="hud-core-glow" style="font-size: 1.4rem;">⚡</div>
+        <div class="dark-hud-loader" style="width: 140px; height: 140px;">
+            <div class="hud-ring-1"></div>
+            <div class="hud-ring-2"></div>
+            <div class="hud-ring-3"></div>
+            <div class="hud-core-sphere" style="font-size: 1.2rem;">⚡</div>
         </div>
-        <button class="activation-btn" id="btnActivate">ATIVAR NÚCLEO JARVIS</button>
+        <button class="activation-btn" id="btnActivate">ATIVAR NÚCLEO NEURAL</button>
     </div>
 
     <!-- MAIN APP -->
     <div id="app">
         <header class="top-bar">
-            <div class="app-title">JARVIS // HOLOGRAPHIC CORE</div>
-            <div class="status-info">● NÚCLEO VERDE CIBERNÉTICO ATIVO</div>
+            <div class="app-title">JARVIS // DEEP DARK CORE</div>
+            <div class="status-info">● HOLOGRAPHIC NEURON ATIVO</div>
         </header>
 
         <div class="main-grid">
@@ -539,9 +547,9 @@
                 </div>
 
                 <div class="hud-center-sphere" id="reactorOrb" title="Clique para falar com Jarvis">
-                    <div class="hud-ring-outer"></div>
-                    <div class="hud-ring-inner"></div>
-                    <div class="hud-core-glow">🧠</div>
+                    <div class="hud-ring-1"></div>
+                    <div class="hud-ring-2"></div>
+                    <div class="hud-core-sphere">⚡</div>
                 </div>
 
                 <div class="dialogue-box">
@@ -573,7 +581,7 @@
 
                 <div class="brain-footer">
                     <div class="legend-list" id="legendList"></div>
-                    <div class="injected-status" id="injectedStatus">✓ motor neural holográfico ativo</div>
+                    <div class="injected-status" id="injectedStatus">✓ motor neural elétrico ativo</div>
                 </div>
             </section>
         </div>
@@ -610,14 +618,14 @@
         };
 
         const AREA = {
-            meta: { label: "Identidade", color: "#8a90a6" },
-            metas: { label: "Metas", color: "#fbbf24" },
-            trabalho: { label: "Carreira", color: "#00ff80" },
-            projetos: { label: "Projetos", color: "#8b7cff" },
+            meta: { label: "Identidade", color: "#64748b" },
+            metas: { label: "Metas", color: "#38bdf8" },
+            trabalho: { label: "Carreira", color: "#00a2ff" },
+            projetos: { label: "Projetos", color: "#818cf8" },
             financas: { label: "Finanças", color: "#f7931a" },
-            aprendizado: { label: "Aprendizado", color: "#2dd4ff" },
-            saude: { label: "Saúde", color: "#10b981" },
-            relacoes: { label: "Relações", color: "#ec4899" }
+            aprendizado: { label: "Aprendizado", color: "#38bdf8" },
+            saude: { label: "Saúde", color: "#34d399" },
+            relacoes: { label: "Relações", color: "#f472b6" }
         };
 
         const INITIAL_NOTES = [
@@ -641,8 +649,8 @@
         let highlightedNoteId = null;
         let recognition = null;
 
-        // CANVAS MATRIX DIGITAL RAIN & NEURAL HUD EM BACKGROUND
-        const canvas = document.getElementById('matrixCanvas');
+        // CANVAS DE REDE NEURAL PROFUNDA (AZUL ELÉTRICO E DEEP DARK)
+        const canvas = document.getElementById('neuralCanvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
 
@@ -653,22 +661,22 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        for (let i = 0; i < 75; i++) {
+        for (let i = 0; i < 90; i++) {
             particles.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
-                vx: (Math.random() - 0.5) * 0.8,
-                vy: (Math.random() - 0.5) * 0.8,
-                radius: Math.random() * 2 + 1.2
+                vx: (Math.random() - 0.5) * 0.7,
+                vy: (Math.random() - 0.5) * 0.7,
+                radius: Math.random() * 2 + 1.1
             });
         }
 
-        function drawMatrixHUD() {
+        function drawNeuralHUD() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#000402';
+            ctx.fillStyle = '#000000';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Linhas sinápticas em verde neon Matrix
+            // Feixes sinápticos em azul elétrico profundo
             for (let i = 0; i < particles.length; i++) {
                 let p = particles[i];
                 p.x += p.vx;
@@ -683,11 +691,11 @@
                     let dy = p.y - p2.y;
                     let dist = Math.sqrt(dx * dx + dy * dy);
 
-                    if (dist < 150) {
+                    if (dist < 160) {
                         ctx.beginPath();
                         ctx.moveTo(p.x, p.y);
                         ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = `rgba(0, 255, 128, ${(1 - dist / 150) * 0.4})`;
+                        ctx.strokeStyle = `rgba(0, 162, 255, ${(1 - dist / 160) * 0.35})`;
                         ctx.lineWidth = 0.8;
                         ctx.stroke();
                     }
@@ -695,16 +703,16 @@
 
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                ctx.fillStyle = '#00ff80';
-                ctx.shadowBlur = 15;
-                ctx.shadowColor = '#00ff80';
+                ctx.fillStyle = '#00a2ff';
+                ctx.shadowBlur = 16;
+                ctx.shadowColor = '#00a2ff';
                 ctx.fill();
                 ctx.shadowBlur = 0;
             }
 
-            requestAnimationFrame(drawMatrixHUD);
+            requestAnimationFrame(drawNeuralHUD);
         }
-        drawMatrixHUD();
+        drawNeuralHUD();
 
         // DOM Elements
         const bootScreen = document.getElementById("bootScreen");
@@ -748,7 +756,7 @@
             app.classList.add("active");
             renderGraph();
             initVoiceRecognition();
-            speakText("Sistemas holográficos online. À sua inteira disposição, Sandro.");
+            speakText("Núcleo neural profundo ativo. À sua inteira disposição, Sandro.");
         });
 
         function initVoiceRecognition() {
@@ -820,7 +828,7 @@
 
         function processIntelligentPrompt(prompt) {
             isBusy = true;
-            statusBadge.innerText = "Processando Holograma...";
+            statusBadge.innerText = "Processando Neurônios...";
 
             setTimeout(() => {
                 const lower = prompt.toLowerCase();
@@ -844,9 +852,9 @@
                         setTimeout(() => { highlightedNoteId = null; renderGraph(); }, 4000);
 
                         const summaries = matchedNotes.map(n => n.body).join(" Além disso, ");
-                        responseText = `Com base nos registros holográficos: ${summaries}. Sugiro mantermos o foco nestas diretrizes estratégicas.`;
+                        responseText = `Com base nos registros neurais: ${summaries}. Sugiro mantermos o foco nestas diretrizes estratégicas.`;
                     } else {
-                        responseText = "Analisei sua questão com base nas diretrizes do sistema. Compreendo perfeitamente o seu raciocínio e permaneço pronto para executar novas demandas.";
+                        responseText = "Analisei sua questão com base nas diretrizes do núcleo profundo. Compreendo perfeitamente o seu raciocínio e permaneço pronto para executar novas demandas.";
                     }
                 }
 
@@ -911,12 +919,12 @@
             let svgContent = `
                 <defs>
                     <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
-                        <stop offset="0%" stop-color="#00ff80" stop-opacity="0.8"/>
-                        <stop offset="100%" stop-color="#8b7cff" stop-opacity="0"/>
+                        <stop offset="0%" stop-color="#00a2ff" stop-opacity="0.8"/>
+                        <stop offset="100%" stop-color="#818cf8" stop-opacity="0"/>
                     </radialGradient>
                     <linearGradient id="edgeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#00ff80"/>
-                        <stop offset="100%" stop-color="#8b7cff"/>
+                        <stop offset="0%" stop-color="#00a2ff"/>
+                        <stop offset="100%" stop-color="#818cf8"/>
                     </linearGradient>
                 </defs>
             `;
@@ -932,18 +940,18 @@
             });
 
             Object.values(nodeCoords).forEach(node => {
-                const color = AREA[node.note.area]?.color || '#00ff80';
+                const color = AREA[node.note.area]?.color || '#00a2ff';
                 svgContent += `<line x1="${cx}" y1="${cy}" x2="${node.x}" y2="${node.y}" stroke="${color}" stroke-width="0.8" opacity="0.3"/>`;
             });
 
             svgContent += `
                 <circle cx="${cx}" cy="${cy}" r="38" fill="url(#coreGlow)"/>
-                <circle cx="${cx}" cy="${cy}" r="22" fill="#001a0d" stroke="#8b7cff" stroke-width="2"/>
+                <circle cx="${cx}" cy="${cy}" r="22" fill="#000814" stroke="#818cf8" stroke-width="2"/>
                 <text x="${cx}" y="${cy + 5}" fill="#fff" font-size="14" text-anchor="middle" font-weight="bold">🧠</text>
             `;
 
             Object.values(nodeCoords).forEach(node => {
-                const color = AREA[node.note.area]?.color || '#00ff80';
+                const color = AREA[node.note.area]?.color || '#00a2ff';
                 const size = Math.min(18, 10 + (connCounts[node.note.id] || 1) * 1.5);
                 const isHighlighted = node.note.id === highlightedNoteId;
 
@@ -953,7 +961,7 @@
                         <circle cx="${node.x}" cy="${node.y}" r="${size + 4}" fill="${color}" opacity="0.25">
                             <animate attributeName="r" values="${size};${size+5};${size}" dur="3s" repeatCount="indefinite"/>
                         </circle>
-                        <circle cx="${node.x}" cy="${node.y}" r="${size}" fill="#000402" stroke="${color}" stroke-width="2"/>
+                        <circle cx="${node.x}" cy="${node.y}" r="${size}" fill="#000000" stroke="${color}" stroke-width="2"/>
                         <text x="${node.x}" y="${node.y + size + 14}" fill="#e2e8f0" font-size="10" text-anchor="middle" font-weight="500">${node.note.title}</text>
                     </g>
                 `;
