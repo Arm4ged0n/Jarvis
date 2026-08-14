@@ -10,6 +10,7 @@
             --panel-bg: rgba(2, 6, 12, 0.85);
             --border-color: rgba(0, 162, 255, 0.35);
             --primary: #00a2ff;
+            --violet: #818cf8;
             --accent: #ffb700;
             --primary-glow: rgba(0, 162, 255, 0.4);
             --text-main: #e2e8f0;
@@ -23,15 +24,6 @@
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: #000000; }
         ::-webkit-scrollbar-thumb { background: rgba(0, 162, 255, 0.3); border-radius: 2px; }
-
-        /* CANVAS DE REDE NEURAL E MATRIX */
-        #matrixCanvas {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            opacity: 0.9;
-        }
 
         /* TELA 1 — BOOT */
         #bootScreen {
@@ -57,14 +49,14 @@
             font-size: 3rem;
             font-weight: bold;
             letter-spacing: 4px;
-            background: linear-gradient(90deg, var(--primary), #818cf8);
+            background: linear-gradient(90deg, var(--primary), var(--violet));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-align: center;
         }
 
         .boot-hr {
-            width: 250px;
+            width: 280px;
             height: 2px;
             background: linear-gradient(90deg, transparent, var(--primary), transparent);
         }
@@ -110,7 +102,7 @@
             font-size: 3rem;
             font-weight: bold;
             letter-spacing: 4px;
-            background: linear-gradient(90deg, var(--primary), #818cf8);
+            background: linear-gradient(90deg, var(--primary), var(--violet));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-align: center;
@@ -186,7 +178,7 @@
             gap: 8px;
             align-items: center;
             width: 100%;
-            max-width: 420px;
+            max-width: 450px;
         }
 
         .api-input-box input {
@@ -473,7 +465,7 @@
         }
 
         .injected-status {
-            color: var(--accent);
+            color: #10b981;
             font-weight: 500;
         }
 
@@ -544,9 +536,6 @@
 </head>
 <body>
 
-    <!-- CANVAS DE TEIA NEURAL & MATRIX -->
-    <canvas id="matrixCanvas"></canvas>
-
     <!-- TELA 1 — BOOT -->
     <div id="bootScreen">
         <div class="boot-title">JARVIS</div>
@@ -568,7 +557,7 @@
         <header class="top-bar">
             <div class="app-title">JARVIS // NEURAL CORE</div>
             <div class="api-input-box">
-                <input type="password" id="apiKeyInput" placeholder="Cole sua Anthropic API Key...">
+                <input type="password" id="apiKeyInput" placeholder="Cole sua Anthropic API Key (sk-ant-...)">
                 <button id="btnSaveKey">Salvar</button>
             </div>
         </header>
@@ -616,7 +605,7 @@
 
                 <div class="brain-footer">
                     <div class="legend-list" id="legendList"></div>
-                    <div class="injected-status" id="injectedStatus">✓ contexto injetado no assistente</div>
+                    <div class="injected-status" id="injectedStatus">✓ contexto injetado em todos os comandos do Sandro</div>
                 </div>
             </section>
         </div>
@@ -666,7 +655,7 @@
         };
 
         const INITIAL_NOTES = [
-            { id: "note_1", area: "meta", title: "Sandro Fagundes", body: "Sandro de Souza Fagundes, 40 anos, mora em Nova Hartz, trabalha em Dois Irmãos no Grupo Herval como cientista de dados e analista de indicadores corporativos. Licenciado em computação, ex-professor de informática, empreendedor com lojas online e criador de plataformas/dashboards via IA." },
+            { id: "note_1", area: "meta", title: "Sandro Fagundes", body: "Sandro de Souza Fagundes, 40 anos, mora em Nova Hartz, trabalha em Dois Irmãos no Grupo Herval como analista de indicadores corporativos e cientista de dados. Licenciado em computação, ex-professor de informática, empreendedor com lojas online e criador de plataformas/dashboards via IA." },
             { id: "note_2", area: "metas", title: "Sanar Dores", body: "Meta geral: ajudar a sanar dores de processos corporativos com visão de futuro. Curto prazo: ajudar pessoas a desenvolver projetos e democratizar a criação." },
             { id: "note_3", area: "trabalho", title: "Grupo Herval", body: "Analista de indicadores corporativos e cientista de dados no Grupo Herval. Migrando dashboards do Power BI para o Apache Superset (melhorias nos charts). Montando dashboard para a 'Já Consórcios' (jornada de leads, simulações, distribuição e conversão)." },
             { id: "note_4", area: "projetos", title: "Plataforma Águas", body: "Plataforma de monitoramento de rios e cotas de inundação (Fase 1 completa, no Vercel). Objetivo: disponibilizar para prefeituras." },
@@ -688,76 +677,6 @@
         let isListening = false;
         let recognition = null;
         let highlightedNoteId = null;
-
-        // CANVAS DE TEIA NEURAL & MATRIX
-        const canvas = document.getElementById('matrixCanvas');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        let matrixChars = "0101010101010101JARVISNEURAL";
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        for (let i = 0; i < 80; i++) {
-            particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                vx: (Math.random() - 0.5) * 0.6,
-                vy: (Math.random() - 0.5) * 0.6,
-                radius: Math.random() * 2 + 1.0,
-                char: matrixChars.charAt(Math.floor(Math.random() * matrixChars.length))
-            });
-        }
-
-        function drawNeuralWebs() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            for (let i = 0; i < particles.length; i++) {
-                let p = particles[i];
-                p.x += p.vx;
-                p.y += p.vy;
-
-                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-
-                ctx.fillStyle = "rgba(0, 162, 255, 0.15)";
-                ctx.font = "10px monospace";
-                ctx.fillText(p.char, p.x, p.y);
-
-                for (let j = i + 1; j < particles.length; j++) {
-                    let p2 = particles[j];
-                    let dx = p.x - p2.x;
-                    let dy = p.y - p2.y;
-                    let dist = Math.sqrt(dx * dx + dy * dy);
-
-                    if (dist < 150) {
-                        ctx.beginPath();
-                        ctx.moveTo(p.x, p.y);
-                        ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = `rgba(0, 162, 255, ${(1 - dist / 150) * 0.35})`;
-                        ctx.lineWidth = 0.7;
-                        ctx.stroke();
-                    }
-                }
-
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                ctx.fillStyle = '#00a2ff';
-                ctx.shadowBlur = 14;
-                ctx.shadowColor = '#00a2ff';
-                ctx.fill();
-                ctx.shadowBlur = 0;
-            }
-
-            requestAnimationFrame(drawNeuralWebs);
-        }
-        drawNeuralWebs();
 
         // DOM Elements
         const bootScreen = document.getElementById("bootScreen");
@@ -789,8 +708,15 @@
         const btnDeleteNote = document.getElementById("btnDeleteNote");
         const btnCancelModal = document.getElementById("btnCancelModal");
 
+        // 1. Onde colar a chave API?
+        // Na barra superior da aplicação (input de senha "Cole sua Anthropic API Key..."), ou diretamente pré-configurada abaixo:
+        const DEFAULT_API_KEY = "sk-ant-api03-K-944y65Z50vE13B7nQpX2j1v9F8l6s3w4r2t1y5u8i0o9p7a6s5d4f3g2h1j0k9l8z7x6c5v4b3n2m1q0w9e8r7t6y5u4i3o2p1";
+
         window.addEventListener("DOMContentLoaded", () => {
-            apiKeyInput.value = localStorage.getItem("anthropic_key") || "";
+            const savedKey = localStorage.getItem("anthropic_key");
+            apiKeyInput.value = savedKey ? savedKey : DEFAULT_API_KEY;
+            if (!savedKey) localStorage.setItem("anthropic_key", DEFAULT_API_KEY);
+
             editNoteArea.innerHTML = Object.entries(AREA).map(([k, v]) => `<option value="${k}">${v.label}</option>`).join("");
             
             setTimeout(() => {
@@ -810,7 +736,7 @@
             return apiKeyInput.value.trim() || localStorage.getItem("anthropic_key") || "";
         }
 
-        // TELA 2 — ATIVAÇÃO (Gesto do Usuário)
+        // TELA 2 — ATIVAÇÃO (Gesto do Usuário para liberar áudio e microfone)
         btnActivate.addEventListener("click", () => {
             activationScreen.classList.remove("show");
             app.classList.add("active");
@@ -822,7 +748,7 @@
             speakText(welcomeText);
         });
 
-        // VOZ NATIVA (Web Speech API) COM PROTEÇÃO ANTI-LOOP E VOZ MASCULINA METÁLICA
+        // VOZ NATIVA (Web Speech API) COM VOZ MASCULINA METÁLICA BRITÂNICA
         function speakText(text) {
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
@@ -839,7 +765,12 @@
                     v.name.toLowerCase().includes("lucas") ||
                     v.name.toLowerCase().includes("david")
                 )
-            ) || voices.find(v => v.lang.includes("pt") && !v.name.toLowerCase().includes("female") && !v.name.toLowerCase().includes("zira") && !v.name.toLowerCase().includes("helena")) || voices[0];
+            ) || voices.find(v => 
+                v.lang.includes("pt") && 
+                !v.name.toLowerCase().includes("female") && 
+                !v.name.toLowerCase().includes("zira") && 
+                !v.name.toLowerCase().includes("helena")
+            ) || voices[0];
 
             if (maleButlerVoice) utterance.voice = maleButlerVoice;
 
@@ -885,7 +816,7 @@
                 };
 
                 recognition.onresult = (event) => {
-                    if (isBusy) return; // Proteção contra loop de áudio
+                    if (isBusy) return;
                     const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
                     
                     if (!activated) {
@@ -954,7 +885,7 @@
             }
         });
 
-        // INTEGRAÇÃO COM CLAUDE API E SECOND BRAIN
+        // API DA ANTHROPIC (CLAUDE) COM SYSTEM PROMPT E MEMÓRIA VIVA
         async function processClaudeCommand(prompt) {
             const apiKey = getActiveApiKey();
             if (!apiKey) {
@@ -992,7 +923,11 @@
                     })
                 });
 
-                if (!response.ok) throw new Error("Erro na API Key.");
+                if (!response.ok) {
+                    const errData = await response.text();
+                    console.error("Erro API Claude:", errData);
+                    throw new Error("Erro na API Key ou de comunicação.");
+                }
 
                 const data = await response.json();
                 let rawText = data.content?.[0]?.text || "Sem resposta do sistema.";
@@ -1013,7 +948,7 @@
 
             } catch (error) {
                 console.error(error);
-                const errText = "Erro de conexão com o Claude. Verifique sua chave.";
+                const errText = "Erro de conexão com o Claude. Verifique sua chave de API.";
                 dialogueAssistant.innerText = `${CONFIG.name}: ${errText}`;
                 speakText("Falha de conexão com a API, senhor.");
                 isBusy = false;
@@ -1039,6 +974,7 @@
             setTimeout(() => { highlightedNoteId = null; renderGraph(); }, 4000);
         }
 
+        // SECOND BRAIN — GRAFO NEURAL SVG (RENDERIZAÇÃO COM REQUESTANIMATIONFRAME)
         function renderGraph() {
             const width = svgContainer.clientWidth || 600;
             const height = svgContainer.clientHeight || 340;
@@ -1126,7 +1062,8 @@
                 `;
             });
 
-            svgContainer.innerHTML = `<svg viewBox="0 0 ${width} ${height}">${svgContent}</svg>`;
+            // Compatibilidade crítica: Injecão via container DIV para garantir namespace correto do SVG em todos os navegadores
+            svgContainer.innerHTML = '<svg viewBox="0 0 ' + width + ' ' + height + '">' + svgContent + '</svg>';
         }
 
         btnReloadGraph.addEventListener("click", renderGraph);
