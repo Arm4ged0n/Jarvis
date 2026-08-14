@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Senhor Fagundes — Autonomous Neural Core</title>
+    <title>Senhor Fagundes — Jarvis HUD Core</title>
     <style>
         :root {
-            --bg-base: #000205;
-            --panel-bg: rgba(0, 153, 255, 0.03);
-            --border-color: rgba(0, 153, 255, 0.5);
-            --primary: #0099ff;
-            --primary-glow: rgba(0, 153, 255, 0.3);
+            --bg-base: #000402;
+            --panel-bg: rgba(0, 255, 128, 0.02);
+            --border-color: rgba(0, 255, 128, 0.45);
+            --primary: #00ff80;
+            --primary-glow: rgba(0, 255, 128, 0.35);
             --text-main: #e2e8f0;
-            --text-dim: #94a3b8;
+            --text-dim: #8fa39b;
             --danger: #ff3d00;
         }
 
@@ -20,14 +20,23 @@
         html, body { background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
         ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: rgba(1, 4, 9, 0.9); }
-        ::-webkit-scrollbar-thumb { background: rgba(0, 242, 254, 0.4); border-radius: 2px; }
+        ::-webkit-scrollbar-track { background: rgba(0, 10, 5, 0.9); }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 255, 128, 0.4); border-radius: 2px; }
 
-        /* BOOT SCREEN */
+        /* CANVAS MATRIX & NEURAL BACKGROUND */
+        #matrixCanvas {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.75;
+        }
+
+        /* TELA DE INICIALIZAÇÃO HOLOGRÁFICA (JARVIS HUD & MATRIX) */
         #bootScreen {
             position: fixed;
             inset: 0;
-            background: linear-gradient(135deg, #000205 0%, #0a0e27 100%);
+            background: #000402;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -35,7 +44,7 @@
             z-index: 1000;
             gap: 30px;
             opacity: 1;
-            transition: opacity 0.8s ease-out;
+            transition: opacity 1s ease-out;
         }
 
         #bootScreen.fade-out {
@@ -43,43 +52,69 @@
             pointer-events: none;
         }
 
-        .boot-title {
-            font-size: 3.5rem;
-            font-weight: bold;
-            letter-spacing: 3px;
-            background: linear-gradient(90deg, #0099ff, #00d4ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-align: center;
+        /* HOLOGRAPHIC HUD ROTATING SPHERE */
+        .jarvis-hud-loader {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 50px rgba(0, 255, 128, 0.2);
         }
 
-        .boot-line {
-            width: 200px;
-            height: 2px;
-            background: linear-gradient(90deg, #0099ff, #00d4ff);
+        .hud-ring-outer {
+            position: absolute;
+            inset: 0;
+            border: 2px dashed rgba(0, 255, 128, 0.7);
+            border-radius: 50%;
+            animation: spinClockwise 10s linear infinite;
         }
+
+        .hud-ring-inner {
+            position: absolute;
+            inset: 15px;
+            border: 2px solid rgba(0, 255, 128, 0.4);
+            border-top: 2px solid transparent;
+            border-bottom: 2px solid transparent;
+            border-radius: 50%;
+            animation: spinCounter 6s linear infinite;
+        }
+
+        .hud-core-glow {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #00ff80 0%, rgba(0,255,128,0.2) 70%, transparent 100%);
+            box-shadow: 0 0 35px #00ff80;
+            animation: corePulse 1.8s infinite ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        @keyframes spinClockwise { to { transform: rotate(360deg); } }
+        @keyframes spinCounter { to { transform: rotate(-360deg); } }
+        @keyframes corePulse { 0%, 100% { transform: scale(0.9); opacity: 0.7; } 50% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 55px #00ff80; } }
 
         .boot-status {
-            font-size: 0.9rem;
-            letter-spacing: 1px;
-            color: var(--text-dim);
+            font-size: 0.85rem;
+            letter-spacing: 3px;
+            color: #00ff80;
+            text-shadow: 0 0 12px rgba(0, 255, 128, 0.6);
             animation: blink 1s infinite;
         }
 
         @keyframes blink { 0%, 49%, 100% { opacity: 1; } 50%, 99% { opacity: 0.3; } }
 
-        .boot-version {
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            letter-spacing: 2px;
-        }
-
         /* ACTIVATION SCREEN */
         #activationScreen {
             position: fixed;
             inset: 0;
-            background: linear-gradient(135deg, #000205 0%, #0a0e27 100%);
+            background: rgba(0, 4, 2, 0.95);
+            backdrop-filter: blur(12px);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -96,47 +131,24 @@
             pointer-events: all;
         }
 
-        .activation-title {
-            font-size: 3.5rem;
-            font-weight: bold;
-            letter-spacing: 3px;
-            background: linear-gradient(90deg, #0099ff, #00d4ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-align: center;
-        }
-
-        .activation-subtitle {
-            font-size: 0.85rem;
-            letter-spacing: 2px;
-            color: var(--text-dim);
-            text-align: center;
-        }
-
         .activation-btn {
-            padding: 16px 40px;
-            font-size: 1rem;
-            letter-spacing: 2px;
-            color: #fff;
-            background: transparent;
-            border: 2px solid var(--primary);
-            border-radius: 6px;
+            padding: 18px 50px;
+            font-size: 1.1rem;
+            letter-spacing: 3px;
+            color: #00ff80;
+            background: rgba(0, 255, 128, 0.1);
+            border: 2px solid #00ff80;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
             transition: all 0.3s;
-            box-shadow: 0 0 20px rgba(0, 242, 254, 0.2);
+            box-shadow: 0 0 40px rgba(0, 255, 128, 0.3), inset 0 0 20px rgba(0, 255, 128, 0.2);
         }
 
         .activation-btn:hover {
-            background: rgba(0, 242, 254, 0.1);
-            box-shadow: 0 0 40px rgba(0, 242, 254, 0.4);
-        }
-
-        .activation-hint {
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            margin-top: 20px;
+            background: rgba(0, 255, 128, 0.3);
+            box-shadow: 0 0 70px #00ff80, inset 0 0 35px #00ff80;
+            transform: scale(1.04);
         }
 
         /* MAIN APP */
@@ -149,6 +161,8 @@
             margin: 0 auto;
             padding: 15px;
             gap: 15px;
+            position: relative;
+            z-index: 10;
         }
 
         #app.active {
@@ -161,23 +175,26 @@
             align-items: center;
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
-            padding: 12px 20px;
-            border-radius: 6px;
-            backdrop-filter: blur(10px);
+            padding: 14px 22px;
+            border-radius: 8px;
+            backdrop-filter: blur(14px);
             flex-wrap: wrap;
             gap: 10px;
+            box-shadow: 0 0 30px rgba(0, 255, 128, 0.1);
         }
 
         .app-title {
             font-weight: bold;
             color: var(--primary);
             letter-spacing: 2px;
+            text-shadow: 0 0 12px var(--primary-glow);
         }
 
         .status-info {
             font-size: 0.8rem;
-            color: #10b981;
+            color: var(--primary);
             letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(0, 255, 128, 0.4);
         }
 
         .main-grid {
@@ -194,13 +211,13 @@
         .panel {
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 20px;
+            border-radius: 10px;
+            padding: 22px;
             display: flex;
             flex-direction: column;
             position: relative;
-            backdrop-filter: blur(10px);
-            box-shadow: inset 0 0 20px var(--primary-glow);
+            backdrop-filter: blur(16px);
+            box-shadow: inset 0 0 25px rgba(0, 255, 128, 0.1), 0 0 30px rgba(0, 0, 0, 0.5);
         }
 
         .interaction-panel {
@@ -210,9 +227,10 @@
             min-height: 480px;
         }
 
-        .reactor-container {
-            width: 140px;
-            height: 140px;
+        /* HUD CENTRAL DO ASSISTENTE */
+        .hud-center-sphere {
+            width: 150px;
+            height: 150px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -220,71 +238,46 @@
             position: relative;
             cursor: pointer;
             margin: 15px 0;
+            background: radial-gradient(circle, rgba(0,255,128,0.15) 0%, rgba(0,100,50,0.05) 60%, transparent 100%);
+            box-shadow: 0 0 40px rgba(0,255,128,0.25), inset 0 0 25px rgba(0,255,128,0.2);
+            transition: all 0.4s;
         }
 
-        .reactor-core {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: radial-gradient(circle, var(--primary) 0%, rgba(0,242,254,0.2) 70%, transparent 100%);
-            box-shadow: 0 0 30px var(--primary);
-            animation: reactorPulse 3s infinite ease-in-out;
-            transition: all 0.3s;
+        .hud-center-sphere:hover {
+            box-shadow: 0 0 70px rgba(0,255,128,0.6), inset 0 0 40px rgba(0,255,128,0.4);
+            transform: scale(1.04);
         }
-
-        .reactor-ring {
-            position: absolute;
-            inset: 0;
-            border: 2px dashed rgba(0, 242, 254, 0.6);
-            border-radius: 50%;
-            animation: spinSlow 12s linear infinite;
-        }
-
-        .reactor-ring-2 {
-            position: absolute;
-            inset: -10px;
-            border: 1px solid rgba(139, 124, 255, 0.4);
-            border-radius: 50%;
-            animation: spinReverse 18s linear infinite;
-        }
-
-        @keyframes reactorPulse {
-            0%, 100% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 20px var(--primary); }
-            50% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 45px var(--primary); }
-        }
-
-        @keyframes spinSlow { to { transform: rotate(360deg); } }
-        @keyframes spinReverse { to { transform: rotate(-360deg); } }
 
         .status-badge {
             font-size: 0.75rem;
             letter-spacing: 2px;
             text-transform: uppercase;
             color: var(--text-dim);
-            background: rgba(0,0,0,0.4);
-            padding: 4px 12px;
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.6);
+            padding: 5px 14px;
+            border-radius: 14px;
+            border: 1px solid rgba(0,255,128,0.3);
         }
 
         .dialogue-box {
             width: 100%;
             text-align: left;
-            background: rgba(0,0,0,0.5);
-            padding: 12px 16px;
-            border-radius: 6px;
+            background: rgba(0, 6, 3, 0.85);
+            padding: 14px 18px;
+            border-radius: 8px;
             border-left: 3px solid var(--primary);
             font-size: 0.85rem;
             margin: 10px 0;
-            min-height: 70px;
+            min-height: 80px;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            gap: 4px;
+            gap: 6px;
+            box-shadow: inset 0 0 15px rgba(0,255,128,0.05);
         }
 
         .dialogue-user { color: var(--text-dim); }
-        .dialogue-assistant { color: var(--primary); font-weight: 500; }
+        .dialogue-assistant { color: var(--primary); font-weight: 500; text-shadow: 0 0 8px rgba(0,255,128,0.3); }
 
         .controls-row {
             display: flex;
@@ -295,28 +288,35 @@
 
         .controls-row input {
             flex-grow: 1;
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.7);
             border: 1px solid var(--border-color);
             color: var(--text-main);
             padding: 10px 14px;
-            border-radius: 4px;
+            border-radius: 6px;
             font-size: 0.9rem;
             outline: none;
+            transition: all 0.3s;
+        }
+
+        .controls-row input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0,255,128,0.3);
         }
 
         .action-btn {
-            background: rgba(0, 242, 254, 0.2);
+            background: rgba(0, 255, 128, 0.15);
             border: 1px solid var(--primary);
             color: #fff;
             padding: 10px 18px;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            transition: background 0.2s;
+            transition: all 0.2s;
         }
 
         .action-btn:hover {
-            background: rgba(0, 242, 254, 0.4);
+            background: rgba(0, 255, 128, 0.35);
+            box-shadow: 0 0 15px rgba(0,255,128,0.4);
         }
 
         .btn-danger {
@@ -327,6 +327,7 @@
 
         .btn-danger:hover {
             background: rgba(255, 61, 0, 0.4);
+            box-shadow: 0 0 15px rgba(255,61,0,0.4);
         }
 
         .brain-panel {
@@ -339,7 +340,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 12px;
-            border-bottom: 1px solid rgba(0,242,254,0.2);
+            border-bottom: 1px solid rgba(0,255,128,0.2);
             padding-bottom: 8px;
         }
 
@@ -364,31 +365,33 @@
         }
 
         .icon-btn {
-            background: rgba(0,242,254,0.1);
+            background: rgba(0,255,128,0.1);
             border: 1px solid var(--border-color);
             color: var(--primary);
-            width: 26px;
-            height: 26px;
-            border-radius: 4px;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
             font-size: 0.9rem;
+            transition: all 0.2s;
         }
 
         .icon-btn:hover {
-            background: rgba(0,242,254,0.3);
+            background: rgba(0,255,128,0.3);
+            box-shadow: 0 0 10px rgba(0,255,128,0.4);
         }
 
         .svg-container {
             flex-grow: 1;
             width: 100%;
             min-height: 340px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 6px;
-            border: 1px solid rgba(255,255,255,0.05);
+            background: rgba(0,0,0,0.4);
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.06);
             position: relative;
             overflow: hidden;
             display: flex;
@@ -434,13 +437,13 @@
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,2,5,0.85);
+            background: rgba(0,4,2,0.88);
             z-index: 200;
             display: none;
             align-items: center;
             justify-content: center;
             padding: 20px;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px);
         }
 
         .modal-overlay.open {
@@ -448,13 +451,13 @@
         }
 
         .modal-card {
-            background: rgba(1, 10, 22, 0.95);
+            background: rgba(0, 15, 8, 0.96);
             border: 1px solid var(--primary);
             width: 100%;
             max-width: 480px;
             padding: 24px;
-            border-radius: 8px;
-            box-shadow: 0 0 40px var(--primary-glow);
+            border-radius: 10px;
+            box-shadow: 0 0 50px rgba(0, 255, 128, 0.4);
             display: flex;
             flex-direction: column;
             gap: 14px;
@@ -472,11 +475,11 @@
         }
 
         .modal-card input, .modal-card select, .modal-card textarea {
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.7);
             border: 1px solid var(--border-color);
             color: var(--text-main);
-            padding: 8px 12px;
-            border-radius: 4px;
+            padding: 9px 12px;
+            border-radius: 6px;
             font-size: 0.85rem;
             outline: none;
             width: 100%;
@@ -484,7 +487,7 @@
 
         .modal-card textarea {
             resize: vertical;
-            min-height: 90px;
+            min-height: 95px;
         }
 
         .modal-actions {
@@ -497,27 +500,34 @@
 </head>
 <body>
 
-    <!-- BOOT SCREEN -->
+    <!-- CANVAS MATRIX DIGITAL RAIN & NEURAL NETWORK -->
+    <canvas id="matrixCanvas"></canvas>
+
+    <!-- BOOT SCREEN COM HOLOGRAMA ROTATIVO ESTILO JARVIS/MATRIX -->
     <div id="bootScreen">
-        <div class="boot-title">SENHOR FAGUNDES</div>
-        <div class="boot-line"></div>
-        <div class="boot-status">CARREGANDO MOTOR SEMÂNTICO LOCAL...</div>
-        <div class="boot-version">v6.1 · DYNAMIC MEMORY</div>
+        <div class="jarvis-hud-loader">
+            <div class="hud-ring-outer"></div>
+            <div class="hud-ring-inner"></div>
+            <div class="hud-core-glow">🌐</div>
+        </div>
+        <div class="boot-status">ESTABELECENDO LIGAÇÃO HOLOGRÁFICA...</div>
     </div>
 
     <!-- ACTIVATION SCREEN -->
     <div id="activationScreen">
-        <div class="activation-title">SENHOR FAGUNDES</div>
-        <div class="activation-subtitle">MEMÓRIA NEURAL DINÂMICA PRONTA</div>
-        <button class="activation-btn" id="btnActivate">► ATIVAR SISTEMA</button>
-        <div class="activation-hint">CLIQUE PARA INICIAR INTERAÇÃO INTELIGENTE</div>
+        <div class="jarvis-hud-loader" style="width: 130px; height: 130px;">
+            <div class="hud-ring-outer"></div>
+            <div class="hud-ring-inner"></div>
+            <div class="hud-core-glow" style="font-size: 1.4rem;">⚡</div>
+        </div>
+        <button class="activation-btn" id="btnActivate">ATIVAR NÚCLEO JARVIS</button>
     </div>
 
     <!-- MAIN APP -->
     <div id="app">
         <header class="top-bar">
-            <div class="app-title">SENHOR FAGUNDES // NEURAL CORE</div>
-            <div class="status-info">● SECOND BRAIN DINÂMICO ATIVO</div>
+            <div class="app-title">JARVIS // HOLOGRAPHIC CORE</div>
+            <div class="status-info">● NÚCLEO VERDE CIBERNÉTICO ATIVO</div>
         </header>
 
         <div class="main-grid">
@@ -528,19 +538,19 @@
                     <span id="statusBadge" class="status-badge">Ocioso</span>
                 </div>
 
-                <div class="reactor-container" id="reactorOrb" title="Clique para falar por voz">
-                    <div class="reactor-ring"></div>
-                    <div class="reactor-ring-2"></div>
-                    <div class="reactor-core" id="reactorCore"></div>
+                <div class="hud-center-sphere" id="reactorOrb" title="Clique para falar com Jarvis">
+                    <div class="hud-ring-outer"></div>
+                    <div class="hud-ring-inner"></div>
+                    <div class="hud-core-glow">🧠</div>
                 </div>
 
                 <div class="dialogue-box">
                     <div id="dialogueUser" class="dialogue-user">Você: --</div>
-                    <div id="dialogueAssistant" class="dialogue-assistant">Senhor Fagundes: Sistemas online, Sandro. Pergunte-me qualquer coisa sobre os seus projetos ou vida.</div>
+                    <div id="dialogueAssistant" class="dialogue-assistant">Jarvis: Sistemas online, Sandro. Como posso auxiliá-lo?</div>
                 </div>
 
                 <div class="controls-row">
-                    <input type="text" id="textInput" placeholder="Pergunte sobre seus projetos, metas, finanças..."/>
+                    <input type="text" id="textInput" placeholder="Faça uma pergunta ou dê uma ordem..."/>
                     <button id="btnMic" class="action-btn" title="Falar por voz">🎙️ Falar</button>
                     <button id="btnStopSpeech" class="action-btn btn-danger">Parar Fala</button>
                 </div>
@@ -563,7 +573,7 @@
 
                 <div class="brain-footer">
                     <div class="legend-list" id="legendList"></div>
-                    <div class="injected-status" id="injectedStatus">✓ motor semântico local ativo</div>
+                    <div class="injected-status" id="injectedStatus">✓ motor neural holográfico ativo</div>
                 </div>
             </section>
         </div>
@@ -594,7 +604,7 @@
 
     <script>
         const CONFIG = {
-            name: "Senhor Fagundes",
+            name: "Jarvis",
             address: "Sandro",
             persona: "formal britânico (mordomo)"
         };
@@ -602,7 +612,7 @@
         const AREA = {
             meta: { label: "Identidade", color: "#8a90a6" },
             metas: { label: "Metas", color: "#fbbf24" },
-            trabalho: { label: "Carreira", color: "#ff5547" },
+            trabalho: { label: "Carreira", color: "#00ff80" },
             projetos: { label: "Projetos", color: "#8b7cff" },
             financas: { label: "Finanças", color: "#f7931a" },
             aprendizado: { label: "Aprendizado", color: "#2dd4ff" },
@@ -611,35 +621,97 @@
         };
 
         const INITIAL_NOTES = [
-            { id: "note_1", area: "meta", title: "Sandro Fagundes", body: "Sandro de Souza Fagundes, 40 anos, mora em Nova Hartz, trabalha em Dois Irmãos no Grupo Herval como cientista de dados. Licenciado em computação, empreendedor entusiasta com foco em processos e indicadores corporativos." },
-            { id: "note_2", area: "metas", title: "Sanar Dores", body: "Meta geral: ajudar a sanar dores de algum processo corporativo. Sempre com visão de futuro. Objetivo curto prazo: ajudar pessoas a desenvolver projetos e democratizar a criação." },
-            { id: "note_3", area: "trabalho", title: "Grupo Herval", body: "Cientista de dados no Grupo Herval. Constrói dashboards interativos em Power BI e Superset. Transforma dados em indicadores (lucro, leads) para gestores e diretoria tomarem decisões de médio a longo prazo. Trabalha com IA." },
-            { id: "note_4", area: "projetos", title: "Plataforma Águas", body: "Plataforma de monitoramento de rios e cotas de inundação (Fase 1 completa). Integra temperatura e dados de enchentes. Já está no Vercel com site ativo. Objetivo: disponibilizar para prefeituras das cidades com risco de inundação." },
-            { id: "note_5", area: "projetos", title: "Motor IA com Voz", body: "Em desenvolvimento. Assistente inteligente que executa ações via comando de voz. Abre aplicações e faz tarefas automaticamente. Um mecanismo de busca inteligente com controle por voz — parte do projeto Jarvis/Senhor Fagundes." },
-            { id: "note_6", area: "financas", title: "Investimentos", body: "Investe em Tesouro Direto, Ouro, CDB, CDI, e Bitcoin (com mais risco). Meta: juntar grana para viagem pela Argentina, explorar Patagônia e Cordilheira dos Andes, depois voltar ao Rio Grande do Sul." },
-            { id: "note_7", area: "aprendizado", title: "Automação & IA", body: "Estuda RPA, MCP, Cloud, VS Code. Foco: mapear fluxos e automatizar processos manuais. Lê sobre empreendedorismo e histórias de pessoas com propósito e crescimento. Entusiasta de IA e processos." },
-            { id: "note_8", area: "saude", title: "Rotina Fitness", body: "Costumava fazer calistenia 3x/semana, correr, pedalar com filho, trilha e futebol. Parado há 6 meses. Aos 40 anos, reconhece diminuição de atividade. Interesse em retomar exercícios." },
-            { id: "note_9", area: "relacoes", title: "Família", body: "Família central: esposa, filhos Heitor e Melissa. Também pais, irmãos e sobrinhos. Foco em deixar legado e aprendizado para eles. Experiência e direcionamento são prioridades." }
+            { id: "note_1", area: "meta", title: "Perfil Geral", body: "Profissional especialista em ciência de dados e indicadores corporativos, atuando com desenvolvimento de plataformas analíticas e inteligência artificial." },
+            { id: "note_2", area: "metas", title: "Sanar Dores", body: "Objetivo de automatizar processos corporativos e democratizar o acesso à tecnologia e criação de projetos." },
+            { id: "note_3", area: "trabalho", title: "Analytics Core", body: "Construção de painéis interativos avançados, transformando dados brutos em inteligência acionável para tomada de decisão gerencial." },
+            { id: "note_4", area: "projetos", title: "Monitoramento de Rios", body: "Plataforma de monitoramento de cotas de inundação com site ativo em nuvem, focada em prevenção de riscos para prefeituras." },
+            { id: "note_5", area: "projetos", title: "Motor IA com Voz", body: "Ecossistema de assistência inteligente operado por comandos de voz e redes neurais locais." },
+            { id: "note_6", area: "financas", title: "Investimentos", body: "Estratégia diversificada em ativos de renda fixa, ouro, criptomoedas e reservas para expedições de viagem." },
+            { id: "note_7", area: "aprendizado", title: "Automação & IA", body: "Estudo contínuo de fluxos inteligentes, ferramentas de nuvem e arquitetura de sistemas." }
         ];
 
         let NOTES = JSON.parse(localStorage.getItem("jarvis_notes")) || INITIAL_NOTES;
         let REL = [
             ["note_1", "note_2"], ["note_1", "note_3"], ["note_2", "note_4"],
             ["note_2", "note_5"], ["note_3", "note_4"], ["note_3", "note_5"],
-            ["note_1", "note_6"], ["note_1", "note_7"], ["note_1", "note_8"],
-            ["note_1", "note_9"], ["note_7", "note_5"], ["note_6", "note_2"]
+            ["note_1", "note_6"], ["note_1", "note_7"]
         ];
 
         let isBusy = false;
         let highlightedNoteId = null;
         let recognition = null;
 
+        // CANVAS MATRIX DIGITAL RAIN & NEURAL HUD EM BACKGROUND
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        for (let i = 0; i < 75; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 0.8,
+                vy: (Math.random() - 0.5) * 0.8,
+                radius: Math.random() * 2 + 1.2
+            });
+        }
+
+        function drawMatrixHUD() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#000402';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Linhas sinápticas em verde neon Matrix
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+
+                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+                for (let j = i + 1; j < particles.length; j++) {
+                    let p2 = particles[j];
+                    let dx = p.x - p2.x;
+                    let dy = p.y - p2.y;
+                    let dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < 150) {
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.strokeStyle = `rgba(0, 255, 128, ${(1 - dist / 150) * 0.4})`;
+                        ctx.lineWidth = 0.8;
+                        ctx.stroke();
+                    }
+                }
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = '#00ff80';
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = '#00ff80';
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+
+            requestAnimationFrame(drawMatrixHUD);
+        }
+        drawMatrixHUD();
+
+        // DOM Elements
         const bootScreen = document.getElementById("bootScreen");
         const activationScreen = document.getElementById("activationScreen");
         const app = document.getElementById("app");
         const btnActivate = document.getElementById("btnActivate");
         const reactorOrb = document.getElementById("reactorOrb");
-        const reactorCore = document.getElementById("reactorCore");
         const statusBadge = document.getElementById("statusBadge");
         const dialogueUser = document.getElementById("dialogueUser");
         const dialogueAssistant = document.getElementById("dialogueAssistant");
@@ -668,7 +740,7 @@
                 setTimeout(() => {
                     activationScreen.classList.add("show");
                 }, 400);
-            }, 2000);
+            }, 2200);
         });
 
         btnActivate.addEventListener("click", () => {
@@ -676,7 +748,7 @@
             app.classList.add("active");
             renderGraph();
             initVoiceRecognition();
-            speakText(`Sistemas ativos com memória dinâmica atualizada. À sua disposição, ${CONFIG.address}.`);
+            speakText("Sistemas holográficos online. À sua inteira disposição, Sandro.");
         });
 
         function initVoiceRecognition() {
@@ -692,19 +764,12 @@
                 const transcript = event.results[0][0].transcript.trim();
                 if (transcript) {
                     dialogueUser.innerText = `Você: ${transcript}`;
-                    processSemanticQuery(transcript);
+                    processIntelligentPrompt(transcript);
                 }
             };
 
-            recognition.onerror = () => {
-                statusBadge.innerText = "Ocioso";
-                reactorCore.style.background = "radial-gradient(circle, var(--primary) 0%, rgba(0, 153, 255, 0.2) 70%, transparent 100%)";
-            };
-
-            recognition.onend = () => {
-                statusBadge.innerText = "Ocioso";
-                reactorCore.style.background = "radial-gradient(circle, var(--primary) 0%, rgba(0, 153, 255, 0.2) 70%, transparent 100%)";
-            };
+            recognition.onerror = () => { statusBadge.innerText = "Ocioso"; };
+            recognition.onend = () => { statusBadge.innerText = "Ocioso"; };
         }
 
         function triggerListening() {
@@ -712,7 +777,6 @@
                 try {
                     recognition.start();
                     statusBadge.innerText = "Ouvindo...";
-                    reactorCore.style.background = "radial-gradient(circle, #ff3d00 0%, rgba(255,61,0,0.3) 70%, transparent 100%)";
                 } catch(e) {
                     console.error(e);
                 }
@@ -726,7 +790,6 @@
             window.speechSynthesis.cancel();
             isBusy = false;
             statusBadge.innerText = "Ocioso";
-            reactorCore.style.background = "radial-gradient(circle, var(--primary) 0%, rgba(0, 153, 255, 0.2) 70%, transparent 100%)";
         });
 
         textInput.addEventListener("keydown", (e) => {
@@ -734,7 +797,7 @@
                 const query = textInput.value.trim();
                 textInput.value = "";
                 dialogueUser.innerText = `Você: ${query}`;
-                processSemanticQuery(query);
+                processIntelligentPrompt(query);
             }
         });
 
@@ -749,70 +812,47 @@
             let maleVoice = voices.find(v => v.lang.includes("pt") && !v.name.toLowerCase().includes("female")) || voices[0];
             if (maleVoice) utterance.voice = maleVoice;
 
-            utterance.onstart = () => {
-                isBusy = true;
-                statusBadge.innerText = "Falando";
-                reactorCore.style.background = "radial-gradient(circle, #2dd4ff 0%, rgba(45,212,255,0.3) 70%, transparent 100%)";
-            };
-
-            utterance.onend = () => {
-                isBusy = false;
-                statusBadge.innerText = "Ocioso";
-                reactorCore.style.background = "radial-gradient(circle, var(--primary) 0%, rgba(0, 153, 255, 0.2) 70%, transparent 100%)";
-            };
+            utterance.onstart = () => { isBusy = true; statusBadge.innerText = "Falando"; };
+            utterance.onend = () => { isBusy = false; statusBadge.innerText = "Ocioso"; };
             
             window.speechSynthesis.speak(utterance);
         }
 
-        // MOTOR DE BUSCA E ASSOCIAÇÃO SEMÂNTICA LOCAL INTELIGENTE (BASE DE DADOS DINÂMICA)
-        function processSemanticQuery(prompt) {
+        function processIntelligentPrompt(prompt) {
             isBusy = true;
-            statusBadge.innerText = "Analisando Second Brain...";
-            reactorCore.style.background = "radial-gradient(circle, #fbbf24 0%, rgba(251,191,36,0.3) 70%, transparent 100%)";
+            statusBadge.innerText = "Processando Holograma...";
 
             setTimeout(() => {
-                const queryWords = prompt.toLowerCase().replace(/[^\w\sÀ-ÿ]/gi, '').split(/\s+/).filter(w => w.length > 2);
-                
-                // Pontuar cada nota com base na correspondência de palavras-chave da pergunta
-                let scoredNotes = NOTES.map(note => {
-                    let score = 0;
-                    const textContent = (note.title + " " + note.body + " " + note.area).toLowerCase();
-                    
-                    queryWords.forEach(word => {
-                        if (textContent.includes(word)) {
-                            score += word.length > 4 ? 3 : 1;
-                        }
-                    });
-
-                    return { note, score };
-                });
-
-                // Ordenar por relevância
-                scoredNotes.sort((a, b) => b.score - a.score);
-
-                let bestMatch = scoredNotes[0];
+                const lower = prompt.toLowerCase();
                 let responseText = "";
 
-                if (prompt.toLowerCase().includes("abrir youtube")) {
+                if (lower.includes("abrir youtube") || lower.includes("youtube")) {
                     window.open("https://youtube.com", "_blank");
-                    responseText = `Abrindo o YouTube imediatamente, ${CONFIG.address}.`;
-                } else if (prompt.toLowerCase().includes("abrir spotify")) {
+                    responseText = "Abrindo o YouTube imediatamente, senhor.";
+                } else if (lower.includes("abrir spotify") || lower.includes("spotify")) {
                     window.open("https://open.spotify.com", "_blank");
-                    responseText = `Acessando o seu Spotify, senhor.`;
-                } else if (bestMatch && bestMatch.score > 0) {
-                    // Destaque visual temporário no nó correspondente do grafo
-                    highlightedNoteId = bestMatch.note.id;
-                    renderGraph();
-                    setTimeout(() => { highlightedNoteId = null; renderGraph(); }, 4000);
-
-                    responseText = `Com base no seu Second Brain (${bestMatch.note.title}): ${bestMatch.note.body}`;
+                    responseText = "Acessando o seu Spotify.";
                 } else {
-                    responseText = `Senhor Sandro, consultei os registos do seu Second Brain, mas não encontrei menção exata sobre "${prompt}". O senhor pode adicionar uma nota clicando no botão de mais na área neural.`;
+                    let matchedNotes = NOTES.filter(n => {
+                        const content = (n.title + " " + n.body + " " + n.area).toLowerCase();
+                        return prompt.toLowerCase().split(' ').some(word => word.length > 3 && content.includes(word));
+                    });
+
+                    if (matchedNotes.length > 0) {
+                        highlightedNoteId = matchedNotes[0].id;
+                        renderGraph();
+                        setTimeout(() => { highlightedNoteId = null; renderGraph(); }, 4000);
+
+                        const summaries = matchedNotes.map(n => n.body).join(" Além disso, ");
+                        responseText = `Com base nos registros holográficos: ${summaries}. Sugiro mantermos o foco nestas diretrizes estratégicas.`;
+                    } else {
+                        responseText = "Analisei sua questão com base nas diretrizes do sistema. Compreendo perfeitamente o seu raciocínio e permaneço pronto para executar novas demandas.";
+                    }
                 }
 
-                dialogueAssistant.innerText = `${CONFIG.name}: ${responseText}`;
+                dialogueAssistant.innerText = `Jarvis: ${responseText}`;
                 speakText(responseText);
-            }, 500);
+            }, 600);
         }
 
         function upsertNote(area, title, body) {
@@ -871,11 +911,11 @@
             let svgContent = `
                 <defs>
                     <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
-                        <stop offset="0%" stop-color="#0099ff" stop-opacity="0.8"/>
-                        <stop offset="100%" stop-color="#0099ff" stop-opacity="0"/>
+                        <stop offset="0%" stop-color="#00ff80" stop-opacity="0.8"/>
+                        <stop offset="100%" stop-color="#8b7cff" stop-opacity="0"/>
                     </radialGradient>
                     <linearGradient id="edgeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#0099ff"/>
+                        <stop offset="0%" stop-color="#00ff80"/>
                         <stop offset="100%" stop-color="#8b7cff"/>
                     </linearGradient>
                 </defs>
@@ -892,18 +932,18 @@
             });
 
             Object.values(nodeCoords).forEach(node => {
-                const color = AREA[node.note.area]?.color || '#00f2fe';
+                const color = AREA[node.note.area]?.color || '#00ff80';
                 svgContent += `<line x1="${cx}" y1="${cy}" x2="${node.x}" y2="${node.y}" stroke="${color}" stroke-width="0.8" opacity="0.3"/>`;
             });
 
             svgContent += `
                 <circle cx="${cx}" cy="${cy}" r="38" fill="url(#coreGlow)"/>
-                <circle cx="${cx}" cy="${cy}" r="22" fill="#110d2c" stroke="#8b7cff" stroke-width="2"/>
+                <circle cx="${cx}" cy="${cy}" r="22" fill="#001a0d" stroke="#8b7cff" stroke-width="2"/>
                 <text x="${cx}" y="${cy + 5}" fill="#fff" font-size="14" text-anchor="middle" font-weight="bold">🧠</text>
             `;
 
             Object.values(nodeCoords).forEach(node => {
-                const color = AREA[node.note.area]?.color || '#00f2fe';
+                const color = AREA[node.note.area]?.color || '#00ff80';
                 const size = Math.min(18, 10 + (connCounts[node.note.id] || 1) * 1.5);
                 const isHighlighted = node.note.id === highlightedNoteId;
 
@@ -913,7 +953,7 @@
                         <circle cx="${node.x}" cy="${node.y}" r="${size + 4}" fill="${color}" opacity="0.25">
                             <animate attributeName="r" values="${size};${size+5};${size}" dur="3s" repeatCount="indefinite"/>
                         </circle>
-                        <circle cx="${node.x}" cy="${node.y}" r="${size}" fill="#000308" stroke="${color}" stroke-width="2"/>
+                        <circle cx="${node.x}" cy="${node.y}" r="${size}" fill="#000402" stroke="${color}" stroke-width="2"/>
                         <text x="${node.x}" y="${node.y + size + 14}" fill="#e2e8f0" font-size="10" text-anchor="middle" font-weight="500">${node.note.title}</text>
                     </g>
                 `;
@@ -974,7 +1014,7 @@
             localStorage.setItem("jarvis_notes", JSON.stringify(NOTES));
             modalOverlay.classList.remove("open");
             renderGraph();
-            speakText("Nota salva e integrada ao Second Brain, senhor.");
+            speakText("Nota integrada na matriz neural, senhor.");
         });
 
         btnDeleteNote.addEventListener("click", () => {
