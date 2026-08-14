@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jarvis // Deep Dark Neural Core</title>
+    <title>Jarvis // Official MCU Neural HUD</title>
     <style>
         :root {
-            --bg-base: #000000;
-            --panel-bg: rgba(5, 10, 20, 0.75);
-            --border-color: rgba(0, 162, 255, 0.35);
-            --primary: #00a2ff;
-            --primary-glow: rgba(0, 162, 255, 0.4);
+            --bg-base: #020408;
+            --panel-bg: rgba(0, 15, 30, 0.85);
+            --border-color: rgba(0, 243, 255, 0.4);
+            --primary: #00f3ff;
+            --accent: #ffb700;
+            --primary-glow: rgba(0, 243, 255, 0.5);
             --text-main: #e2e8f0;
             --text-dim: #64748b;
             --danger: #ff3d00;
@@ -20,23 +21,23 @@
         html, body { background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
         ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: #000000; }
-        ::-webkit-scrollbar-thumb { background: rgba(0, 162, 255, 0.3); border-radius: 2px; }
+        ::-webkit-scrollbar-track { background: #020408; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 243, 255, 0.4); border-radius: 2px; }
 
-        /* CANVAS DE REDE NEURAL PROFUNDA (AZUL ELÉTRICO & DEEP DARK) */
-        #neuralCanvas {
+        /* CANVAS MATRIX & TEIAS NEURAIS (BIOLOGICAL WEBS + MATRIX RAIN) */
+        #matrixCanvas {
             position: fixed;
             inset: 0;
             z-index: 0;
             pointer-events: none;
-            opacity: 0.9;
+            opacity: 0.95;
         }
 
-        /* BOOT SCREEN COM HUD DARK AZUL ELÉTRICO ROTATIVA */
+        /* BOOT SCREEN COM HUD OFICIAL JARVIS / ARC REACTOR & MATRIX */
         #bootScreen {
             position: fixed;
             inset: 0;
-            background: #000000;
+            background: #020408;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -52,65 +53,65 @@
             pointer-events: none;
         }
 
-        .dark-hud-loader {
-            width: 200px;
-            height: 200px;
+        .mcu-hud-loader {
+            width: 210px;
+            height: 210px;
             border-radius: 50%;
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 80px rgba(0, 162, 255, 0.15), inset 0 0 40px rgba(0, 162, 255, 0.1);
+            box-shadow: 0 0 90px rgba(0, 243, 255, 0.2), inset 0 0 45px rgba(255, 183, 0, 0.15);
         }
 
-        .hud-ring-1 {
+        .hud-ring-gold {
             position: absolute;
             inset: 0;
-            border: 2px dashed rgba(0, 162, 255, 0.6);
+            border: 2px dashed var(--accent);
             border-radius: 50%;
-            animation: spinClockwise 12s linear infinite;
+            animation: spinClockwise 14s linear infinite;
         }
 
-        .hud-ring-2 {
+        .hud-ring-blue {
             position: absolute;
-            inset: 18px;
-            border: 2px solid rgba(0, 162, 255, 0.3);
+            inset: 16px;
+            border: 2px solid var(--primary);
             border-top: 2px solid transparent;
             border-bottom: 2px solid transparent;
             border-radius: 50%;
-            animation: spinCounter 7s linear infinite;
+            animation: spinCounter 8s linear infinite;
         }
 
-        .hud-ring-3 {
+        .hud-ring-dots {
             position: absolute;
-            inset: 38px;
-            border: 1px dotted rgba(255, 255, 255, 0.7);
+            inset: 36px;
+            border: 1px dotted rgba(255, 255, 255, 0.8);
             border-radius: 50%;
-            animation: spinClockwise 5s linear infinite;
+            animation: spinClockwise 6s linear infinite;
         }
 
-        .hud-core-sphere {
-            width: 65px;
-            height: 65px;
+        .hud-core-reactor {
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
-            background: radial-gradient(circle, #00a2ff 0%, rgba(0,162,255,0.2) 70%, transparent 100%);
-            box-shadow: 0 0 50px #00a2ff, inset 0 0 15px #ffffff;
-            animation: corePulse 1.6s infinite ease-in-out;
+            background: radial-gradient(circle, var(--accent) 0%, var(--primary) 50%, rgba(0,243,255,0.2) 80%, transparent 100%);
+            box-shadow: 0 0 60px var(--accent), inset 0 0 20px #ffffff;
+            animation: corePulse 1.5s infinite ease-in-out;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.6rem;
+            font-size: 1.8rem;
         }
 
         @keyframes spinClockwise { to { transform: rotate(360deg); } }
         @keyframes spinCounter { to { transform: rotate(-360deg); } }
-        @keyframes corePulse { 0%, 100% { transform: scale(0.92); opacity: 0.75; } 50% { transform: scale(1.08); opacity: 1; box-shadow: 0 0 80px #00a2ff; } }
+        @keyframes corePulse { 0%, 100% { transform: scale(0.92); opacity: 0.8; } 50% { transform: scale(1.08); opacity: 1; box-shadow: 0 0 90px var(--accent); } }
 
         .boot-status {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             letter-spacing: 4px;
-            color: #00a2ff;
-            text-shadow: 0 0 15px rgba(0, 162, 255, 0.8);
+            color: var(--primary);
+            text-shadow: 0 0 15px var(--primary-glow);
             animation: blink 1s infinite;
         }
 
@@ -120,7 +121,7 @@
         #activationScreen {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.97);
+            background: rgba(2, 4, 8, 0.97);
             backdrop-filter: blur(14px);
             display: flex;
             flex-direction: column;
@@ -142,19 +143,19 @@
             padding: 18px 50px;
             font-size: 1.1rem;
             letter-spacing: 3px;
-            color: #00a2ff;
-            background: rgba(0, 162, 255, 0.1);
-            border: 2px solid #00a2ff;
+            color: var(--accent);
+            background: rgba(255, 183, 0, 0.1);
+            border: 2px solid var(--accent);
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
             transition: all 0.3s;
-            box-shadow: 0 0 45px rgba(0, 162, 255, 0.3), inset 0 0 20px rgba(0, 162, 255, 0.2);
+            box-shadow: 0 0 45px rgba(255, 183, 0, 0.3), inset 0 0 20px rgba(255, 183, 0, 0.2);
         }
 
         .activation-btn:hover {
-            background: rgba(0, 162, 255, 0.3);
-            box-shadow: 0 0 80px #00a2ff, inset 0 0 40px #00a2ff;
+            background: rgba(255, 183, 0, 0.3);
+            box-shadow: 0 0 80px var(--accent), inset 0 0 40px var(--accent);
             transform: scale(1.04);
         }
 
@@ -187,21 +188,48 @@
             backdrop-filter: blur(14px);
             flex-wrap: wrap;
             gap: 10px;
-            box-shadow: 0 0 35px rgba(0, 162, 255, 0.1);
+            box-shadow: 0 0 35px rgba(0, 243, 255, 0.1);
         }
 
         .app-title {
             font-weight: bold;
-            color: var(--primary);
+            color: var(--accent);
             letter-spacing: 2px;
-            text-shadow: 0 0 12px var(--primary-glow);
+            text-shadow: 0 0 12px rgba(255, 183, 0, 0.5);
         }
 
-        .status-info {
-            font-size: 0.8rem;
+        .api-input-box {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .api-input-box input {
+            background: rgba(0,0,0,0.85);
+            border: 1px solid var(--border-color);
             color: var(--primary);
-            letter-spacing: 1px;
-            text-shadow: 0 0 10px rgba(0, 162, 255, 0.4);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            flex-grow: 1;
+            outline: none;
+        }
+
+        .api-input-box button {
+            background: rgba(0, 243, 255, 0.2);
+            border: 1px solid var(--primary);
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .api-input-box button:hover {
+            background: rgba(0, 243, 255, 0.4);
         }
 
         .main-grid {
@@ -224,7 +252,7 @@
             flex-direction: column;
             position: relative;
             backdrop-filter: blur(16px);
-            box-shadow: inset 0 0 30px rgba(0, 162, 255, 0.08), 0 0 35px rgba(0, 0, 0, 0.8);
+            box-shadow: inset 0 0 30px rgba(0, 243, 255, 0.08), 0 0 35px rgba(0, 0, 0, 0.8);
         }
 
         .interaction-panel {
@@ -234,9 +262,9 @@
             min-height: 480px;
         }
 
-        .hud-center-sphere {
-            width: 160px;
-            height: 160px;
+        .hud-center-reactor {
+            width: 170px;
+            height: 170px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -244,13 +272,13 @@
             position: relative;
             cursor: pointer;
             margin: 15px 0;
-            background: radial-gradient(circle, rgba(0,162,255,0.15) 0%, rgba(0,50,100,0.05) 60%, transparent 100%);
-            box-shadow: 0 0 50px rgba(0,162,255,0.3), inset 0 0 30px rgba(0,162,255,0.2);
+            background: radial-gradient(circle, rgba(255,183,0,0.15) 0%, rgba(0,243,255,0.05) 60%, transparent 100%);
+            box-shadow: 0 0 60px rgba(255,183,0,0.3), inset 0 0 30px rgba(0,243,255,0.2);
             transition: all 0.4s;
         }
 
-        .hud-center-sphere:hover {
-            box-shadow: 0 0 80px rgba(0,162,255,0.7), inset 0 0 45px rgba(0,162,255,0.5);
+        .hud-center-reactor:hover {
+            box-shadow: 0 0 90px rgba(255,183,0,0.7), inset 0 0 45px rgba(0,243,255,0.5);
             transform: scale(1.04);
         }
 
@@ -262,16 +290,16 @@
             background: rgba(0,0,0,0.8);
             padding: 5px 14px;
             border-radius: 14px;
-            border: 1px solid rgba(0,162,255,0.35);
+            border: 1px solid var(--border-color);
         }
 
         .dialogue-box {
             width: 100%;
             text-align: left;
-            background: rgba(2, 6, 12, 0.9);
+            background: rgba(2, 8, 16, 0.9);
             padding: 14px 18px;
             border-radius: 8px;
-            border-left: 3px solid var(--primary);
+            border-left: 3px solid var(--accent);
             font-size: 0.85rem;
             margin: 10px 0;
             min-height: 80px;
@@ -279,11 +307,11 @@
             flex-direction: column;
             justify-content: center;
             gap: 6px;
-            box-shadow: inset 0 0 20px rgba(0,162,255,0.05);
+            box-shadow: inset 0 0 20px rgba(255,183,0,0.05);
         }
 
         .dialogue-user { color: var(--text-dim); }
-        .dialogue-assistant { color: var(--primary); font-weight: 500; text-shadow: 0 0 10px rgba(0,162,255,0.4); }
+        .dialogue-assistant { color: var(--accent); font-weight: 500; text-shadow: 0 0 10px rgba(255,183,0,0.4); }
 
         .controls-row {
             display: flex;
@@ -306,11 +334,11 @@
 
         .controls-row input:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(0,162,255,0.4);
+            box-shadow: 0 0 20px var(--primary-glow);
         }
 
         .action-btn {
-            background: rgba(0, 162, 255, 0.15);
+            background: rgba(0, 243, 255, 0.15);
             border: 1px solid var(--primary);
             color: #fff;
             padding: 10px 18px;
@@ -321,8 +349,8 @@
         }
 
         .action-btn:hover {
-            background: rgba(0, 162, 255, 0.35);
-            box-shadow: 0 0 20px rgba(0,162,255,0.5);
+            background: rgba(0, 243, 255, 0.35);
+            box-shadow: 0 0 20px var(--primary-glow);
         }
 
         .btn-danger {
@@ -346,7 +374,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 12px;
-            border-bottom: 1px solid rgba(0,162,255,0.25);
+            border-bottom: 1px solid var(--border-color);
             padding-bottom: 8px;
         }
 
@@ -371,7 +399,7 @@
         }
 
         .icon-btn {
-            background: rgba(0,162,255,0.1);
+            background: rgba(0, 243, 255, 0.1);
             border: 1px solid var(--border-color);
             color: var(--primary);
             width: 28px;
@@ -387,8 +415,8 @@
         }
 
         .icon-btn:hover {
-            background: rgba(0,162,255,0.3);
-            box-shadow: 0 0 12px rgba(0,162,255,0.5);
+            background: rgba(0, 243, 255, 0.3);
+            box-shadow: 0 0 12px var(--primary-glow);
         }
 
         .svg-container {
@@ -435,7 +463,7 @@
         }
 
         .injected-status {
-            color: #00a2ff;
+            color: var(--accent);
             font-weight: 500;
         }
 
@@ -443,7 +471,7 @@
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.92);
+            background: rgba(2, 4, 8, 0.92);
             z-index: 200;
             display: none;
             align-items: center;
@@ -463,7 +491,7 @@
             max-width: 480px;
             padding: 24px;
             border-radius: 10px;
-            box-shadow: 0 0 60px rgba(0, 162, 255, 0.4);
+            box-shadow: 0 0 60px rgba(0, 243, 255, 0.4);
             display: flex;
             flex-direction: column;
             gap: 14px;
@@ -506,36 +534,39 @@
 </head>
 <body>
 
-    <!-- CANVAS DE REDE NEURAL PROFUNDA (AZUL ELÉTRICO E DEEP DARK) -->
-    <canvas id="neuralCanvas"></canvas>
+    <!-- CANVAS DE TEIAS NEURAIS (BIOLOGICAL WEBS + MATRIX RAIN) -->
+    <canvas id="matrixCanvas"></canvas>
 
-    <!-- BOOT SCREEN COM HUD DARK AZUL ELÉTRICO ROTATIVA -->
+    <!-- BOOT SCREEN COM HUD OFICIAL JARVIS ROTATIVO -->
     <div id="bootScreen">
-        <div class="dark-hud-loader">
-            <div class="hud-ring-1"></div>
-            <div class="hud-ring-2"></div>
-            <div class="hud-ring-3"></div>
-            <div class="hud-core-sphere">🧠</div>
+        <div class="mcu-hud-loader">
+            <div class="hud-ring-gold"></div>
+            <div class="hud-ring-blue"></div>
+            <div class="hud-ring-dots"></div>
+            <div class="hud-core-reactor">⚡</div>
         </div>
-        <div class="boot-status">ESTABELECENDO LIGAÇÃO NEURAL PROFUNDA...</div>
+        <div class="boot-status">INICIALIZANDO HUD OFICIAL JARVIS...</div>
     </div>
 
     <!-- ACTIVATION SCREEN -->
     <div id="activationScreen">
-        <div class="dark-hud-loader" style="width: 140px; height: 140px;">
-            <div class="hud-ring-1"></div>
-            <div class="hud-ring-2"></div>
-            <div class="hud-ring-3"></div>
-            <div class="hud-core-sphere" style="font-size: 1.2rem;">⚡</div>
+        <div class="mcu-hud-loader" style="width: 150px; height: 150px;">
+            <div class="hud-ring-gold"></div>
+            <div class="hud-ring-blue"></div>
+            <div class="hud-ring-dots"></div>
+            <div class="hud-core-reactor" style="font-size: 1.3rem;">🧠</div>
         </div>
-        <button class="activation-btn" id="btnActivate">ATIVAR NÚCLEO NEURAL</button>
+        <button class="activation-btn" id="btnActivate">ATIVAR SISTEMA OFICIAL</button>
     </div>
 
     <!-- MAIN APP -->
     <div id="app">
         <header class="top-bar">
-            <div class="app-title">JARVIS // DEEP DARK CORE</div>
-            <div class="status-info">● HOLOGRAPHIC NEURON ATIVO</div>
+            <div class="app-title">JARVIS // MCU OFFICIAL NEURAL HUD</div>
+            <div class="api-input-box">
+                <input type="password" id="apiKeyInput" placeholder="Cole sua Anthropic API Key...">
+                <button id="btnSaveKey">Salvar</button>
+            </div>
         </header>
 
         <div class="main-grid">
@@ -546,15 +577,15 @@
                     <span id="statusBadge" class="status-badge">Ocioso</span>
                 </div>
 
-                <div class="hud-center-sphere" id="reactorOrb" title="Clique para falar com Jarvis">
-                    <div class="hud-ring-1"></div>
-                    <div class="hud-ring-2"></div>
-                    <div class="hud-core-sphere">⚡</div>
+                <div class="hud-center-reactor" id="reactorOrb" title="Clique para interagir com Jarvis">
+                    <div class="hud-ring-gold"></div>
+                    <div class="hud-ring-blue"></div>
+                    <div class="hud-core-reactor">⚡</div>
                 </div>
 
                 <div class="dialogue-box">
                     <div id="dialogueUser" class="dialogue-user">Você: --</div>
-                    <div id="dialogueAssistant" class="dialogue-assistant">Jarvis: Sistemas online, Sandro. Como posso auxiliá-lo?</div>
+                    <div id="dialogueAssistant" class="dialogue-assistant">Jarvis: Sistemas operacionais ativos, Sandro. Como posso auxiliá-lo?</div>
                 </div>
 
                 <div class="controls-row">
@@ -581,7 +612,7 @@
 
                 <div class="brain-footer">
                     <div class="legend-list" id="legendList"></div>
-                    <div class="injected-status" id="injectedStatus">✓ motor neural elétrico ativo</div>
+                    <div class="injected-status" id="injectedStatus">✓ teias neurais ativas com Claude API</div>
                 </div>
             </section>
         </div>
@@ -614,14 +645,15 @@
         const CONFIG = {
             name: "Jarvis",
             address: "Sandro",
+            model: "claude-3-5-sonnet-20241022",
             persona: "formal britânico (mordomo)"
         };
 
         const AREA = {
             meta: { label: "Identidade", color: "#64748b" },
             metas: { label: "Metas", color: "#38bdf8" },
-            trabalho: { label: "Carreira", color: "#00a2ff" },
-            projetos: { label: "Projetos", color: "#818cf8" },
+            trabalho: { label: "Carreira", color: "#00f3ff" },
+            projetos: { label: "Projetos", color: "#ffb700" },
             financas: { label: "Finanças", color: "#f7931a" },
             aprendizado: { label: "Aprendizado", color: "#38bdf8" },
             saude: { label: "Saúde", color: "#34d399" },
@@ -629,30 +661,33 @@
         };
 
         const INITIAL_NOTES = [
-            { id: "note_1", area: "meta", title: "Perfil Geral", body: "Profissional especialista em ciência de dados e indicadores corporativos, atuando com desenvolvimento de plataformas analíticas e inteligência artificial." },
-            { id: "note_2", area: "metas", title: "Sanar Dores", body: "Objetivo de automatizar processos corporativos e democratizar o acesso à tecnologia e criação de projetos." },
-            { id: "note_3", area: "trabalho", title: "Analytics Core", body: "Construção de painéis interativos avançados, transformando dados brutos em inteligência acionável para tomada de decisão gerencial." },
-            { id: "note_4", area: "projetos", title: "Monitoramento de Rios", body: "Plataforma de monitoramento de cotas de inundação com site ativo em nuvem, focada em prevenção de riscos para prefeituras." },
-            { id: "note_5", area: "projetos", title: "Motor IA com Voz", body: "Ecossistema de assistência inteligente operado por comandos de voz e redes neurais locais." },
-            { id: "note_6", area: "financas", title: "Investimentos", body: "Estratégia diversificada em ativos de renda fixa, ouro, criptomoedas e reservas para expedições de viagem." },
-            { id: "note_7", area: "aprendizado", title: "Automação & IA", body: "Estudo contínuo de fluxos inteligentes, ferramentas de nuvem e arquitetura de sistemas." }
+            { id: "note_1", area: "meta", title: "Sandro Fagundes", body: "Sandro de Souza Fagundes, 40 anos, mora em Nova Hartz, trabalha em Dois Irmãos no Grupo Herval como cientista de dados e analista de indicadores corporativos. Licenciado em computação, ex-professor de informática, empreendedor com lojas online e criador de plataformas/dashboards via IA." },
+            { id: "note_2", area: "metas", title: "Sanar Dores", body: "Meta geral: ajudar a sanar dores de processos corporativos com visão de futuro. Curto prazo: ajudar pessoas a desenvolver projetos e democratizar a criação." },
+            { id: "note_3", area: "trabalho", title: "Grupo Herval", body: "Analista de indicadores corporativos e cientista de dados no Grupo Herval. Migrando dashboards do Power BI para o Apache Superset (melhorias nos charts). Montando dashboard para a 'Já Consórcios' (jornada de leads, simulações, distribuição e conversão)." },
+            { id: "note_4", area: "projetos", title: "Plataforma Águas", body: "Plataforma de monitoramento de rios e cotas de inundação (Fase 1 completa, no Vercel). Objetivo: disponibilizar para prefeituras." },
+            { id: "note_5", area: "projetos", title: "Motor IA com Voz", body: "Jarvis personal assistent — assistente inteligente operado por voz e texto integrado ao Second Brain neural." },
+            { id: "note_6", area: "financas", title: "Investimentos", body: "Objetivos financeiros: aproveitar o dinheiro investindo em Bitcoin, Tesouro Direto, imóveis, viagens (Argentina, Patagônia e Cordilheira dos Andes)." },
+            { id: "note_7", area: "aprendizado", title: "Estudos & IA", body: "Estuda veias culturais (com foco na asiática), livros de empreendedorismo, LLMs, IA, RPA, MCP, Cloud." },
+            { id: "note_8", area: "saude", title: "Rotina & Família", body: "Acorda às 06:00, alongamento, fruta, cuida do filho, leva à escola, assiste desenho. Trabalho em outra cidade (carro). Sábados: bicicleta, caminhada e trilha. Adora boa comida e passeios com a família (esposa e filhos Heitor e Melissa)." }
         ];
 
         let NOTES = JSON.parse(localStorage.getItem("jarvis_notes")) || INITIAL_NOTES;
         let REL = [
             ["note_1", "note_2"], ["note_1", "note_3"], ["note_2", "note_4"],
             ["note_2", "note_5"], ["note_3", "note_4"], ["note_3", "note_5"],
-            ["note_1", "note_6"], ["note_1", "note_7"]
+            ["note_1", "note_6"], ["note_1", "note_7"], ["note_1", "note_8"]
         ];
 
+        let chatHistory = [];
         let isBusy = false;
         let highlightedNoteId = null;
         let recognition = null;
 
-        // CANVAS DE REDE NEURAL PROFUNDA (AZUL ELÉTRICO E DEEP DARK)
-        const canvas = document.getElementById('neuralCanvas');
+        // CANVAS DE TEIA NEURAL COMPLEXA E CÓDIGO MATRIX EM CASCATA
+        const canvas = document.getElementById('matrixCanvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
+        let matrixChars = "0101010101010101JARVISMCUARK";
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -665,18 +700,19 @@
             particles.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
-                vx: (Math.random() - 0.5) * 0.7,
-                vy: (Math.random() - 0.5) * 0.7,
-                radius: Math.random() * 2 + 1.1
+                vx: (Math.random() - 0.5) * 0.6,
+                vy: (Math.random() - 0.5) * 0.6,
+                radius: Math.random() * 2 + 1.0,
+                char: matrixChars.charAt(Math.floor(Math.random() * matrixChars.length))
             });
         }
 
-        function drawNeuralHUD() {
+        function drawNeuralWebs() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#000000';
+            ctx.fillStyle = '#020408';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Feixes sinápticos em azul elétrico profundo
+            // Desenhar teias de aranha / conexões neurais inteligentes
             for (let i = 0; i < particles.length; i++) {
                 let p = particles[i];
                 p.x += p.vx;
@@ -685,40 +721,48 @@
                 if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
                 if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
 
+                // Efeito Matrix de caracteres digitais discretos flutuando
+                ctx.fillStyle = "rgba(0, 243, 255, 0.15)";
+                ctx.font = "10px monospace";
+                ctx.fillText(p.char, p.x, p.y);
+
                 for (let j = i + 1; j < particles.length; j++) {
                     let p2 = particles[j];
                     let dx = p.x - p2.x;
                     let dy = p.y - p2.y;
                     let dist = Math.sqrt(dx * dx + dy * dy);
 
-                    if (dist < 160) {
+                    // Formação de teias neurais (malha geométrica intrincada)
+                    if (dist < 150) {
                         ctx.beginPath();
                         ctx.moveTo(p.x, p.y);
                         ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = `rgba(0, 162, 255, ${(1 - dist / 160) * 0.35})`;
-                        ctx.lineWidth = 0.8;
+                        ctx.strokeStyle = `rgba(0, 243, 255, ${(1 - dist / 150) * 0.3})`;
+                        ctx.lineWidth = 0.7;
                         ctx.stroke();
                     }
                 }
 
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                ctx.fillStyle = '#00a2ff';
-                ctx.shadowBlur = 16;
-                ctx.shadowColor = '#00a2ff';
+                ctx.fillStyle = '#00f3ff';
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = '#00f3ff';
                 ctx.fill();
                 ctx.shadowBlur = 0;
             }
 
-            requestAnimationFrame(drawNeuralHUD);
+            requestAnimationFrame(drawNeuralWebs);
         }
-        drawNeuralHUD();
+        drawNeuralWebs();
 
         // DOM Elements
         const bootScreen = document.getElementById("bootScreen");
         const activationScreen = document.getElementById("activationScreen");
         const app = document.getElementById("app");
         const btnActivate = document.getElementById("btnActivate");
+        const apiKeyInput = document.getElementById("apiKeyInput");
+        const btnSaveKey = document.getElementById("btnSaveKey");
         const reactorOrb = document.getElementById("reactorOrb");
         const statusBadge = document.getElementById("statusBadge");
         const dialogueUser = document.getElementById("dialogueUser");
@@ -742,6 +786,7 @@
         const btnCancelModal = document.getElementById("btnCancelModal");
 
         window.addEventListener("DOMContentLoaded", () => {
+            apiKeyInput.value = localStorage.getItem("anthropic_key") || "";
             editNoteArea.innerHTML = Object.entries(AREA).map(([k, v]) => `<option value="${k}">${v.label}</option>`).join("");
             setTimeout(() => {
                 bootScreen.classList.add("fade-out");
@@ -751,12 +796,21 @@
             }, 2200);
         });
 
+        btnSaveKey.addEventListener("click", () => {
+            localStorage.setItem("anthropic_key", apiKeyInput.value.trim());
+            speakText("Chave de API salva com sucesso, senhor.");
+        });
+
+        function getActiveApiKey() {
+            return apiKeyInput.value.trim() || localStorage.getItem("anthropic_key") || "";
+        }
+
         btnActivate.addEventListener("click", () => {
             activationScreen.classList.remove("show");
             app.classList.add("active");
             renderGraph();
             initVoiceRecognition();
-            speakText("Núcleo neural profundo ativo. À sua inteira disposição, Sandro.");
+            speakText("Sistemas operacionais ativos. À sua inteira disposição, Sandro.");
         });
 
         function initVoiceRecognition() {
@@ -772,7 +826,7 @@
                 const transcript = event.results[0][0].transcript.trim();
                 if (transcript) {
                     dialogueUser.innerText = `Você: ${transcript}`;
-                    processIntelligentPrompt(transcript);
+                    processClaudeCommand(transcript);
                 }
             };
 
@@ -805,7 +859,7 @@
                 const query = textInput.value.trim();
                 textInput.value = "";
                 dialogueUser.innerText = `Você: ${query}`;
-                processIntelligentPrompt(query);
+                processClaudeCommand(query);
             }
         });
 
@@ -826,41 +880,70 @@
             window.speechSynthesis.speak(utterance);
         }
 
-        function processIntelligentPrompt(prompt) {
+        // INTEGRAÇÃO COM A API DO CLAUDE & SECOND BRAIN VIVO
+        async function processClaudeCommand(prompt) {
+            const apiKey = getActiveApiKey();
+            if (!apiKey) {
+                const err = "Por favor, insira sua chave da Anthropic API no topo da página.";
+                dialogueAssistant.innerText = `${CONFIG.name}: ${err}`;
+                speakText("Insira sua chave de API na barra superior, senhor.");
+                return;
+            }
+
             isBusy = true;
-            statusBadge.innerText = "Processando Neurônios...";
+            statusBadge.innerText = "Processando no Claude...";
 
-            setTimeout(() => {
-                const lower = prompt.toLowerCase();
-                let responseText = "";
+            let notesText = NOTES.map(n => `- [${n.area.toUpperCase()}] ${n.title}: ${n.body}`).join("\n");
+            const systemPrompt = `Você é o ${CONFIG.name}, um assistente pessoal com personalidade de ${CONFIG.persona}. Você atende ${CONFIG.address}. Suas respostas devem ser curtas (2-4 frases), faladas, sem emojis nem markdown em português do Brasil. 
+            Regra de Memória Viva: Se o usuário revelar algo novo e duradouro, TERMINE a resposta com uma linha no formato EXATO [[SAVE:area|titulo|texto]] (area ∈ meta, metas, trabalho, projetos, financas, aprendizado, saude, relacoes).
+            
+            SECOND BRAIN (Notas atuais de ${CONFIG.address}):
+            ${notesText}`;
 
-                if (lower.includes("abrir youtube") || lower.includes("youtube")) {
-                    window.open("https://youtube.com", "_blank");
-                    responseText = "Abrindo o YouTube imediatamente, senhor.";
-                } else if (lower.includes("abrir spotify") || lower.includes("spotify")) {
-                    window.open("https://open.spotify.com", "_blank");
-                    responseText = "Acessando o seu Spotify.";
-                } else {
-                    let matchedNotes = NOTES.filter(n => {
-                        const content = (n.title + " " + n.body + " " + n.area).toLowerCase();
-                        return prompt.toLowerCase().split(' ').some(word => word.length > 3 && content.includes(word));
-                    });
+            try {
+                const response = await fetch("https://api.anthropic.com/v1/messages", {
+                    method: "POST",
+                    headers: {
+                        "x-api-key": apiKey,
+                        "anthropic-version": "2023-06-01",
+                        "anthropic-dangerous-direct-browser-access": "true",
+                        "content-type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        model: CONFIG.model,
+                        max_tokens: 400,
+                        system: systemPrompt,
+                        messages: chatHistory.concat([{ role: "user", content: prompt }])
+                    })
+                });
 
-                    if (matchedNotes.length > 0) {
-                        highlightedNoteId = matchedNotes[0].id;
-                        renderGraph();
-                        setTimeout(() => { highlightedNoteId = null; renderGraph(); }, 4000);
+                if (!response.ok) throw new Error("Erro na API Key ou de comunicação.");
 
-                        const summaries = matchedNotes.map(n => n.body).join(" Além disso, ");
-                        responseText = `Com base nos registros neurais: ${summaries}. Sugiro mantermos o foco nestas diretrizes estratégicas.`;
-                    } else {
-                        responseText = "Analisei sua questão com base nas diretrizes do núcleo profundo. Compreendo perfeitamente o seu raciocínio e permaneço pronto para executar novas demandas.";
-                    }
+                const data = await response.json();
+                let rawText = data.content?.[0]?.text || "Sem resposta do sistema.";
+
+                const saveRegex = /\[\[SAVE:([a-z_]+)\|([^|]+)\|([\s\S]+?)\]\]/;
+                const match = rawText.match(saveRegex);
+                if (match) {
+                    const [, area, title, body] = match;
+                    rawText = rawText.replace(saveRegex, "").trim();
+                    upsertNote(area, title, body);
                 }
 
-                dialogueAssistant.innerText = `Jarvis: ${responseText}`;
-                speakText(responseText);
-            }, 600);
+                chatHistory.push({ role: "user", content: prompt });
+                chatHistory.push({ role: "assistant", content: rawText });
+
+                dialogueAssistant.innerText = `${CONFIG.name}: ${rawText}`;
+                speakText(rawText);
+
+            } catch (error) {
+                console.error(error);
+                const errText = "Erro ao comunicar com o Claude. Verifique sua chave de API.";
+                dialogueAssistant.innerText = `${CONFIG.name}: ${errText}`;
+                speakText("Falha de conexão com a API, senhor.");
+                isBusy = false;
+                statusBadge.innerText = "Ocioso";
+            }
         }
 
         function upsertNote(area, title, body) {
@@ -877,7 +960,7 @@
             }
             localStorage.setItem("jarvis_notes", JSON.stringify(NOTES));
             renderGraph();
-            setTimeout(() => { highlightedNoteId = null; renderGraph(); }, 3000);
+            setTimeout(() => { highlightedNoteId = null; renderGraph(); }, 4000);
         }
 
         function renderGraph() {
@@ -919,12 +1002,12 @@
             let svgContent = `
                 <defs>
                     <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
-                        <stop offset="0%" stop-color="#00a2ff" stop-opacity="0.8"/>
-                        <stop offset="100%" stop-color="#818cf8" stop-opacity="0"/>
+                        <stop offset="0%" stop-color="#ffb700" stop-opacity="0.8"/>
+                        <stop offset="100%" stop-color="#00f3ff" stop-opacity="0"/>
                     </radialGradient>
                     <linearGradient id="edgeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#00a2ff"/>
-                        <stop offset="100%" stop-color="#818cf8"/>
+                        <stop offset="0%" stop-color="#ffb700"/>
+                        <stop offset="100%" stop-color="#00f3ff"/>
                     </linearGradient>
                 </defs>
             `;
@@ -940,18 +1023,18 @@
             });
 
             Object.values(nodeCoords).forEach(node => {
-                const color = AREA[node.note.area]?.color || '#00a2ff';
+                const color = AREA[node.note.area]?.color || '#00f3ff';
                 svgContent += `<line x1="${cx}" y1="${cy}" x2="${node.x}" y2="${node.y}" stroke="${color}" stroke-width="0.8" opacity="0.3"/>`;
             });
 
             svgContent += `
                 <circle cx="${cx}" cy="${cy}" r="38" fill="url(#coreGlow)"/>
-                <circle cx="${cx}" cy="${cy}" r="22" fill="#000814" stroke="#818cf8" stroke-width="2"/>
+                <circle cx="${cx}" cy="${cy}" r="22" fill="#020810" stroke="#ffb700" stroke-width="2"/>
                 <text x="${cx}" y="${cy + 5}" fill="#fff" font-size="14" text-anchor="middle" font-weight="bold">🧠</text>
             `;
 
             Object.values(nodeCoords).forEach(node => {
-                const color = AREA[node.note.area]?.color || '#00a2ff';
+                const color = AREA[node.note.area]?.color || '#00f3ff';
                 const size = Math.min(18, 10 + (connCounts[node.note.id] || 1) * 1.5);
                 const isHighlighted = node.note.id === highlightedNoteId;
 
@@ -961,7 +1044,7 @@
                         <circle cx="${node.x}" cy="${node.y}" r="${size + 4}" fill="${color}" opacity="0.25">
                             <animate attributeName="r" values="${size};${size+5};${size}" dur="3s" repeatCount="indefinite"/>
                         </circle>
-                        <circle cx="${node.x}" cy="${node.y}" r="${size}" fill="#000000" stroke="${color}" stroke-width="2"/>
+                        <circle cx="${node.x}" cy="${node.y}" r="${size}" fill="#020408" stroke="${color}" stroke-width="2"/>
                         <text x="${node.x}" y="${node.y + size + 14}" fill="#e2e8f0" font-size="10" text-anchor="middle" font-weight="500">${node.note.title}</text>
                     </g>
                 `;
@@ -1022,7 +1105,7 @@
             localStorage.setItem("jarvis_notes", JSON.stringify(NOTES));
             modalOverlay.classList.remove("open");
             renderGraph();
-            speakText("Nota integrada na matriz neural, senhor.");
+            speakText("Nota integrada no Second Brain, senhor.");
         });
 
         btnDeleteNote.addEventListener("click", () => {
