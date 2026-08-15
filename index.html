@@ -978,7 +978,6 @@
             }
         });
 
-        // COMUNICAÇÃO COM O GOOGLE GEMINI E GOOGLE SEARCH GROUNDING ATIVO
         async function processGeminiCommand(prompt) {
             const apiKey = getActiveApiKey();
             if (!apiKey) {
@@ -1008,7 +1007,7 @@
                         { role: 'user', parts: [{ text: prompt }] }
                     ],
                     systemInstruction: { parts: [{ text: systemPrompt }] },
-                    tools: [{ "google_search": {} }] // ATIVA O GOOGLE SEARCH GROUNDING PARA BUSCA NA WEB
+                    tools: [{ "google_search": {} }]
                 };
 
                 const response = await fetch(url, {
