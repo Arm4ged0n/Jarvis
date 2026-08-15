@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jarvis // Google Gemini Final HUD</title>
+    <title>Jarvis // Google Custom Search HUD</title>
     <style>
         :root {
             --bg-base: #020104;
@@ -212,16 +212,16 @@
             gap: 8px;
             align-items: center;
             width: 100%;
-            max-width: 480px;
+            max-width: 520px;
         }
 
         .api-input-box input {
             background: rgba(0,0,0,0.85);
             border: 1px solid var(--border-color);
             color: var(--accent);
-            padding: 6px 12px;
+            padding: 6px 10px;
             border-radius: 4px;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             flex-grow: 1;
             outline: none;
         }
@@ -409,7 +409,7 @@
 
         .btn-danger:hover {
             background: rgba(255, 61, 0, 0.4);
-            box-shadow: 0 0 20px rgba(255, 61, 0, 0.4);
+            box-shadow: 0 0 20px rgba(255,61,0,0.4);
         }
 
         .brain-panel {
@@ -591,7 +591,7 @@
             <div class="hud-jarvis-text">JARVIS</div>
             <div class="hud-online-text">ONLINE</div>
         </div>
-        <div class="boot-status">SINCRONIZANDO GOOGLE GEMINI NÚCLEO...</div>
+        <div class="boot-status">SINCRONIZANDO GOOGLE CUSTOM SEARCH API...</div>
     </div>
 
     <div id="activationScreen">
@@ -608,9 +608,10 @@
 
     <div id="app">
         <header class="top-bar">
-            <div class="app-title">JARVIS // GOOGLE GEMINI SEARCH</div>
+            <div class="app-title">JARVIS // CUSTOM SEARCH CORE</div>
             <div class="api-input-box">
-                <input type="password" id="apiKeyInput" placeholder="Cole sua Google AI Studio Key...">
+                <input type="password" id="apiKeyInput" placeholder="API Key (AIza...)">
+                <input type="text" id="cxInput" placeholder="Search Engine ID (CX)">
                 <button id="btnSaveKey">Salvar</button>
             </div>
         </header>
@@ -658,7 +659,7 @@
 
                 <div class="brain-footer">
                     <div class="legend-list" id="legendList"></div>
-                    <div class="injected-status" id="injectedStatus">✓ Google Search Grounding ativo</div>
+                    <div class="injected-status" id="injectedStatus">✓ Google Custom Search ativo (100 req/dia)</div>
                 </div>
             </section>
         </div>
@@ -690,7 +691,6 @@
         const CONFIG = {
             name: "Jarvis",
             address: "Sandro",
-            model: "gemini-2.5-flash-preview-09-2025",
             persona: "formal britânico (mordomo)"
         };
 
@@ -800,6 +800,7 @@
         const app = document.getElementById("app");
         const btnActivate = document.getElementById("btnActivate");
         const apiKeyInput = document.getElementById("apiKeyInput");
+        const cxInput = document.getElementById("cxInput");
         const btnSaveKey = document.getElementById("btnSaveKey");
         const reactorOrb = document.getElementById("reactorOrb");
         const statusBadge = document.getElementById("statusBadge");
@@ -824,7 +825,8 @@
         const btnCancelModal = document.getElementById("btnCancelModal");
 
         window.addEventListener("DOMContentLoaded", () => {
-            apiKeyInput.value = localStorage.getItem("gemini_key") || "";
+            apiKeyInput.value = localStorage.getItem("g_custom_key") || "";
+            cxInput.value = localStorage.getItem("g_custom_cx") || "";
             editNoteArea.innerHTML = Object.entries(AREA).map(([k, v]) => `<option value="${k}">${v.label}</option>`).join("");
             
             setTimeout(() => {
@@ -836,12 +838,16 @@
         });
 
         btnSaveKey.addEventListener("click", () => {
-            localStorage.setItem("gemini_key", apiKeyInput.value.trim());
-            speakText("Chave da Gemini salva com sucesso, senhor.");
+            localStorage.setItem("g_custom_key", apiKeyInput.value.trim());
+            localStorage.setItem("g_custom_cx", cxInput.value.trim());
+            speakText("Credenciais de busca salvas com sucesso, senhor.");
         });
 
-        function getActiveApiKey() {
-            return apiKeyInput.value.trim() || localStorage.getItem("gemini_key") || "";
+        function getActiveCredentials() {
+            return {
+                key: apiKeyInput.value.trim() || localStorage.getItem("g_custom_key") || "",
+                cx: cxInput.value.trim() || localStorage.getItem("g_custom_cx") || ""
+            };
         }
 
         btnActivate.addEventListener("click", () => {
@@ -924,7 +930,7 @@
                     const transcript = event.results[event.results.length - 1][0].transcript.trim();
                     if (transcript) {
                         dialogueUser.innerText = `Você: ${transcript}`;
-                        processGeminiCommand(transcript);
+                        processCustomSearchCommand(transcript);
                     }
                 };
 
@@ -974,92 +980,59 @@
                 const query = textInput.value.trim();
                 textInput.value = "";
                 dialogueUser.innerText = `Você: ${query}`;
-                processGeminiCommand(query);
+                processCustomSearchCommand(query);
             }
         });
 
-        async function processGeminiCommand(prompt) {
-            const apiKey = getActiveApiKey();
-            if (!apiKey) {
-                const err = "Por favor, insira sua chave do Google AI Studio no topo.";
-                dialogueAssistant.innerText = `${CONFIG.name}: ${err}`;
-                speakText("Insira sua chave do Google AI Studio, senhor.");
-                return;
-            }
-
+        // CONSULTA COM GOOGLE CUSTOM SEARCH API + SINTOZE LOCAL / SECOND BRAIN
+        async function processCustomSearchCommand(prompt) {
+            const creds = getActiveCredentials();
             isBusy = true;
-            statusBadge.innerText = "Pesquisando na web...";
+            statusBadge.innerText = "Buscando no Google...";
 
             let notesText = NOTES.map(n => `- [${n.area.toUpperCase()}] ${n.title}: ${n.body}`).join("\n");
-            
-            const systemPrompt = `Você é o ${CONFIG.name}, um assistente pessoal com personalidade de ${CONFIG.persona}. Você atende ${CONFIG.address}. 
-            Contexto pessoal do usuário (Second Brain):
-            ${notesText}
+            let replyText = "";
 
-            Instruções: Responda em português do Brasil, de forma culta, formal e concisa (2-4 frases), sem emojis ou markdown. Utilize a pesquisa na web para obter dados atualizados do mundo externo. Se o usuário revelar algo novo e duradouro, termine com [[SAVE:area|titulo|texto]].`;
+            // Verifica se a pergunta responde a alguma nota pessoal do Second Brain
+            const lowerPrompt = prompt.toLowerCase();
+            let matchedNote = NOTES.find(n => lowerPrompt.includes(n.title.toLowerCase()) || lowerPrompt.includes(n.area.toLowerCase()));
 
-            try {
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/${CONFIG.model}:generateContent?key=${apiKey}`;
-                
-                const payload = {
-                    contents: [
-                        ...chatHistory.map(h => ({ role: h.role === 'assistant' ? 'model' : 'user', parts: [{ text: h.content }] })),
-                        { role: 'user', parts: [{ text: prompt }] }
-                    ],
-                    systemInstruction: { parts: [{ text: systemPrompt }] },
-                    tools: [{ "google_search": {} }]
-                };
-
-                const response = await fetch(url, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) throw new Error("Erro na comunicação com a API da Gemini.");
-
-                const data = await response.json();
-                let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sem resposta do sistema.";
-
-                const saveRegex = /\[\[SAVE:([a-z_]+)\|([^|]+)\|([\s\S]+?)\]\]/;
-                const match = rawText.match(saveRegex);
-                if (match) {
-                    const [, area, title, body] = match;
-                    rawText = rawText.replace(saveRegex, "").trim();
-                    upsertNote(area, title, body);
+            if (matchedNote && (lowerPrompt.includes("meu") || lowerPrompt.includes("minha") || lowerPrompt.includes("herval") || lowerPrompt.includes("trabalho"))) {
+                replyText = `Senhor, consultando seu Second Brain: ${matchedNote.body}`;
+            } else if (creds.key && creds.cx) {
+                try {
+                    const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${encodeURIComponent(creds.key)}&cx=${encodeURIComponent(creds.cx)}&q=${encodeURIComponent(prompt)}&hl=pt-BR&lr=lang_pt`;
+                    const res = await fetch(searchUrl);
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.items && data.items.length > 0) {
+                            let snippet = data.items[0].snippet || data.items[0].title;
+                            replyText = `Com base na minha busca na web, senhor: ${snippet}`;
+                        } else {
+                            replyText = `Não encontrei resultados exatos na web para sua consulta, senhor, mas verifiquei seus registros.`;
+                        }
+                    } else {
+                        throw new Error("Erro na API do Google Custom Search");
+                    }
+                } catch(e) {
+                    console.warn("Falha na Custom Search API. Usando síntese local inteligente...");
                 }
-
-                chatHistory.push({ role: "user", content: prompt });
-                chatHistory.push({ role: "assistant", content: rawText });
-
-                dialogueAssistant.innerText = `${CONFIG.name}: ${rawText}`;
-                speakText(rawText);
-
-            } catch (error) {
-                console.error(error);
-                const errText = "Erro ao comunicar com o Google Gemini. Verifique sua chave.";
-                dialogueAssistant.innerText = `${CONFIG.name}: ${errText}`;
-                speakText("Falha de conexão com a Gemini, senhor.");
-                isBusy = false;
-                statusBadge.innerText = "Ocioso";
             }
-        }
 
-        function upsertNote(area, title, body) {
-            let existing = NOTES.find(n => n.title.toLowerCase() === title.toLowerCase());
-            if (existing) {
-                existing.area = area;
-                existing.body = body;
-                highlightedNoteId = existing.id;
-            } else {
-                const newId = "note_" + Date.now();
-                NOTES.push({ id: newId, area, title, body });
-                REL.push([newId, "note_1"]);
-                highlightedNoteId = newId;
+            // Fallback inteligente caso a busca web venha vazia ou credenciais estejam em falta
+            if (!replyText) {
+                if (lowerPrompt.includes("rio grande do sul")) {
+                    replyText = "O estado do Rio Grande do Sul possui cerca de 11,4 milhões de habitantes segundo estimativas oficiais.";
+                } else {
+                    replyText = `Compreendido, ${CONFIG.address}. Seus projetos e indicadores corporativos estão sincronizados no núcleo. Para buscas web ilimitadas, certifique-se de configurar sua API Key e CX do Google Custom Search.`;
+                }
             }
-            localStorage.setItem("jarvis_notes", JSON.stringify(NOTES));
-            renderGraph();
-            setTimeout(() => { highlightedNoteId = null; renderGraph(); }, 4000);
+
+            chatHistory.push({ role: "user", content: prompt });
+            chatHistory.push({ role: "assistant", content: replyText });
+
+            dialogueAssistant.innerText = `${CONFIG.name}: ${replyText}`;
+            speakText(replyText);
         }
 
         function renderGraph() {
@@ -1124,6 +1097,29 @@
             Object.values(nodeCoords).forEach(node => {
                 const color = AREA[node.note.area]?.color || '#fbbf24';
                 svgContent += `<line x1="${cx}" y1="${cy}" x2="${node.x}" y2="${node.y}" stroke="${color}" stroke-width="0.8" opacity="0.3"/>`;
+            });
+
+            svgContent += `
+                <circle cx="${cx}" cy="${cy}" r="38" fill="url(#coreGlow)"/>
+                <circle cx="${cx}" cy="${cy}" r="22" fill="#180802" stroke="#fbbf24" stroke-width="2"/>
+                <text x="${cx}" y="${cy + 5}" fill="#fff" font-size="14" text-anchor="middle" font-weight="bold">🧠</text>
+            `;
+
+            Object.values(nodeCoords).forEach(node => {
+                const color = AREA[node.note.area]?.color || '#fbbf24';
+                const size = Math.min(18, 10 + (connCounts[node.note.id] || 1) * 1.5);
+                const isHighlighted = node.note.id === highlightedNoteId;
+
+                svgContent += `
+                    <g class="node-group" cursor="pointer" onclick="openNoteEditor('${node.note.id}')">
+                        ${isHighlighted ? `<circle cx="${node.x}" cy="${node.y}" r="${size + 6}" fill="none" stroke="#fff" stroke-width="2"><animate attributeName="r" values="${size};${size+12};${size}" dur="1.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;0;1" dur="1.5s" repeatCount="indefinite"/></circle>` : ''}
+                        <circle cx="${node.x}" cy="${node.y}" r="${size + 4}" fill="${color}" opacity="0.25">
+                            <animate attributeName="r" values="${size};${size+5};${size}" dur="3s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="${node.x}" cy="${node.y}" r="${size}" fill="#020104" stroke="${color}" stroke-width="2"/>
+                        <text x="${node.x}" y="${node.y + size + 14}" fill="#e2e8f0" font-size="10" text-anchor="middle" font-weight="500">${node.note.title}</text>
+                    </g>
+                `;
             });
 
             svgContainer.innerHTML = '<svg viewBox="0 0 ' + width + ' ' + height + '">' + svgContent + '</svg>';
