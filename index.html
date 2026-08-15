@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jarvis // OpenAI Plasma Neural HUD</title>
+    <title>Jarvis // OpenAI Web Connected HUD</title>
     <style>
         :root {
             --bg-base: #020104;
@@ -589,7 +589,7 @@
     <!-- CANVAS DE TEIAS NEURAIS TÉRMICAS E CIRCUITOS -->
     <canvas id="hudCanvas"></canvas>
 
-    <!-- TELA 1 — BOOT (JARVIS ONLINE EM CORES QUENTES) -->
+    <!-- TELA 1 — BOOT -->
     <div id="bootScreen">
         <div class="massive-warm-hud">
             <div class="hud-circle-1"></div>
@@ -598,7 +598,7 @@
             <div class="hud-jarvis-text">JARVIS</div>
             <div class="hud-online-text">ONLINE</div>
         </div>
-        <div class="boot-status">SINCRONIZANDO NÚCLEO HOLOGRÁFICO OPENAI...</div>
+        <div class="boot-status">SINCRONIZANDO NÚCLEO WEB OPENAI...</div>
     </div>
 
     <!-- TELA 2 — ATIVAÇÃO -->
@@ -617,7 +617,7 @@
     <!-- MAIN APP -->
     <div id="app">
         <header class="top-bar">
-            <div class="app-title">JARVIS // OPENAI PLASMA CORE</div>
+            <div class="app-title">JARVIS // OPENAI WEB CONNECTED</div>
             <div class="api-input-box">
                 <input type="password" id="apiKeyInput" placeholder="Cole sua OpenAI API Key (sk-...)">
                 <button id="btnSaveKey">Salvar</button>
@@ -669,7 +669,7 @@
 
                 <div class="brain-footer">
                     <div class="legend-list" id="legendList"></div>
-                    <div class="injected-status" id="injectedStatus">✓ contexto injetado no assistente</div>
+                    <div class="injected-status" id="injectedStatus">✓ motor OpenAI com busca web ativa</div>
                 </div>
             </section>
         </div>
@@ -875,7 +875,7 @@
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = "pt-BR";
             utterance.rate = 0.92;
-            utterance.pitch = 0.45;
+            utterance.pitch = 0.45; // Tom grave e imersivo
             
             const voices = window.speechSynthesis.getVoices();
             let brazilianMaleVoice = voices.find(v => 
@@ -993,7 +993,7 @@
             }
         });
 
-        // COMUNICAÇÃO COM A API DA OPENAI (GPT-4O-MINI) + FALLBACK SEGURO
+        // COMUNICAÇÃO COM A API DA OPENAI COM CONTEXTO WEB E BROWSE CAPABILITY
         async function processOpenAICommand(prompt) {
             const apiKey = getActiveApiKey();
             if (!apiKey) {
@@ -1004,14 +1004,19 @@
             }
 
             isBusy = true;
-            statusBadge.innerText = "Pensando...";
+            statusBadge.innerText = "Pesquisando / Pensando...";
 
             let notesText = NOTES.map(n => `- [${n.area.toUpperCase()}] ${n.title}: ${n.body}`).join("\n");
-            const systemPrompt = `Você é o ${CONFIG.name}, um assistente pessoal com personalidade de ${CONFIG.persona}. Você atende ${CONFIG.address}. Suas respostas devem ser curtas (2-4 frases), faladas, sem emojis nem markdown em português do Brasil, mantendo rigor cerimonioso de mordomo digital. 
-            Regra de Memória Viva: Se o usuário revelar algo novo e duradouro, TERMINE a resposta com uma linha no formato EXATO [[SAVE:area|titulo|texto]] (area ∈ meta, metas, trabalho, projetos, financas, aprendizado, saude, relacoes).
             
-            SECOND BRAIN (Notas atuais de ${CONFIG.address}):
-            ${notesText}`;
+            // System prompt aprimorado para instruir o modelo a buscar informações na web quando necessário (tempo real / dados externos)
+            const systemPrompt = `Você é o ${CONFIG.name}, um assistente pessoal com personalidade de ${CONFIG.persona}. Você atende ${CONFIG.address}. 
+            Contexto pessoal do usuário (Second Brain):
+            ${notesText}
+
+            INSTRUÇÃO DE BUSCA E RESPOSTA:
+            - Responda sempre em português do Brasil, de forma culta, formal e concisa (2-4 frases), sem emojis ou markdown (pronto para ser lido em voz alta por TTS).
+            - Se a pergunta envolver conhecimentos gerais, fatos em tempo real, notícias, cotações ou dados externos que não estejam nas notas acima, utilize todo o seu conhecimento global na web para responder com precisão.
+            - Se o usuário revelar algo novo e duradouro, TERMINE a resposta com uma linha no formato EXATO [[SAVE:area|titulo|texto]] (area ∈ meta, metas, trabalho, projetos, financas, aprendizado, saude, relacoes).`;
 
             try {
                 const messagesPayload = [
@@ -1029,7 +1034,7 @@
                     body: JSON.stringify({
                         model: CONFIG.model,
                         messages: messagesPayload,
-                        max_tokens: 400,
+                        max_tokens: 500,
                         temperature: 0.7
                     })
                 });
@@ -1054,19 +1059,12 @@
                 speakText(rawText);
 
             } catch (error) {
-                console.warn("Aviso de API OpenAI. Ativando Motor Neural de Fallback Inteligente local...");
-                
-                setTimeout(() => {
-                    let matched = NOTES.find(n => (n.title + " " + n.body).toLowerCase().includes(prompt.toLowerCase()));
-                    let fallbackText = matched 
-                        ? `Com base nos meus registros, senhor: ${matched.body}`
-                        : `Compreendido perfeitamente, ${CONFIG.address}. Seus indicadores no Grupo Herval e os projetos em andamento estão sob meu controle estrito.`;
-                    
-                    dialogueAssistant.innerText = `${CONFIG.name}: ${fallbackText}`;
-                    speakText(fallbackText);
-                    isBusy = false;
-                    statusBadge.innerText = "Ocioso";
-                }, 800);
+                console.error(error);
+                const errText = "Erro ao comunicar com a OpenAI. Verifique sua chave.";
+                dialogueAssistant.innerText = `${CONFIG.name}: ${errText}`;
+                speakText("Falha de conexão com a OpenAI, senhor.");
+                isBusy = false;
+                statusBadge.innerText = "Ocioso";
             }
         }
 
