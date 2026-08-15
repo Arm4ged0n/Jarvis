@@ -1,1157 +1,407 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jarvis // Google Custom Search HUD</title>
-    <style>
-        :root {
-            --bg-base: #020104;
-            --panel-bg: rgba(18, 8, 2, 0.90);
-            --border-color: rgba(255, 140, 0, 0.45);
-            --primary: #ff6600;
-            --accent: #ffb700;
-            --hud-glow: rgba(255, 140, 0, 0.55);
-            --text-main: #f1f5f9;
-            --text-dim: #94a3b8;
-            --danger: #ff3d00;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
-        html, body { background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
-
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: #020104; }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 100, 0, 0.4); border-radius: 2px; }
-
-        #hudCanvas {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            opacity: 0.95;
-        }
-
-        #bootScreen {
-            position: fixed;
-            inset: 0;
-            background: #020104;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            gap: 25px;
-            opacity: 1;
-            transition: opacity 0.8s ease-out;
-        }
-
-        #bootScreen.fade-out {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .massive-warm-hud {
-            width: 340px;
-            height: 340px;
-            border-radius: 50%;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: radial-gradient(circle, rgba(255,140,0,0.22) 0%, transparent 75%);
-            box-shadow: 0 0 140px rgba(255, 140, 0, 0.4), inset 0 0 70px rgba(255, 183, 0, 0.25);
-            animation: warmPulse 2.2s infinite alternate ease-in-out;
-            text-align: center;
-        }
-
-        @keyframes warmPulse {
-            0% { transform: scale(0.96); box-shadow: 0 0 90px rgba(255, 100, 0, 0.35); }
-            100% { transform: scale(1.04); box-shadow: 0 0 160px rgba(255, 183, 0, 0.7); }
-        }
-
-        .hud-circle-1 {
-            position: absolute;
-            inset: 0;
-            border: 3px dashed var(--accent);
-            border-radius: 50%;
-            animation: spinClockwise 16s linear infinite;
-        }
-
-        .hud-circle-2 {
-            position: absolute;
-            inset: 15px;
-            border: 2px solid var(--primary);
-            border-top: 2px solid transparent;
-            border-bottom: 2px solid transparent;
-            border-radius: 50%;
-            animation: spinCounter 10s linear infinite;
-        }
-
-        .hud-circle-3 {
-            position: absolute;
-            inset: 40px;
-            border: 1px dotted rgba(255, 255, 255, 0.85);
-            border-radius: 50%;
-            animation: spinClockwise 6s linear infinite;
-        }
-
-        .hud-jarvis-text {
-            font-size: 2.5rem;
-            font-weight: bold;
-            letter-spacing: 5px;
-            color: var(--accent);
-            text-shadow: 0 0 20px var(--primary), 0 0 40px var(--accent);
-            z-index: 2;
-        }
-
-        .hud-online-text {
-            font-size: 1.3rem;
-            letter-spacing: 6px;
-            color: #ffffff;
-            text-shadow: 0 0 15px var(--primary);
-            margin-top: 5px;
-            z-index: 2;
-        }
-
-        @keyframes spinClockwise { to { transform: rotate(360deg); } }
-        @keyframes spinCounter { to { transform: rotate(-360deg); } }
-
-        .boot-status {
-            font-size: 0.85rem;
-            letter-spacing: 3px;
-            color: var(--accent);
-            text-shadow: 0 0 10px var(--primary);
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink { 0%, 49%, 100% { opacity: 1; } 50%, 99% { opacity: 0.3; } }
-
-        #activationScreen {
-            position: fixed;
-            inset: 0;
-            background: rgba(2, 1, 4, 0.96);
-            backdrop-filter: blur(14px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 999;
-            gap: 35px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.6s ease-in;
-        }
-
-        #activationScreen.show {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .activation-btn {
-            padding: 18px 50px;
-            font-size: 1.1rem;
-            letter-spacing: 3px;
-            color: var(--accent);
-            background: rgba(255, 100, 0, 0.2);
-            border: 2px solid var(--primary);
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-            box-shadow: 0 0 45px rgba(255, 100, 0, 0.4), inset 0 0 20px rgba(255, 183, 0, 0.3);
-        }
-
-        .activation-btn:hover {
-            background: rgba(255, 100, 0, 0.4);
-            box-shadow: 0 0 90px var(--primary), inset 0 0 40px var(--accent);
-            transform: scale(1.04);
-        }
-
-        #app {
-            display: none;
-            flex-direction: column;
-            min-height: 100vh;
-            width: 100%;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 15px;
-            gap: 15px;
-            position: relative;
-            z-index: 10;
-        }
-
-        #app.active {
-            display: flex;
-        }
-
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            padding: 14px 22px;
-            border-radius: 8px;
-            backdrop-filter: blur(14px);
-            flex-wrap: wrap;
-            gap: 10px;
-            box-shadow: 0 0 35px rgba(255, 100, 0, 0.15);
-        }
-
-        .app-title {
-            font-weight: bold;
-            color: var(--accent);
-            letter-spacing: 2px;
-            text-shadow: 0 0 12px rgba(255, 183, 0, 0.5);
-        }
-
-        .api-input-box {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            width: 100%;
-            max-width: 520px;
-        }
-
-        .api-input-box input {
-            background: rgba(0,0,0,0.85);
-            border: 1px solid var(--border-color);
-            color: var(--accent);
-            padding: 6px 10px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            flex-grow: 1;
-            outline: none;
-        }
-
-        .api-input-box button {
-            background: rgba(255, 100, 0, 0.2);
-            border: 1px solid var(--primary);
-            color: #fff;
-            padding: 6px 14px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: bold;
-        }
-
-        .api-input-box button:hover {
-            background: rgba(255, 100, 0, 0.4);
-        }
-
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            flex-grow: 1;
-        }
-
-        @media(max-width: 900px) {
-            .main-grid { grid-template-columns: 1fr; }
-        }
-
-        .panel {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 22px;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            backdrop-filter: blur(16px);
-            box-shadow: inset 0 0 30px rgba(255, 100, 0, 0.08), 0 0 35px rgba(0, 0, 0, 0.8);
-        }
-
-        .interaction-panel {
-            align-items: center;
-            justify-content: space-between;
-            text-align: center;
-            min-height: 480px;
-        }
-
-        .reactor-container {
-            width: 220px;
-            height: 220px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            cursor: pointer;
-            margin: 15px 0;
-            background: radial-gradient(circle, rgba(255,100,0,0.2) 0%, transparent 70%);
-            box-shadow: 0 0 70px rgba(255, 100, 0, 0.35), inset 0 0 35px rgba(255, 183, 0, 0.25);
-            transition: all 0.4s;
-        }
-
-        .reactor-container:hover {
-            box-shadow: 0 0 110px rgba(255, 183, 0, 0.8), inset 0 0 55px rgba(255, 100, 0, 0.5);
-            transform: scale(1.04);
-        }
-
-        .ring-h1 {
-            position: absolute;
-            inset: 0;
-            border: 2px dashed var(--accent);
-            border-radius: 50%;
-            animation: spinClockwise 12s linear infinite;
-        }
-
-        .ring-h2 {
-            position: absolute;
-            inset: 15px;
-            border: 2px solid var(--primary);
-            border-top: 2px solid transparent;
-            border-bottom: 2px solid transparent;
-            border-radius: 50%;
-            animation: spinCounter 7s linear infinite;
-        }
-
-        .ring-h3 {
-            position: absolute;
-            inset: 32px;
-            border: 1px dotted rgba(255, 255, 255, 0.8);
-            border-radius: 50%;
-            animation: spinClockwise 6s linear infinite;
-        }
-
-        .ring-h4 {
-            position: absolute;
-            inset: 50px;
-            border: 1.5px solid rgba(251, 191, 36, 0.6);
-            border-left: 1.5px solid transparent;
-            border-right: 1.5px solid transparent;
-            border-radius: 50%;
-            animation: spinCounter 4s linear infinite;
-        }
-
-        @keyframes spinClockwise { to { transform: rotate(360deg); } }
-        @keyframes spinCounter { to { transform: rotate(-360deg); } }
-
-        .status-badge {
-            font-size: 0.75rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--text-dim);
-            background: rgba(0,0,0,0.8);
-            padding: 5px 14px;
-            border-radius: 14px;
-            border: 1px solid var(--border-color);
-        }
-
-        .dialogue-box {
-            width: 100%;
-            text-align: left;
-            background: rgba(20, 8, 2, 0.9);
-            padding: 14px 18px;
-            border-radius: 8px;
-            border-left: 3px solid var(--accent);
-            font-size: 0.85rem;
-            margin: 10px 0;
-            min-height: 80px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 6px;
-            box-shadow: inset 0 0 20px rgba(255,183,0,0.05);
-        }
-
-        .dialogue-user { color: var(--text-dim); }
-        .dialogue-assistant { color: var(--accent); font-weight: 500; text-shadow: 0 0 10px rgba(255,183,0,0.4); }
-
-        .controls-row {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        .controls-row input {
-            flex-grow: 1;
-            background: rgba(0,0,0,0.85);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 10px 14px;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            outline: none;
-            transition: all 0.3s;
-        }
-
-        .controls-row input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(255, 100, 0, 0.4);
-        }
-
-        .action-btn {
-            background: rgba(255, 100, 0, 0.2);
-            border: 1px solid var(--primary);
-            color: #fff;
-            padding: 10px 18px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s;
-        }
-
-        .action-btn:hover {
-            background: rgba(255, 100, 0, 0.4);
-            box-shadow: 0 0 20px rgba(255, 100, 0, 0.5);
-        }
-
-        .btn-danger {
-            background: rgba(255, 61, 0, 0.2);
-            border-color: var(--danger);
-            color: var(--danger);
-        }
-
-        .btn-danger:hover {
-            background: rgba(255, 61, 0, 0.4);
-            box-shadow: 0 0 20px rgba(255,61,0,0.4);
-        }
-
-        .brain-panel {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .brain-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
-        }
-
-        .brain-title {
-            font-size: 0.9rem;
-            font-weight: bold;
-            letter-spacing: 1px;
-            color: var(--accent);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .brain-stats {
-            font-size: 0.75rem;
-            color: var(--text-dim);
-        }
-
-        .brain-btns {
-            display: flex;
-            gap: 6px;
-        }
-
-        .icon-btn {
-            background: rgba(255, 100, 0, 0.15);
-            border: 1px solid var(--border-color);
-            color: var(--accent);
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-
-        .icon-btn:hover {
-            background: rgba(255, 100, 0, 0.35);
-            box-shadow: 0 0 12px rgba(255, 100, 0, 0.5);
-        }
-
-        .svg-container {
-            flex-grow: 1;
-            width: 100%;
-            min-height: 340px;
-            background: rgba(0,0,0,0.6);
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.05);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .brain-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 10px;
-            font-size: 0.75rem;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .legend-list {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            color: var(--text-dim);
-        }
-
-        .legend-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-        }
-
-        .injected-status {
-            color: var(--accent);
-            font-weight: 500;
-        }
-
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(2, 1, 4, 0.94);
-            z-index: 200;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            backdrop-filter: blur(8px);
-        }
-
-        .modal-overlay.open {
-            display: flex;
-        }
-
-        .modal-card {
-            background: rgba(20, 8, 2, 0.96);
-            border: 1px solid var(--primary);
-            width: 100%;
-            max-width: 480px;
-            padding: 24px;
-            border-radius: 10px;
-            box-shadow: 0 0 60px rgba(255, 100, 0, 0.4);
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .modal-card h3 {
-            color: var(--accent);
-            font-size: 1.1rem;
-        }
-
-        .modal-card label {
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            margin-bottom: -8px;
-        }
-
-        .modal-card input, .modal-card select, .modal-card textarea {
-            background: rgba(0,0,0,0.85);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 9px 12px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            outline: none;
-            width: 100%;
-        }
-
-        .modal-card textarea {
-            resize: vertical;
-            min-height: 95px;
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 10px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jarvis // Massive Warm Holographic HUD</title>
+<style>
+:root {
+--bg-base: #020104;
+--panel-bg: rgba(18, 8, 2, 0.90);
+--border-color: rgba(255, 140, 0, 0.45);
+--primary: #ff6600;
+--accent: #ffb700;
+--hud-glow: rgba(255, 140, 0, 0.55);
+--text-main: #f1f5f9;
+--text-dim: #94a3b8;
+--danger: #ff3d00;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+html, body { background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: #020104; }
+::-webkit-scrollbar-thumb { background: rgba(255, 100, 0, 0.4); border-radius: 2px; }
+
+#hudCanvas {
+position: fixed;
+inset: 0;
+z-index: 0;
+pointer-events: none;
+opacity: 0.95;
+}
+
+#bootScreen {
+position: fixed;
+inset: 0;
+background: #020104;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+z-index: 1000;
+gap: 25px;
+opacity: 1;
+transition: opacity 0.8s ease-out;
+}
+
+#bootScreen.fade-out {
+opacity: 0;
+pointer-events: none;
+}
+
+.massive-warm-hud {
+width: 340px;
+height: 340px;
+border-radius: 50%;
+position: relative;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+background: radial-gradient(circle, rgba(255,140,0,0.22) 0%, transparent 75%);
+box-shadow: 0 0 140px rgba(255, 140, 0, 0.4), inset 0 0 70px rgba(255, 183, 0, 0.25);
+animation: warmPulse 2.2s infinite alternate ease-in-out;
+text-align: center;
+}
+
+@keyframes warmPulse {
+0% { transform: scale(0.96); box-shadow: 0 0 90px rgba(255, 100, 0, 0.35); }
+100% { transform: scale(1.04); box-shadow: 0 0 160px rgba(255, 183, 0, 0.7); }
+}
+
+.hud-circle-1 {
+position: absolute;
+inset: 0;
+border: 3px dashed var(--accent);
+border-radius: 50%;
+animation: spinClockwise 16s linear infinite;
+}
+
+.hud-circle-2 {
+position: absolute;
+inset: 15px;
+border: 2px solid var(--primary);
+border-top: 2px solid transparent;
+border-bottom: 2px solid transparent;
+border-radius: 50%;
+animation: spinCounter 10s linear infinite;
+}
+
+.hud-circle-3 {
+position: absolute;
+inset: 40px;
+border: 1px dotted rgba(255, 255, 255, 0.85);
+border-radius: 50%;
+animation: spinClockwise 6s linear infinite;
+}
+
+.hud-jarvis-text {
+font-size: 2.5rem;
+font-weight: bold;
+letter-spacing: 5px;
+color: var(--accent);
+text-shadow: 0 0 20px var(--primary), 0 0 40px var(--accent);
+z-index: 2;
+}
+
+.hud-online-text {
+font-size: 1.3rem;
+letter-spacing: 6px;
+color: #ffffff;
+text-shadow: 0 0 15px var(--primary);
+margin-top: 5px;
+z-index: 2;
+}
+
+@keyframes spinClockwise { to { transform: rotate(360deg); } }
+@keyframes spinCounter { to { transform: rotate(-360deg); } }
+
+.boot-status {
+font-size: 0.85rem;
+letter-spacing: 3px;
+color: var(--accent);
+text-shadow: 0 0 10px var(--primary);
+animation: blink 1s infinite;
+}
+
+@keyframes blink { 0%, 49%, 100% { opacity: 1; } 50%, 99% { opacity: 0.3; } }
+
+#activationScreen {
+position: fixed;
+inset: 0;
+background: rgba(2, 1, 4, 0.96);
+backdrop-filter: blur(14px);
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+z-index: 999;
+gap: 35px;
+opacity: 0;
+pointer-events: none;
+transition: opacity 0.6s ease-in;
+}
+
+#activationScreen.show {
+opacity: 1;
+pointer-events: all;
+}
+
+.activation-btn {
+padding: 18px 50px;
+font-size: 1.1rem;
+letter-spacing: 3px;
+color: var(--accent);
+background: rgba(255, 100, 0, 0.2);
+border: 2px solid var(--primary);
+border-radius: 8px;
+cursor: pointer;
+font-weight: bold;
+transition: all 0.3s;
+box-shadow: 0 0 45px rgba(255, 100, 0, 0.4), inset 0 0 20px rgba(255, 183, 0, 0.3);
+}
+
+.activation-btn:hover {
+background: rgba(255, 100, 0, 0.4);
+box-shadow: 0 0 90px var(--primary), inset 0 0 40px var(--accent);
+transform: scale(1.04);
+}
+
+#app {
+display: none;
+flex-direction: column;
+min-height: 100vh;
+width: 100%;
+max-width: 1400px;
+margin: 0 auto;
+padding: 15px;
+gap: 15px;
+position: relative;
+z-index: 10;
+}
+
+#app.active {
+display: flex;
+}
+
+.top-bar {
+display: flex;
+justify-content: space-between;
+align-items: center;
+background: var(--panel-bg);
+border: 1px solid var(--border-color);
+padding: 14px 22px;
+border-radius: 8px;
+backdrop-filter: blur(14px);
+flex-wrap: wrap;
+gap: 10px;
+box-shadow: 0 0 35px rgba(255, 100, 0, 0.15);
+}
+
+.app-title {
+font-weight: bold;
+color: var(--accent);
+letter-spacing: 2px;
+text-shadow: 0 0 12px rgba(255, 183, 0, 0.5);
+}
+
+.api-input-box {
+display: flex;
+gap: 8px;
+align-items: center;
+width: 100%;
+max-width: 450px;
+}
+
+.api-input-box input {
+background: rgba(0,0,0,0.85);
+border: 1px solid var(--border-color);
+color: var(--accent);
+padding: 6px 12px;
+border-radius: 4px;
+font-size: 0.85rem;
+flex-grow: 1;
+outline: none;
+}
+
+.main-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 15px;
+flex-grow: 1;
+}
+
+@media(max-width: 900px) {
+.main-grid { grid-template-columns: 1fr; }
+}
+
+.panel {
+background: var(--panel-bg);
+border: 1px solid var(--border-color);
+border-radius: 10px;
+padding: 22px;
+display: flex;
+flex-direction: column;
+position: relative;
+backdrop-filter: blur(16px);
+box-shadow: inset 0 0 30px rgba(255, 100, 0, 0.08), 0 0 35px rgba(0, 0, 0, 0.8);
+}
+
+.interaction-panel {
+align-items: center;
+justify-content: space-between;
+text-align: center;
+min-height: 480px;
+}
+
+.reactor-container {
+width: 220px;
+height: 220px;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+position: relative;
+cursor: pointer;
+margin: 15px 0;
+background: radial-gradient(circle, rgba(255,100,0,0.2) 0%, transparent 70%);
+box-shadow: 0 0 70px rgba(255, 100, 0, 0.35), inset 0 0 35px rgba(255, 183, 0, 0.25);
+transition: all 0.4s;
+}
+
+.reactor-container.listening {
+animation: warmPulse 0.4s infinite alternate ease-in-out;
+box-shadow: 0 0 130px var(--primary), inset 0 0 40px var(--accent);
+}
+
+.ring-h1 { position: absolute; inset: 0; border: 2px dashed var(--accent); border-radius: 50%; animation: spinClockwise 12s linear infinite; }
+.ring-h2 { position: absolute; inset: 15px; border: 2px solid var(--primary); border-top: 2px solid transparent; border-bottom: 2px solid transparent; border-radius: 50%; animation: spinCounter 7s linear infinite; }
+.ring-h3 { position: absolute; inset: 32px; border: 1px dotted rgba(255, 255, 255, 0.8); border-radius: 50%; animation: spinClockwise 6s linear infinite; }
+.ring-h4 { position: absolute; inset: 50px; border: 1.5px solid rgba(255, 183, 0, 0.6); border-left: 1.5px solid transparent; border-right: 1.5px solid transparent; border-radius: 50%; animation: spinCounter 4s linear infinite; }
+
+.status-badge {
+font-size: 0.75rem;
+letter-spacing: 2px;
+text-transform: uppercase;
+color: var(--text-dim);
+background: rgba(0,0,0,0.8);
+padding: 5px 14px;
+border-radius: 14px;
+border: 1px solid var(--border-color);
+}
+
+.dialogue-box {
+width: 100%;
+text-align: left;
+background: rgba(20, 8, 2, 0.9);
+padding: 14px 18px;
+border-radius: 8px;
+border-left: 3px solid var(--accent);
+font-size: 0.85rem;
+margin: 10px 0;
+min-height: 80px;
+display: flex;
+flex-direction: column;
+justify-content: center;
+gap: 6px;
+box-shadow: inset 0 0 20px rgba(255,183,0,0.05);
+}
+
+.dialogue-user { color: var(--text-dim); }
+.dialogue-assistant { color: var(--accent); font-weight: 500; text-shadow: 0 0 10px rgba(255,183,0,0.4); }
+
+.controls-row {
+display: flex;
+gap: 10px;
+width: 100%;
+margin-top: 10px;
+}
+
+.controls-row input {
+flex-grow: 1;
+background: rgba(0,0,0,0.85);
+border: 1px solid var(--border-color);
+color: var(--text-main);
+padding: 10px 14px;
+border-radius: 6px;
+font-size: 0.9rem;
+outline: none;
+transition: all 0.3s;
+}
+
+.controls-row button {
+background: rgba(255, 100, 0, 0.2);
+border: 1px solid var(--primary);
+color: #fff;
+padding: 10px 20px;
+border-radius: 6px;
+cursor: pointer;
+font-weight: bold;
+transition: background 0.2s;
+}
+.controls-row button:hover { background: rgba(255, 100, 0, 0.4); }
+
+.log-container {
+font-size: 0.75rem;
+color: var(--text-dim);
+line-height: 1.5;
+overflow-y: auto;
+max-height: 400px;
+padding: 10px;
+background: rgba(0, 0, 0, 0.4);
+border-radius: 6px;
+border: 1px solid rgba(255, 100, 0, 0.15);
+}
+</style>
 </head>
 <body>
 
-    <canvas id="hudCanvas"></canvas>
+<canvas id="hudCanvas"></canvas>
 
-    <div id="bootScreen">
-        <div class="massive-warm-hud">
-            <div class="hud-circle-1"></div>
-            <div class="hud-circle-2"></div>
-            <div class="hud-circle-3"></div>
-            <div class="hud-jarvis-text">JARVIS</div>
-            <div class="hud-online-text">ONLINE</div>
+<!-- TELA DE BOOT -->
+<div id="bootScreen">
+    <div class="massive-warm-hud">
+        <div class="hud-circle-1"></div>
+        <div class="hud-circle-2"></div>
+        <div class="hud-circle-3"></div>
+        <div class="hud-jarvis-text">JARVIS</div>
+        <div class="hud-online-text">ONLINE</div>
+    </div>
+    <div class="boot-status">INICIALIZANDO PROTOCOLOS...</div>
+</div>
+
+<!-- TELA DE ATIVAÇÃO -->
+<div id="activationScreen">
+    <button class="activation-btn" id="activateBtn">INICIAR CONEXÃO COGNITIVA</button>
+</div>
+
+<!-- APLICAÇÃO PRINCIPAL -->
+<div id="app">
+    <div class="top-bar">
+        <div class="app-title">JARVIS // INTELLIGENT HUD SYSTEM</div>
+        <div class="api-input-box">
+            <input type="password" id="apiKeyInput" placeholder="Insira sua Google AI Studio API Key...">
         </div>
-        <div class="boot-status">SINCRONIZANDO GOOGLE CUSTOM SEARCH API...</div>
     </div>
 
-    <div id="activationScreen">
-        <div class="massive-warm-hud" style="width: 260px; height: 260px;">
-            <div class="hud-circle-1"></div>
-            <div class="hud-circle-2"></div>
-            <div class="hud-circle-3"></div>
-            <div class="hud-jarvis-text" style="font-size: 2rem;">JARVIS</div>
-            <div class="hud-online-text" style="font-size: 1rem;">PRONTO</div>
-        </div>
-        <button class="activation-btn" id="btnActivate">► ATIVAR SISTEMA</button>
-        <div style="font-size: 0.75rem; color: var(--text-dim); letter-spacing: 1px;">CLIQUE PARA INICIAR</div>
-    </div>
-
-    <div id="app">
-        <header class="top-bar">
-            <div class="app-title">JARVIS // CUSTOM SEARCH CORE</div>
-            <div class="api-input-box">
-                <input type="password" id="apiKeyInput" placeholder="API Key (AIza...)">
-                <input type="text" id="cxInput" placeholder="Search Engine ID (CX)">
-                <button id="btnSaveKey">Salvar</button>
+    <div class="main-grid">
+        <!-- PAINEL DE INTERAÇÃO -->
+        <div class="panel interaction-panel">
+            <div class="status-badge" id="statusBadge">SISTEMA PRONTO</div>
+           
+            <div class="reactor-container" id="reactorBtn">
+                <div class="ring-h1"></div>
+                <div class="ring-h2"></div>
+                <div class="ring-h3"></div>
+                <div class="ring-h4"></div>
             </div>
-        </header>
 
-        <div class="main-grid">
-            <section class="panel interaction-panel">
-                <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-size: 0.8rem; color: var(--accent); font-weight: bold; letter-spacing: 1px;">ASSISTENTE PESSOAL</span>
-                    <span id="statusBadge" class="status-badge">Ocioso</span>
-                </div>
-
-                <div class="reactor-container" id="reactorOrb" title="Clique para interagir">
-                    <div class="ring-h1"></div>
-                    <div class="ring-h2"></div>
-                    <div class="ring-h3"></div>
-                    <div class="ring-h4"></div>
-                    <div style="width: 75px; height: 75px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, var(--accent) 0%, var(--primary) 70%); box-shadow: 0 0 45px var(--accent);">🧠</div>
-                </div>
-
-                <div class="dialogue-box">
-                    <div id="dialogueUser" class="dialogue-user">Você: --</div>
-                    <div id="dialogueAssistant" class="dialogue-assistant">Jarvis: Sistemas online, Sandro.</div>
-                </div>
-
-                <div class="controls-row">
-                    <input type="text" id="textInput" placeholder="Ou digite e tecle Enter..."/>
-                    <button id="btnMic" class="action-btn" title="Microfone">🎙️</button>
-                    <button id="btnStopSpeech" class="action-btn btn-danger">Parar Fala</button>
-                </div>
-            </section>
-
-            <section class="panel brain-panel">
-                <div class="brain-header">
-                    <div class="brain-title">
-                        <span>🧠 SECOND BRAIN</span>
-                    </div>
-                    <div class="brain-stats" id="brainStats">0 notas · 0 áreas</div>
-                    <div class="brain-btns">
-                        <button class="icon-btn" id="btnAddNote" title="Nova Nota">+</button>
-                        <button class="icon-btn" id="btnReloadGraph" title="Recarregar Grafo">↻</button>
-                    </div>
-                </div>
-
-                <div class="svg-container" id="svgContainer"></div>
-
-                <div class="brain-footer">
-                    <div class="legend-list" id="legendList"></div>
-                    <div class="injected-status" id="injectedStatus">✓ Google Custom Search ativo (100 req/dia)</div>
-                </div>
-            </section>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal-card">
-            <h3 id="modalTitle">Editar Nota</h3>
-            <input type="hidden" id="editNoteId">
-            
-            <label>Título (1-2 palavras)</label>
-            <input type="text" id="editNoteTitle" placeholder="Ex: Investimentos">
-            
-            <label>Área</label>
-            <select id="editNoteArea"></select>
-            
-            <label>Conteúdo</label>
-            <textarea id="editNoteBody" placeholder="Detalhes da nota..."></textarea>
-            
-            <div class="modal-actions">
-                <button class="action-btn btn-danger" id="btnDeleteNote" style="margin-right: auto;">Excluir</button>
-                <button class="action-btn" id="btnCancelModal" style="background: transparent; border-color: var(--text-dim);">Cancelar</button>
-                <button class="action-btn" id="btnSaveNote">Salvar Nota</button>
+            <div class="dialogue-box">
+                <div class="dialogue-user" id="userText">Usuário: Aguardando comando de voz...</div>
+                <div class="dialogue-assistant" id="jarvisText">Jarvis: Às suas ordens, Senhor.</div>
             </div>
-        </div>
-    </div>
 
-    <script>
-        const CONFIG = {
-            name: "Jarvis",
-            address: "Sandro",
-            persona: "formal britânico (mordomo)"
-        };
-
-        const AREA = {
-            meta: { label: "Identidade", color: "#94a3b8" },
-            metas: { label: "Metas", color: "#38bdf8" },
-            trabalho: { label: "Carreira", color: "#ff5500" },
-            projetos: { label: "Projetos", color: "#fbbf24" },
-            financas: { label: "Finanças", color: "#f7931a" },
-            aprendizado: { label: "Aprendizado", color: "#38bdf8" },
-            saude: { label: "Saúde", color: "#34d399" },
-            relacoes: { label: "Relações", color: "#f472b6" }
-        };
-
-        const INITIAL_NOTES = [
-            { id: "note_1", area: "meta", title: "Sandro Fagundes", body: "Sandro de Souza Fagundes, 40 anos, mora em Nova Hartz, trabalha em Dois Irmãos no Grupo Herval como cientista de dados e analista de indicadores corporativos. Licenciado em computação, ex-professor de informática, empreendedor com lojas online e criador de plataformas/dashboards via IA." },
-            { id: "note_2", area: "metas", title: "Sanar Dores", body: "Meta geral: ajudar a sanar dores de processos corporativos com visão de futuro. Curto prazo: ajudar pessoas a desenvolver projetos e democratizar a criação." },
-            { id: "note_3", area: "trabalho", title: "Grupo Herval", body: "Analista de indicadores corporativos e cientista de dados no Grupo Herval. Migrando dashboards do Power BI para o Apache Superset (melhorias nos charts). Montando dashboard para a 'Já Consórcios' (jornada de leads, simulações, distribuição e conversão)." },
-            { id: "note_4", area: "projetos", title: "Plataforma Águas", body: "Plataforma de monitoramento de rios e cotas de inundação (Fase 1 completa, no Vercel). Objetivo: disponibilizar para prefeituras." },
-            { id: "note_5", area: "projetos", title: "Motor IA com Voz", body: "Jarvis personal assistant — assistente inteligente operado por voz e texto integrado ao Second Brain neural." },
-            { id: "note_6", area: "financas", title: "Investimentos", body: "Objetivos financeiros: aproveitar o dinheiro investindo em Bitcoin, Tesouro Direto, imóveis, viagens (Argentina, Patagônia e Cordilheira dos Andes)." },
-            { id: "note_7", area: "aprendizado", title: "Estudos & IA", body: "Estuda veias culturais (com foco na asiática), livros de empreendedorismo, LLMs, IA, RPA, MCP, Cloud." },
-            { id: "note_8", area: "saude", title: "Rotina & Família", body: "Acorda às 06:00, alongamento, fruta, cuida do filho, leva à escola, assiste desenho. Trabalho em outra cidade (carro). Sábados: bicicleta, caminhada e trilha. Adora boa comida e passeios com a família (esposa e filhos Heitor e Melissa)." }
-        ];
-
-        let NOTES = JSON.parse(localStorage.getItem("jarvis_notes")) || INITIAL_NOTES;
-        let REL = [
-            ["note_1", "note_2"], ["note_1", "note_3"], ["note_2", "note_4"],
-            ["note_2", "note_5"], ["note_3", "note_4"], ["note_3", "note_5"],
-            ["note_1", "note_6"], ["note_1", "note_7"], ["note_1", "note_8"]
-        ];
-
-        let chatHistory = [];
-        let isBusy = false;
-        let isListening = false;
-        let recognition = null;
-        let highlightedNoteId = null;
-
-        const canvas = document.getElementById('hudCanvas');
-        const ctx = canvas.getContext('2d');
-        let hudNodes = [];
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        for (let i = 0; i < 80; i++) {
-            hudNodes.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                vx: (Math.random() - 0.5) * 0.8,
-                vy: (Math.random() - 0.5) * 0.8,
-                radius: Math.random() * 2.2 + 1.2
-            });
-        }
-
-        function drawWarmHUD() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#020104';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            let glowIntensity = isBusy || isListening ? 0.85 : 0.45;
-            let strokeColor = isBusy ? "rgba(255, 61, 0," : "rgba(255, 183, 0,";
-
-            for (let i = 0; i < hudNodes.length; i++) {
-                let p = hudNodes[i];
-                p.x += p.vx;
-                p.y += p.vy;
-
-                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-
-                for (let j = i + 1; j < hudNodes.length; j++) {
-                    let p2 = hudNodes[j];
-                    let dx = p.x - p2.x;
-                    let dy = p.y - p2.y;
-                    let dist = Math.sqrt(dx * dx + dy * dy);
-
-                    if (dist < 150) {
-                        ctx.beginPath();
-                        ctx.moveTo(p.x, p.y);
-                        ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = `${strokeColor} ${(1 - dist / 150) * glowIntensity})`;
-                        ctx.lineWidth = 1.1;
-                        ctx.stroke();
-                    }
-                }
-
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                ctx.fillStyle = isBusy ? '#ff3d00' : '#fbbf24';
-                ctx.shadowBlur = isBusy ? 25 : 15;
-                ctx.shadowColor = '#ff6600';
-                ctx.fill();
-                ctx.shadowBlur = 0;
-            }
-
-            requestAnimationFrame(drawWarmHUD);
-        }
-        drawWarmHUD();
-
-        const bootScreen = document.getElementById("bootScreen");
-        const activationScreen = document.getElementById("activationScreen");
-        const app = document.getElementById("app");
-        const btnActivate = document.getElementById("btnActivate");
-        const apiKeyInput = document.getElementById("apiKeyInput");
-        const cxInput = document.getElementById("cxInput");
-        const btnSaveKey = document.getElementById("btnSaveKey");
-        const reactorOrb = document.getElementById("reactorOrb");
-        const statusBadge = document.getElementById("statusBadge");
-        const dialogueUser = document.getElementById("dialogueUser");
-        const dialogueAssistant = document.getElementById("dialogueAssistant");
-        const textInput = document.getElementById("textInput");
-        const btnMic = document.getElementById("btnMic");
-        const btnStopSpeech = document.getElementById("btnStopSpeech");
-        const svgContainer = document.getElementById("svgContainer");
-        const brainStats = document.getElementById("brainStats");
-        const legendList = document.getElementById("legendList");
-        const btnAddNote = document.getElementById("btnAddNote");
-        const btnReloadGraph = document.getElementById("btnReloadGraph");
-        const modalOverlay = document.getElementById("modalOverlay");
-        const modalTitle = document.getElementById("modalTitle");
-        const editNoteId = document.getElementById("editNoteId");
-        const editNoteTitle = document.getElementById("editNoteTitle");
-        const editNoteArea = document.getElementById("editNoteArea");
-        const editNoteBody = document.getElementById("editNoteBody");
-        const btnSaveNote = document.getElementById("btnSaveNote");
-        const btnDeleteNote = document.getElementById("btnDeleteNote");
-        const btnCancelModal = document.getElementById("btnCancelModal");
-
-        window.addEventListener("DOMContentLoaded", () => {
-            apiKeyInput.value = localStorage.getItem("g_custom_key") || "";
-            cxInput.value = localStorage.getItem("g_custom_cx") || "";
-            editNoteArea.innerHTML = Object.entries(AREA).map(([k, v]) => `<option value="${k}">${v.label}</option>`).join("");
-            
-            setTimeout(() => {
-                bootScreen.classList.add("fade-out");
-                setTimeout(() => {
-                    activationScreen.classList.add("show");
-                }, 400);
-            }, 2200);
-        });
-
-        btnSaveKey.addEventListener("click", () => {
-            localStorage.setItem("g_custom_key", apiKeyInput.value.trim());
-            localStorage.setItem("g_custom_cx", cxInput.value.trim());
-            speakText("Credenciais de busca salvas com sucesso, senhor.");
-        });
-
-        function getActiveCredentials() {
-            return {
-                key: apiKeyInput.value.trim() || localStorage.getItem("g_custom_key") || "",
-                cx: cxInput.value.trim() || localStorage.getItem("g_custom_cx") || ""
-            };
-        }
-
-        btnActivate.addEventListener("click", () => {
-            activationScreen.classList.remove("show");
-            app.classList.add("active");
-            renderGraph();
-            initVoiceRecognition();
-            
-            const welcomeText = `Sistemas online. Estou ouvindo, ${CONFIG.address}.`;
-            dialogueAssistant.innerText = `${CONFIG.name}: ${welcomeText}`;
-            speakText(welcomeText);
-        });
-
-        function speakText(text) {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = "pt-BR";
-            utterance.rate = 0.92;
-            utterance.pitch = 0.45;
-            
-            const voices = window.speechSynthesis.getVoices();
-            let brazilianMaleVoice = voices.find(v => 
-                v.lang === "pt-BR" && (
-                    v.name.toLowerCase().includes("antonio") ||
-                    v.name.toLowerCase().includes("daniel") ||
-                    v.name.toLowerCase().includes("lucas") ||
-                    v.name.toLowerCase().includes("felipe") ||
-                    v.name.toLowerCase().includes("ricardo") ||
-                    v.name.toLowerCase().includes("google português do brasil")
-                )
-            ) || voices.find(v => 
-                v.lang.includes("pt-BR") && 
-                !v.name.toLowerCase().includes("female") && 
-                !v.name.toLowerCase().includes("luciana") && 
-                !v.name.toLowerCase().includes("raquel") &&
-                !v.name.toLowerCase().includes("maria")
-            ) || voices.find(v => v.lang.includes("pt")) || voices[0];
-
-            if (brazilianMaleVoice) utterance.voice = brazilianMaleVoice;
-
-            utterance.onstart = () => {
-                isBusy = true;
-                statusBadge.innerText = "Falando";
-                if (recognition) {
-                    try { recognition.stop(); } catch(e){}
-                }
-            };
-
-            utterance.onend = () => {
-                isBusy = false;
-                statusBadge.innerText = "Ocioso";
-                if (recognition && !isListening) {
-                    try { recognition.start(); } catch(e){}
-                }
-            };
-
-            window.speechSynthesis.speak(utterance);
-        }
-
-        function initVoiceRecognition() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                statusBadge.innerText = "STT Indisponível";
-                return;
-            }
-
-            try {
-                recognition = new SpeechRecognition();
-                recognition.lang = "pt-BR";
-                recognition.continuous = true;
-                recognition.interimResults = false;
-
-                recognition.onstart = () => {
-                    isListening = true;
-                    statusBadge.innerText = "Ouvindo...";
-                };
-
-                recognition.onresult = (event) => {
-                    if (isBusy) return;
-                    const transcript = event.results[event.results.length - 1][0].transcript.trim();
-                    if (transcript) {
-                        dialogueUser.innerText = `Você: ${transcript}`;
-                        processCustomSearchCommand(transcript);
-                    }
-                };
-
-                recognition.onerror = (e) => {
-                    if (e.error === "not-allowed") {
-                        statusBadge.innerText = "Microfone Negado";
-                    }
-                };
-
-                recognition.onend = () => {
-                    isListening = false;
-                    if (!isBusy) {
-                        try { recognition.start(); } catch(err){}
-                    }
-                };
-
-                recognition.start();
-            } catch(e) {
-                console.error(e);
-            }
-        }
-
-        btnMic.addEventListener("click", () => {
-            if (recognition && !isListening) {
-                try { recognition.start(); } catch(e){}
-            } else if (recognition && isListening) {
-                try { recognition.stop(); } catch(e){}
-            }
-        });
-
-        reactorOrb.addEventListener("click", () => {
-            if (recognition && !isListening) {
-                try { recognition.start(); } catch(e){}
-            } else if (recognition && isListening) {
-                try { recognition.stop(); } catch(e){}
-            }
-        });
-
-        btnStopSpeech.addEventListener("click", () => {
-            window.speechSynthesis.cancel();
-            isBusy = false;
-            statusBadge.innerText = "Ocioso";
-        });
-
-        textInput.addEventListener("keydown", (e) => {
-            if (e.key === "Enter" && textInput.value.trim() !== "") {
-                const query = textInput.value.trim();
-                textInput.value = "";
-                dialogueUser.innerText = `Você: ${query}`;
-                processCustomSearchCommand(query);
-            }
-        });
-
-        // CONSULTA COM GOOGLE CUSTOM SEARCH API + SINTOZE LOCAL / SECOND BRAIN
-        async function processCustomSearchCommand(prompt) {
-            const creds = getActiveCredentials();
-            isBusy = true;
-            statusBadge.innerText = "Buscando no Google...";
-
-            let notesText = NOTES.map(n => `- [${n.area.toUpperCase()}] ${n.title}: ${n.body}`).join("\n");
-            let replyText = "";
-
-            // Verifica se a pergunta responde a alguma nota pessoal do Second Brain
-            const lowerPrompt = prompt.toLowerCase();
-            let matchedNote = NOTES.find(n => lowerPrompt.includes(n.title.toLowerCase()) || lowerPrompt.includes(n.area.toLowerCase()));
-
-            if (matchedNote && (lowerPrompt.includes("meu") || lowerPrompt.includes("minha") || lowerPrompt.includes("herval") || lowerPrompt.includes("trabalho"))) {
-                replyText = `Senhor, consultando seu Second Brain: ${matchedNote.body}`;
-            } else if (creds.key && creds.cx) {
-                try {
-                    const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${encodeURIComponent(creds.key)}&cx=${encodeURIComponent(creds.cx)}&q=${encodeURIComponent(prompt)}&hl=pt-BR&lr=lang_pt`;
-                    const res = await fetch(searchUrl);
-                    if (res.ok) {
-                        const data = await res.json();
-                        if (data.items && data.items.length > 0) {
-                            let snippet = data.items[0].snippet || data.items[0].title;
-                            replyText = `Com base na minha busca na web, senhor: ${snippet}`;
-                        } else {
-                            replyText = `Não encontrei resultados exatos na web para sua consulta, senhor, mas verifiquei seus registros.`;
-                        }
-                    } else {
-                        throw new Error("Erro na API do Google Custom Search");
-                    }
-                } catch(e) {
-                    console.warn("Falha na Custom Search API. Usando síntese local inteligente...");
-                }
-            }
-
-            // Fallback inteligente caso a busca web venha vazia ou credenciais estejam em falta
-            if (!replyText) {
-                if (lowerPrompt.includes("rio grande do sul")) {
-                    replyText = "O estado do Rio Grande do Sul possui cerca de 11,4 milhões de habitantes segundo estimativas oficiais.";
-                } else {
-                    replyText = `Compreendido, ${CONFIG.address}. Seus projetos e indicadores corporativos estão sincronizados no núcleo. Para buscas web ilimitadas, certifique-se de configurar sua API Key e CX do Google Custom Search.`;
-                }
-            }
-
-            chatHistory.push({ role: "user", content: prompt });
-            chatHistory.push({ role: "assistant", content: replyText });
-
-            dialogueAssistant.innerText = `${CONFIG.name}: ${replyText}`;
-            speakText(replyText);
-        }
-
-        function renderGraph() {
-            const width = svgContainer.clientWidth || 600;
-            const height = svgContainer.clientHeight || 340;
-            const cx = width / 2;
-            const cy = height / 2;
-
-            brainStats.innerText = `${NOTES.length} notas · ${new Set(NOTES.map(n => n.area)).size} áreas`;
-
-            let usedAreas = [...new Set(NOTES.map(n => n.area))];
-            legendList.innerHTML = usedAreas.map(a => `
-                <div class="legend-item">
-                    <span class="legend-dot" style="background: ${AREA[a]?.color || '#fff'}"></span>
-                    <span>${AREA[a]?.label || a}</span>
-                </div>
-            `).join('');
-
-            let connCounts = {};
-            NOTES.forEach(n => connCounts[n.id] = 1);
-            REL.forEach(([a, b]) => {
-                if (connCounts[a]) connCounts[a]++;
-                if (connCounts[b]) connCounts[b]++;
-            });
-
-            const radiusX = width * 0.36;
-            const radiusY = height * 0.34;
-            let nodeCoords = {};
-
-            NOTES.forEach((note, idx) => {
-                const angle = (idx / NOTES.length) * Math.PI * 2;
-                nodeCoords[note.id] = {
-                    x: cx + Math.cos(angle) * radiusX,
-                    y: cy + Math.sin(angle) * radiusY,
-                    note
-                };
-            });
-
-            let svgContent = `
-                <defs>
-                    <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
-                        <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.9"/>
-                        <stop offset="100%" stop-color="#ff5500" stop-opacity="0"/>
-                    </radialGradient>
-                    <linearGradient id="edgeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#fbbf24"/>
-                        <stop offset="100%" stop-color="#ff5500"/>
-                    </linearGradient>
-                </defs>
-            `;
-
-            REL.forEach(([idA, idB]) => {
-                if (nodeCoords[idA] && nodeCoords[idB]) {
-                    const p1 = nodeCoords[idA];
-                    const p2 = nodeCoords[idB];
-                    const ctrlX = cx + (p1.x + p2.x - 2*cx) * 0.25;
-                    const ctrlY = cy + (p1.y + p2.y - 2*cy) * 0.25;
-                    svgContent += `<path d="M ${p1.x} ${p1.y} Q ${ctrlX} ${ctrlY} ${p2.x} ${p2.y}" stroke="url(#edgeGrad)" stroke-width="1.2" fill="none" opacity="0.4" stroke-dasharray="4 4"/>`;
-                }
-            });
-
-            Object.values(nodeCoords).forEach(node => {
-                const color = AREA[node.note.area]?.color || '#fbbf24';
-                svgContent += `<line x1="${cx}" y1="${cy}" x2="${node.x}" y2="${node.y}" stroke="${color}" stroke-width="0.8" opacity="0.3"/>`;
-            });
-
-            svgContent += `
-                <circle cx="${cx}" cy="${cy}" r="38" fill="url(#coreGlow)"/>
-                <circle cx="${cx}" cy="${cy}" r="22" fill="#180802" stroke="#fbbf24" stroke-width="2"/>
-                <text x="${cx}" y="${cy + 5}" fill="#fff" font-size="14" text-anchor="middle" font-weight="bold">🧠</text>
-            `;
-
-            Object.values(nodeCoords).forEach(node => {
-                const color = AREA[node.note.area]?.color || '#fbbf24';
-                const size = Math.min(18, 10 + (connCounts[node.note.id] || 1) * 1.5);
-                const isHighlighted = node.note.id === highlightedNoteId;
-
-                svgContent += `
-                    <g class="node-group" cursor="pointer" onclick="openNoteEditor('${node.note.id}')">
-                        ${isHighlighted ? `<circle cx="${node.x}" cy="${node.y}" r="${size + 6}" fill="none" stroke="#fff" stroke-width="2"><animate attributeName="r" values="${size};${size+12};${size}" dur="1.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;0;1" dur="1.5s" repeatCount="indefinite"/></circle>` : ''}
-                        <circle cx="${node.x}" cy="${node.y}" r="${size + 4}" fill="${color}" opacity="0.25">
-                            <animate attributeName="r" values="${size};${size+5};${size}" dur="3s" repeatCount="indefinite"/>
-                        </circle>
-                        <circle cx="${node.x}" cy="${node.y}" r="${size}" fill="#020104" stroke="${color}" stroke-width="2"/>
-                        <text x="${node.x}" y="${node.y + size + 14}" fill="#e2e8f0" font-size="10" text-anchor="middle" font-weight="500">${node.note.title}</text>
-                    </g>
-                `;
-            });
-
-            svgContainer.innerHTML = '<svg viewBox="0 0 ' + width + ' ' + height + '">' + svgContent + '</svg>';
-        }
-
-        btnReloadGraph.addEventListener("click", renderGraph);
-        window.addEventListener("resize", renderGraph);
-
-        function openNoteEditor(noteId = null) {
-            if (noteId) {
-                const note = NOTES.find(n => n.id === noteId);
-                if (note) {
-                    modalTitle.innerText = "Editar Nota";
-                    editNoteId.value = note.id;
-                    editNoteTitle.value = note.title;
-                    editNoteArea.value = note.area;
-                    editNoteBody.value = note.body;
-                    btnDeleteNote.style.display = "block";
-                }
-            } else {
-                modalTitle.innerText = "Nova Nota";
-                editNoteId.value = "";
-                editNoteTitle.value = "";
-                editNoteArea.value = "projetos";
-                editNoteBody.value = "";
-                btnDeleteNote.style.display = "none";
-            }
-            modalOverlay.classList.add("open");
-        }
-
-        window.openNoteEditor = openNoteEditor;
-    </script>
-</body>
-</html>
-
+            <div class="controls-row">
+                <input type="text" id="manualInput" placeholder="Digite uma diretriz ou comando alternativo...">
