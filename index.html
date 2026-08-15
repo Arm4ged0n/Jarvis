@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jarvis // Ultimate Plasma Neural HUD</title>
+    <title>Jarvis // Ultimate Celestial Fire HUD</title>
     <style>
         :root {
-            --bg-base: #020204;
-            --panel-bg: rgba(10, 5, 2, 0.88);
-            --border-color: rgba(255, 100, 0, 0.45);
+            --bg-base: #020104;
+            --panel-bg: rgba(15, 6, 2, 0.88);
+            --border-color: rgba(255, 170, 0, 0.45);
             --primary: #ff5500;
-            --accent: #ffaa00;
-            --plasma-glow: rgba(255, 85, 0, 0.6);
+            --accent: #fbbf24;
+            --fire-glow: rgba(255, 119, 0, 0.7);
             --text-main: #f1f5f9;
             --text-dim: #94a3b8;
             --danger: #ff3d00;
@@ -21,11 +21,11 @@
         html, body { background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
         ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: #020204; }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 85, 0, 0.4); border-radius: 2px; }
+        ::-webkit-scrollbar-track { background: #020104; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 119, 0, 0.4); border-radius: 2px; }
 
-        /* CANVAS DE CIRCUITOS E RAIOS LARANJA/VERMELHO */
-        #plasmaCanvas {
+        /* CANVAS DE TEIAS NEURAIS, CIRCUITOS E RAIOS DE FOGO */
+        #fireCanvas {
             position: fixed;
             inset: 0;
             z-index: 0;
@@ -37,7 +37,7 @@
         #bootScreen {
             position: fixed;
             inset: 0;
-            background: #020204;
+            background: #020104;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -53,54 +53,70 @@
             pointer-events: none;
         }
 
-        .plasma-loader {
-            width: 220px;
-            height: 220px;
+        .fire-loader {
+            width: 240px;
+            height: 240px;
             border-radius: 50%;
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: radial-gradient(circle, rgba(255,85,0,0.2) 0%, transparent 70%);
-            box-shadow: 0 0 100px rgba(255, 85, 0, 0.3), inset 0 0 50px rgba(255, 170, 0, 0.2);
-            animation: plasmaPulse 2s infinite alternate ease-in-out;
+            background: radial-gradient(circle, rgba(255,119,0,0.25) 0%, transparent 70%);
+            box-shadow: 0 0 110px rgba(255, 119, 0, 0.4), inset 0 0 55px rgba(251, 191, 36, 0.3);
+            animation: firePulse 2s infinite alternate ease-in-out;
         }
 
-        @keyframes plasmaPulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 60px rgba(255, 85, 0, 0.3); }
-            100% { transform: scale(1.05); box-shadow: 0 0 120px rgba(255, 136, 0, 0.7); }
+        @keyframes firePulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 70px rgba(255, 85, 0, 0.4); }
+            100% { transform: scale(1.06); box-shadow: 0 0 140px rgba(251, 191, 36, 0.7); }
         }
 
-        .plasma-ring-1 {
+        .fire-ring-1 {
             position: absolute;
             inset: 0;
             border: 2px dashed var(--accent);
             border-radius: 50%;
-            animation: spinClockwise 10s linear infinite;
+            animation: spinClockwise 12s linear infinite;
         }
 
-        .plasma-ring-2 {
+        .fire-ring-2 {
             position: absolute;
             inset: 15px;
             border: 2px solid var(--primary);
             border-top: 2px solid transparent;
             border-bottom: 2px solid transparent;
             border-radius: 50%;
-            animation: spinCounter 6s linear infinite;
+            animation: spinCounter 7s linear infinite;
         }
 
-        .plasma-core {
-            font-size: 2.8rem;
+        .fire-core {
+            font-size: 3rem;
             animation: coreFlicker 0.4s infinite alternate;
         }
 
         @keyframes coreFlicker {
-            0% { transform: scale(0.95); filter: drop-shadow(0 0 10px #ff3d00); }
-            100% { transform: scale(1.05); filter: drop-shadow(0 0 30px #ffaa00); }
+            0% { transform: scale(0.95); filter: drop-shadow(0 0 10px #ff5500); }
+            100% { transform: scale(1.05); filter: drop-shadow(0 0 35px #fbbf24); }
         }
 
         @keyframes spinClockwise { to { transform: rotate(360deg); } }
         @keyframes spinCounter { to { transform: rotate(-360deg); } }
+
+        .boot-title {
+            font-size: 3rem;
+            font-weight: bold;
+            letter-spacing: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        .boot-hr {
+            width: 250px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+        }
 
         .boot-status {
             font-size: 0.9rem;
@@ -116,7 +132,7 @@
         #activationScreen {
             position: fixed;
             inset: 0;
-            background: rgba(2, 2, 4, 0.96);
+            background: rgba(2, 1, 4, 0.96);
             backdrop-filter: blur(14px);
             display: flex;
             flex-direction: column;
@@ -155,7 +171,7 @@
             cursor: pointer;
             font-weight: bold;
             transition: all 0.3s;
-            box-shadow: 0 0 45px rgba(255, 85, 0, 0.4), inset 0 0 20px rgba(255, 170, 0, 0.3);
+            box-shadow: 0 0 45px rgba(255, 119, 0, 0.4), inset 0 0 20px rgba(251, 191, 36, 0.3);
         }
 
         .activation-btn:hover {
@@ -193,14 +209,14 @@
             backdrop-filter: blur(14px);
             flex-wrap: wrap;
             gap: 10px;
-            box-shadow: 0 0 35px rgba(255, 85, 0, 0.15);
+            box-shadow: 0 0 35px rgba(255, 119, 0, 0.15);
         }
 
         .app-title {
             font-weight: bold;
             color: var(--accent);
             letter-spacing: 2px;
-            text-shadow: 0 0 12px rgba(255, 170, 0, 0.5);
+            text-shadow: 0 0 12px rgba(251, 191, 36, 0.5);
         }
 
         .api-input-box {
@@ -257,7 +273,7 @@
             flex-direction: column;
             position: relative;
             backdrop-filter: blur(16px);
-            box-shadow: inset 0 0 30px rgba(255, 85, 0, 0.08), 0 0 35px rgba(0, 0, 0, 0.8);
+            box-shadow: inset 0 0 30px rgba(255, 119, 0, 0.08), 0 0 35px rgba(0, 0, 0, 0.8);
         }
 
         .interaction-panel {
@@ -267,9 +283,10 @@
             min-height: 480px;
         }
 
+        /* ORBE COM MÚLTIPLOS ANÉIS HOLOGRÁFICOS CONCÊNTRICOS ROTATIVOS (DENTRO DO OUTRO EM ROTAÇÃO DIFERENCIADA) */
         .reactor-container {
-            width: 170px;
-            height: 170px;
+            width: 220px;
+            height: 220px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -277,14 +294,51 @@
             position: relative;
             cursor: pointer;
             margin: 15px 0;
-            background: radial-gradient(circle, rgba(255,85,0,0.2) 0%, transparent 70%);
-            box-shadow: 0 0 60px rgba(255, 85, 0, 0.3), inset 0 0 30px rgba(255, 170, 0, 0.2);
+            background: radial-gradient(circle, rgba(255,119,0,0.2) 0%, transparent 70%);
+            box-shadow: 0 0 70px rgba(255, 119, 0, 0.35), inset 0 0 35px rgba(251, 191, 36, 0.25);
             transition: all 0.4s;
         }
 
         .reactor-container:hover {
-            box-shadow: 0 0 90px rgba(255, 136, 0, 0.8), inset 0 0 45px rgba(255, 170, 0, 0.5);
+            box-shadow: 0 0 110px rgba(251, 191, 36, 0.8), inset 0 0 55px rgba(255, 85, 0, 0.5);
             transform: scale(1.04);
+        }
+
+        /* Anéis concêntricos independentes com rotação e tamanhos diferentes */
+        .ring-h1 {
+            position: absolute;
+            inset: 0;
+            border: 2px dashed var(--accent);
+            border-radius: 50%;
+            animation: spinClockwise 14s linear infinite;
+        }
+
+        .ring-h2 {
+            position: absolute;
+            inset: 15px;
+            border: 2px solid var(--primary);
+            border-top: 2px solid transparent;
+            border-bottom: 2px solid transparent;
+            border-radius: 50%;
+            animation: spinCounter 9s linear infinite;
+        }
+
+        .ring-h3 {
+            position: absolute;
+            inset: 32px;
+            border: 1px dotted rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: spinClockwise 6s linear infinite;
+        }
+
+        .ring-h4 {
+            position: absolute;
+            inset: 50px;
+            border: 1.5px solid rgba(251, 191, 36, 0.6);
+            border-left: 1.5px solid transparent;
+            border-right: 1.5px solid transparent;
+            border-radius: 50%;
+            animation: spinCounter 4s linear infinite;
         }
 
         .status-badge {
@@ -301,7 +355,7 @@
         .dialogue-box {
             width: 100%;
             text-align: left;
-            background: rgba(10, 4, 2, 0.9);
+            background: rgba(15, 6, 2, 0.9);
             padding: 14px 18px;
             border-radius: 8px;
             border-left: 3px solid var(--accent);
@@ -312,11 +366,11 @@
             flex-direction: column;
             justify-content: center;
             gap: 6px;
-            box-shadow: inset 0 0 20px rgba(255,170,0,0.05);
+            box-shadow: inset 0 0 20px rgba(251,191,36,0.05);
         }
 
         .dialogue-user { color: var(--text-dim); }
-        .dialogue-assistant { color: var(--accent); font-weight: 500; text-shadow: 0 0 10px rgba(255,170,0,0.4); }
+        .dialogue-assistant { color: var(--accent); font-weight: 500; text-shadow: 0 0 10px rgba(251,191,36,0.4); }
 
         .controls-row {
             display: flex;
@@ -343,7 +397,7 @@
         }
 
         .action-btn {
-            background: rgba(255, 85, 0, 0.2);
+            background: rgba(255, 119, 0, 0.2);
             border: 1px solid var(--primary);
             color: #fff;
             padding: 10px 18px;
@@ -354,8 +408,8 @@
         }
 
         .action-btn:hover {
-            background: rgba(255, 85, 0, 0.4);
-            box-shadow: 0 0 20px rgba(255, 85, 0, 0.5);
+            background: rgba(255, 119, 0, 0.4);
+            box-shadow: 0 0 20px rgba(255, 119, 0, 0.5);
         }
 
         .btn-danger {
@@ -404,7 +458,7 @@
         }
 
         .icon-btn {
-            background: rgba(255, 85, 0, 0.15);
+            background: rgba(255, 119, 0, 0.15);
             border: 1px solid var(--border-color);
             color: var(--accent);
             width: 28px;
@@ -420,8 +474,8 @@
         }
 
         .icon-btn:hover {
-            background: rgba(255, 85, 0, 0.35);
-            box-shadow: 0 0 12px rgba(255, 85, 0, 0.5);
+            background: rgba(255, 119, 0, 0.35);
+            box-shadow: 0 0 12px rgba(255, 119, 0, 0.5);
         }
 
         .svg-container {
@@ -476,7 +530,7 @@
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(2, 2, 4, 0.94);
+            background: rgba(2, 1, 4, 0.94);
             z-index: 200;
             display: none;
             align-items: center;
@@ -490,13 +544,13 @@
         }
 
         .modal-card {
-            background: rgba(12, 6, 2, 0.96);
+            background: rgba(18, 8, 3, 0.96);
             border: 1px solid var(--primary);
             width: 100%;
             max-width: 480px;
             padding: 24px;
             border-radius: 10px;
-            box-shadow: 0 0 60px rgba(255, 85, 0, 0.4);
+            box-shadow: 0 0 60px rgba(255, 119, 0, 0.4);
             display: flex;
             flex-direction: column;
             gap: 14px;
@@ -539,29 +593,31 @@
 </head>
 <body>
 
-    <!-- CANVAS DE TEIAS NEURAIS, CIRCUITOS E RAIOS ALARANJADOS -->
-    <canvas id="plasmaCanvas"></canvas>
+    <!-- CANVAS DE TEIAS NEURAIS, CIRCUITOS E RAIOS DE FOGO -->
+    <canvas id="fireCanvas"></canvas>
 
     <!-- TELA 1 — BOOT -->
     <div id="bootScreen">
-        <div class="plasma-loader">
-            <div class="plasma-ring-1"></div>
-            <div class="plasma-ring-2"></div>
-            <div class="plasma-core">⚡</div>
+        <div class="fire-loader">
+            <div class="fire-ring-1"></div>
+            <div class="fire-ring-2"></div>
+            <div class="fire-core">⚡</div>
         </div>
-        <div class="boot-status">CARREGANDO CIRCUITOS NEURAIS DE PLASMA...</div>
-        <div style="font-size: 0.75rem; color: var(--text-dim); letter-spacing: 2px;">v5.0 · ULTIMATE REBUILD</div>
+        <div class="boot-title">JARVIS</div>
+        <div class="boot-hr"></div>
+        <div class="boot-status">SINCRONIZANDO DADOS TÉRMICOS...</div>
+        <div style="font-size: 0.75rem; color: var(--text-dim); letter-spacing: 2px;">v5.0 · CELESTIAL FIRE HUD</div>
     </div>
 
     <!-- TELA 2 — ATIVAÇÃO -->
     <div id="activationScreen">
-        <div class="plasma-loader" style="width: 160px; height: 160px;">
-            <div class="plasma-ring-1"></div>
-            <div class="plasma-ring-2"></div>
-            <div class="plasma-core" style="font-size: 2rem;">🧠</div>
+        <div class="fire-loader" style="width: 180px; height: 180px;">
+            <div class="fire-ring-1"></div>
+            <div class="fire-ring-2"></div>
+            <div class="fire-core" style="font-size: 2.2rem;">🧠</div>
         </div>
         <div class="activation-title">JARVIS</div>
-        <div style="font-size: 0.85rem; letter-spacing: 2px; color: var(--text-dim); text-align: center;">NÚCLEO TÉRMICO PRONTO PARA IGNIÇÃO</div>
+        <div style="font-size: 0.85rem; letter-spacing: 2px; color: var(--text-dim); text-align: center;">NÚCLEO PRONTO PARA INICIALIZAÇÃO</div>
         <button class="activation-btn" id="btnActivate">► ATIVAR SISTEMA</button>
         <div style="font-size: 0.75rem; color: var(--text-dim); letter-spacing: 1px;">CLIQUE PARA INICIAR</div>
     </div>
@@ -569,7 +625,7 @@
     <!-- MAIN APP -->
     <div id="app">
         <header class="top-bar">
-            <div class="app-title">JARVIS // ULTIMATE PLASMA CORE</div>
+            <div class="app-title">JARVIS // CELESTIAL FIRE CORE</div>
             <div class="api-input-box">
                 <input type="password" id="apiKeyInput" placeholder="Chave Anthropic API (sk-ant-...)">
                 <button id="btnSaveKey">Salvar</button>
@@ -584,10 +640,13 @@
                     <span id="statusBadge" class="status-badge">Ocioso</span>
                 </div>
 
+                <!-- ORBE CENTRAL COM MÚLTIPLOS ANÉIS HOLOGRÁFICOS CONCÊNTRICOS EM ROTAÇÃO DIFERENCIADA -->
                 <div class="reactor-container" id="reactorOrb" title="Clique para ativar escuta">
-                    <div class="plasma-ring-1"></div>
-                    <div class="plasma-ring-2"></div>
-                    <div class="plasma-core" style="width: 90px; height: 90px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, var(--accent) 0%, var(--primary) 70%); box-shadow: 0 0 50px var(--primary);">⚡</div>
+                    <div class="ring-h1"></div>
+                    <div class="ring-h2"></div>
+                    <div class="ring-h3"></div>
+                    <div class="ring-h4"></div>
+                    <div style="width: 75px; height: 75px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, var(--accent) 0%, var(--primary) 70%); box-shadow: 0 0 45px var(--accent);">🧠</div>
                 </div>
 
                 <div class="dialogue-box">
@@ -661,7 +720,7 @@
             meta: { label: "Identidade", color: "#94a3b8" },
             metas: { label: "Metas", color: "#38bdf8" },
             trabalho: { label: "Carreira", color: "#ff5500" },
-            projetos: { label: "Projetos", color: "#ffaa00" },
+            projetos: { label: "Projetos", color: "#fbbf24" },
             financas: { label: "Finanças", color: "#f7931a" },
             aprendizado: { label: "Aprendizado", color: "#38bdf8" },
             saude: { label: "Saúde", color: "#34d399" },
@@ -692,10 +751,10 @@
         let recognition = null;
         let highlightedNoteId = null;
 
-        // CANVAS DE CIRCUITOS QUÂNTICOS, RAIOS E TEIAS NEURAIS ALARANJADAS
-        const canvas = document.getElementById('plasmaCanvas');
+        // CANVAS DE TEIAS NEURAIS ELÉTRICAS E CIRCUITOS TÉRMICOS (FOGO E OURO)
+        const canvas = document.getElementById('fireCanvas');
         const ctx = canvas.getContext('2d');
-        let plasmaNodes = [];
+        let fireNodes = [];
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -704,57 +763,61 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        for (let i = 0; i < 75; i++) {
-            plasmaNodes.push({
+        for (let i = 0; i < 85; i++) {
+            fireNodes.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
-                vx: (Math.random() - 0.5) * 0.8,
-                vy: (Math.random() - 0.5) * 0.8,
-                radius: Math.random() * 2.2 + 1.2
+                vx: (Math.random() - 0.5) * 0.9,
+                vy: (Math.random() - 0.5) * 0.9,
+                radius: Math.random() * 2.5 + 1.2
             });
         }
 
-        function drawPlasmaCircuits() {
+        function drawFireWebs() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#020204';
+            ctx.fillStyle = '#020104';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            for (let i = 0; i < plasmaNodes.length; i++) {
-                let p = plasmaNodes[i];
+            // Se estiver ouvindo ou falando, intensifica o brilho e as descargas térmicas
+            let activeGlow = isBusy || isListening ? 0.75 : 0.4;
+            let lineColor = isBusy ? "rgba(255, 61, 0," : "rgba(255, 170, 0,";
+
+            for (let i = 0; i < fireNodes.length; i++) {
+                let p = fireNodes[i];
                 p.x += p.vx;
                 p.y += p.vy;
 
                 if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
                 if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
 
-                for (let j = i + 1; j < plasmaNodes.length; j++) {
-                    let p2 = plasmaNodes[j];
+                for (let j = i + 1; j < fireNodes.length; j++) {
+                    let p2 = fireNodes[j];
                     let dx = p.x - p2.x;
                     let dy = p.y - p2.y;
                     let dist = Math.sqrt(dx * dx + dy * dy);
 
-                    if (dist < 140) {
+                    if (dist < 150) {
                         ctx.beginPath();
                         ctx.moveTo(p.x, p.y);
                         ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = `rgba(255, 136, 0, ${(1 - dist / 140) * 0.4})`;
-                        ctx.lineWidth = 0.9;
+                        ctx.strokeStyle = `${lineColor} ${(1 - dist / 150) * activeGlow})`;
+                        ctx.lineWidth = 1.1;
                         ctx.stroke();
                     }
                 }
 
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                ctx.fillStyle = '#ffaa00';
-                ctx.shadowBlur = 15;
+                ctx.fillStyle = isBusy ? '#ff3d00' : '#fbbf24';
+                ctx.shadowBlur = isBusy ? 25 : 15;
                 ctx.shadowColor = '#ff5500';
                 ctx.fill();
                 ctx.shadowBlur = 0;
             }
 
-            requestAnimationFrame(drawPlasmaCircuits);
+            requestAnimationFrame(drawFireWebs);
         }
-        drawPlasmaCircuits();
+        drawFireWebs();
 
         // DOM Elements
         const bootScreen = document.getElementById("bootScreen");
@@ -818,17 +881,15 @@
             speakText(welcomeText);
         });
 
-        // VOZ MASCULINA ESTABELECIDA STRICTAMENTE EM PORTUGUÊS DO BRASIL (PT-BR)
+        // VOZ MASCULINA EM PORTUGUÊS DO BRASIL (PT-BR) GARANTIDA
         function speakText(text) {
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = "pt-BR";
             utterance.rate = 0.92;
-            utterance.pitch = 0.45; // Tom grave, metálico e imersivo
+            utterance.pitch = 0.45; // Tom grave e imersivo
             
             const voices = window.speechSynthesis.getVoices();
-            
-            // Filtro rígido para encontrar estritamente uma voz pt-BR masculina
             let brazilianMaleVoice = voices.find(v => 
                 v.lang === "pt-BR" && (
                     v.name.toLowerCase().includes("antonio") ||
@@ -956,7 +1017,7 @@
             }
         });
 
-        // COMUNICAÇÃO COM A API DA ANTHROPIC (CLAUDE) + FALLBACK LOCAL
+        // COMUNICAÇÃO COM A API DA ANTHROPIC (CLAUDE) + FALLBACK LOCAL SEGURO
         async function processClaudeCommand(prompt) {
             const apiKey = getActiveApiKey();
             if (!apiKey) {
@@ -1086,11 +1147,11 @@
             let svgContent = `
                 <defs>
                     <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
-                        <stop offset="0%" stop-color="#ffaa00" stop-opacity="0.9"/>
+                        <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.9"/>
                         <stop offset="100%" stop-color="#ff5500" stop-opacity="0"/>
                     </radialGradient>
                     <linearGradient id="edgeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#ffaa00"/>
+                        <stop offset="0%" stop-color="#fbbf24"/>
                         <stop offset="100%" stop-color="#ff5500"/>
                     </linearGradient>
                 </defs>
@@ -1107,18 +1168,18 @@
             });
 
             Object.values(nodeCoords).forEach(node => {
-                const color = AREA[node.note.area]?.color || '#ffaa00';
+                const color = AREA[node.note.area]?.color || '#fbbf24';
                 svgContent += `<line x1="${cx}" y1="${cy}" x2="${node.x}" y2="${node.y}" stroke="${color}" stroke-width="0.8" opacity="0.3"/>`;
             });
 
             svgContent += `
                 <circle cx="${cx}" cy="${cy}" r="38" fill="url(#coreGlow)"/>
-                <circle cx="${cx}" cy="${cy}" r="22" fill="#140a02" stroke="#ffaa00" stroke-width="2"/>
+                <circle cx="${cx}" cy="${cy}" r="22" fill="#180802" stroke="#fbbf24" stroke-width="2"/>
                 <text x="${cx}" y="${cy + 5}" fill="#fff" font-size="14" text-anchor="middle" font-weight="bold">🧠</text>
             `;
 
             Object.values(nodeCoords).forEach(node => {
-                const color = AREA[node.note.area]?.color || '#ffaa00';
+                const color = AREA[node.note.area]?.color || '#fbbf24';
                 const size = Math.min(18, 10 + (connCounts[node.note.id] || 1) * 1.5);
                 const isHighlighted = node.note.id === highlightedNoteId;
 
@@ -1128,7 +1189,7 @@
                         <circle cx="${node.x}" cy="${node.y}" r="${size + 4}" fill="${color}" opacity="0.25">
                             <animate attributeName="r" values="${size};${size+5};${size}" dur="3s" repeatCount="indefinite"/>
                         </circle>
-                        <circle cx="${node.x}" cy="${node.y}" r="${size}" fill="#020204" stroke="${color}" stroke-width="2"/>
+                        <circle cx="${node.x}" cy="${node.y}" r="${size}" fill="#020104" stroke="${color}" stroke-width="2"/>
                         <text x="${node.x}" y="${node.y + size + 14}" fill="#e2e8f0" font-size="10" text-anchor="middle" font-weight="500">${node.note.title}</text>
                     </g>
                 `;
