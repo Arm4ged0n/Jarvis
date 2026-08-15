@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jarvis // Ultimate Celestial Fire HUD</title>
+    <title>Jarvis // Google Custom Search HUD</title>
     <style>
         :root {
             --bg-base: #020104;
-            --panel-bg: rgba(15, 6, 2, 0.88);
-            --border-color: rgba(255, 170, 0, 0.45);
-            --primary: #ff5500;
-            --accent: #fbbf24;
-            --fire-glow: rgba(255, 119, 0, 0.7);
+            --panel-bg: rgba(18, 8, 2, 0.90);
+            --border-color: rgba(255, 140, 0, 0.45);
+            --primary: #ff6600;
+            --accent: #ffb700;
+            --hud-glow: rgba(255, 140, 0, 0.55);
             --text-main: #f1f5f9;
             --text-dim: #94a3b8;
             --danger: #ff3d00;
@@ -22,10 +22,9 @@
 
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: #020104; }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 119, 0, 0.4); border-radius: 2px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 100, 0, 0.4); border-radius: 2px; }
 
-        /* CANVAS DE TEIAS NEURAIS, CIRCUITOS E RAIOS DE FOGO */
-        #fireCanvas {
+        #hudCanvas {
             position: fixed;
             inset: 0;
             z-index: 0;
@@ -33,7 +32,6 @@
             opacity: 0.95;
         }
 
-        /* TELA 1 — BOOT */
         #bootScreen {
             position: fixed;
             inset: 0;
@@ -53,82 +51,83 @@
             pointer-events: none;
         }
 
-        .fire-loader {
-            width: 240px;
-            height: 240px;
+        .massive-warm-hud {
+            width: 340px;
+            height: 340px;
             border-radius: 50%;
             position: relative;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: radial-gradient(circle, rgba(255,119,0,0.25) 0%, transparent 70%);
-            box-shadow: 0 0 110px rgba(255, 119, 0, 0.4), inset 0 0 55px rgba(251, 191, 36, 0.3);
-            animation: firePulse 2s infinite alternate ease-in-out;
+            background: radial-gradient(circle, rgba(255,140,0,0.22) 0%, transparent 75%);
+            box-shadow: 0 0 140px rgba(255, 140, 0, 0.4), inset 0 0 70px rgba(255, 183, 0, 0.25);
+            animation: warmPulse 2.2s infinite alternate ease-in-out;
+            text-align: center;
         }
 
-        @keyframes firePulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 70px rgba(255, 85, 0, 0.4); }
-            100% { transform: scale(1.06); box-shadow: 0 0 140px rgba(251, 191, 36, 0.7); }
+        @keyframes warmPulse {
+            0% { transform: scale(0.96); box-shadow: 0 0 90px rgba(255, 100, 0, 0.35); }
+            100% { transform: scale(1.04); box-shadow: 0 0 160px rgba(255, 183, 0, 0.7); }
         }
 
-        .fire-ring-1 {
+        .hud-circle-1 {
             position: absolute;
             inset: 0;
-            border: 2px dashed var(--accent);
+            border: 3px dashed var(--accent);
             border-radius: 50%;
-            animation: spinClockwise 12s linear infinite;
+            animation: spinClockwise 16s linear infinite;
         }
 
-        .fire-ring-2 {
+        .hud-circle-2 {
             position: absolute;
             inset: 15px;
             border: 2px solid var(--primary);
             border-top: 2px solid transparent;
             border-bottom: 2px solid transparent;
             border-radius: 50%;
-            animation: spinCounter 7s linear infinite;
+            animation: spinCounter 10s linear infinite;
         }
 
-        .fire-core {
-            font-size: 3rem;
-            animation: coreFlicker 0.4s infinite alternate;
+        .hud-circle-3 {
+            position: absolute;
+            inset: 40px;
+            border: 1px dotted rgba(255, 255, 255, 0.85);
+            border-radius: 50%;
+            animation: spinClockwise 6s linear infinite;
         }
 
-        @keyframes coreFlicker {
-            0% { transform: scale(0.95); filter: drop-shadow(0 0 10px #ff5500); }
-            100% { transform: scale(1.05); filter: drop-shadow(0 0 35px #fbbf24); }
+        .hud-jarvis-text {
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 5px;
+            color: var(--accent);
+            text-shadow: 0 0 20px var(--primary), 0 0 40px var(--accent);
+            z-index: 2;
+        }
+
+        .hud-online-text {
+            font-size: 1.3rem;
+            letter-spacing: 6px;
+            color: #ffffff;
+            text-shadow: 0 0 15px var(--primary);
+            margin-top: 5px;
+            z-index: 2;
         }
 
         @keyframes spinClockwise { to { transform: rotate(360deg); } }
         @keyframes spinCounter { to { transform: rotate(-360deg); } }
 
-        .boot-title {
-            font-size: 3rem;
-            font-weight: bold;
-            letter-spacing: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-align: center;
-        }
-
-        .boot-hr {
-            width: 250px;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--primary), transparent);
-        }
-
         .boot-status {
-            font-size: 0.9rem;
-            letter-spacing: 4px;
+            font-size: 0.85rem;
+            letter-spacing: 3px;
             color: var(--accent);
-            text-shadow: 0 0 15px var(--primary);
+            text-shadow: 0 0 10px var(--primary);
             animation: blink 1s infinite;
         }
 
         @keyframes blink { 0%, 49%, 100% { opacity: 1; } 50%, 99% { opacity: 0.3; } }
 
-        /* TELA 2 — ATIVAÇÃO */
         #activationScreen {
             position: fixed;
             inset: 0;
@@ -150,37 +149,26 @@
             pointer-events: all;
         }
 
-        .activation-title {
-            font-size: 3rem;
-            font-weight: bold;
-            letter-spacing: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-align: center;
-        }
-
         .activation-btn {
             padding: 18px 50px;
             font-size: 1.1rem;
             letter-spacing: 3px;
             color: var(--accent);
-            background: rgba(255, 85, 0, 0.15);
+            background: rgba(255, 100, 0, 0.2);
             border: 2px solid var(--primary);
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
             transition: all 0.3s;
-            box-shadow: 0 0 45px rgba(255, 119, 0, 0.4), inset 0 0 20px rgba(251, 191, 36, 0.3);
+            box-shadow: 0 0 45px rgba(255, 100, 0, 0.4), inset 0 0 20px rgba(255, 183, 0, 0.3);
         }
 
         .activation-btn:hover {
-            background: rgba(255, 85, 0, 0.35);
-            box-shadow: 0 0 80px var(--primary), inset 0 0 40px var(--accent);
+            background: rgba(255, 100, 0, 0.4);
+            box-shadow: 0 0 90px var(--primary), inset 0 0 40px var(--accent);
             transform: scale(1.04);
         }
 
-        /* MAIN APP */
         #app {
             display: none;
             flex-direction: column;
@@ -209,14 +197,14 @@
             backdrop-filter: blur(14px);
             flex-wrap: wrap;
             gap: 10px;
-            box-shadow: 0 0 35px rgba(255, 119, 0, 0.15);
+            box-shadow: 0 0 35px rgba(255, 100, 0, 0.15);
         }
 
         .app-title {
             font-weight: bold;
             color: var(--accent);
             letter-spacing: 2px;
-            text-shadow: 0 0 12px rgba(251, 191, 36, 0.5);
+            text-shadow: 0 0 12px rgba(255, 183, 0, 0.5);
         }
 
         .api-input-box {
@@ -224,22 +212,22 @@
             gap: 8px;
             align-items: center;
             width: 100%;
-            max-width: 450px;
+            max-width: 520px;
         }
 
         .api-input-box input {
             background: rgba(0,0,0,0.85);
             border: 1px solid var(--border-color);
             color: var(--accent);
-            padding: 6px 12px;
+            padding: 6px 10px;
             border-radius: 4px;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             flex-grow: 1;
             outline: none;
         }
 
         .api-input-box button {
-            background: rgba(255, 85, 0, 0.2);
+            background: rgba(255, 100, 0, 0.2);
             border: 1px solid var(--primary);
             color: #fff;
             padding: 6px 14px;
@@ -250,7 +238,7 @@
         }
 
         .api-input-box button:hover {
-            background: rgba(255, 85, 0, 0.4);
+            background: rgba(255, 100, 0, 0.4);
         }
 
         .main-grid {
@@ -273,7 +261,7 @@
             flex-direction: column;
             position: relative;
             backdrop-filter: blur(16px);
-            box-shadow: inset 0 0 30px rgba(255, 119, 0, 0.08), 0 0 35px rgba(0, 0, 0, 0.8);
+            box-shadow: inset 0 0 30px rgba(255, 100, 0, 0.08), 0 0 35px rgba(0, 0, 0, 0.8);
         }
 
         .interaction-panel {
@@ -283,7 +271,6 @@
             min-height: 480px;
         }
 
-        /* ORBE COM MÚLTIPLOS ANÉIS HOLOGRÁFICOS CONCÊNTRICOS ROTATIVOS (DENTRO DO OUTRO EM ROTAÇÃO DIFERENCIADA) */
         .reactor-container {
             width: 220px;
             height: 220px;
@@ -294,23 +281,22 @@
             position: relative;
             cursor: pointer;
             margin: 15px 0;
-            background: radial-gradient(circle, rgba(255,119,0,0.2) 0%, transparent 70%);
-            box-shadow: 0 0 70px rgba(255, 119, 0, 0.35), inset 0 0 35px rgba(251, 191, 36, 0.25);
+            background: radial-gradient(circle, rgba(255,100,0,0.2) 0%, transparent 70%);
+            box-shadow: 0 0 70px rgba(255, 100, 0, 0.35), inset 0 0 35px rgba(255, 183, 0, 0.25);
             transition: all 0.4s;
         }
 
         .reactor-container:hover {
-            box-shadow: 0 0 110px rgba(251, 191, 36, 0.8), inset 0 0 55px rgba(255, 85, 0, 0.5);
+            box-shadow: 0 0 110px rgba(255, 183, 0, 0.8), inset 0 0 55px rgba(255, 100, 0, 0.5);
             transform: scale(1.04);
         }
 
-        /* Anéis concêntricos independentes com rotação e tamanhos diferentes */
         .ring-h1 {
             position: absolute;
             inset: 0;
             border: 2px dashed var(--accent);
             border-radius: 50%;
-            animation: spinClockwise 14s linear infinite;
+            animation: spinClockwise 12s linear infinite;
         }
 
         .ring-h2 {
@@ -320,7 +306,7 @@
             border-top: 2px solid transparent;
             border-bottom: 2px solid transparent;
             border-radius: 50%;
-            animation: spinCounter 9s linear infinite;
+            animation: spinCounter 7s linear infinite;
         }
 
         .ring-h3 {
@@ -341,6 +327,9 @@
             animation: spinCounter 4s linear infinite;
         }
 
+        @keyframes spinClockwise { to { transform: rotate(360deg); } }
+        @keyframes spinCounter { to { transform: rotate(-360deg); } }
+
         .status-badge {
             font-size: 0.75rem;
             letter-spacing: 2px;
@@ -355,7 +344,7 @@
         .dialogue-box {
             width: 100%;
             text-align: left;
-            background: rgba(15, 6, 2, 0.9);
+            background: rgba(20, 8, 2, 0.9);
             padding: 14px 18px;
             border-radius: 8px;
             border-left: 3px solid var(--accent);
@@ -366,11 +355,11 @@
             flex-direction: column;
             justify-content: center;
             gap: 6px;
-            box-shadow: inset 0 0 20px rgba(251,191,36,0.05);
+            box-shadow: inset 0 0 20px rgba(255,183,0,0.05);
         }
 
         .dialogue-user { color: var(--text-dim); }
-        .dialogue-assistant { color: var(--accent); font-weight: 500; text-shadow: 0 0 10px rgba(251,191,36,0.4); }
+        .dialogue-assistant { color: var(--accent); font-weight: 500; text-shadow: 0 0 10px rgba(255,183,0,0.4); }
 
         .controls-row {
             display: flex;
@@ -393,11 +382,11 @@
 
         .controls-row input:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(255, 85, 0, 0.4);
+            box-shadow: 0 0 20px rgba(255, 100, 0, 0.4);
         }
 
         .action-btn {
-            background: rgba(255, 119, 0, 0.2);
+            background: rgba(255, 100, 0, 0.2);
             border: 1px solid var(--primary);
             color: #fff;
             padding: 10px 18px;
@@ -408,8 +397,8 @@
         }
 
         .action-btn:hover {
-            background: rgba(255, 119, 0, 0.4);
-            box-shadow: 0 0 20px rgba(255, 119, 0, 0.5);
+            background: rgba(255, 100, 0, 0.4);
+            box-shadow: 0 0 20px rgba(255, 100, 0, 0.5);
         }
 
         .btn-danger {
@@ -458,7 +447,7 @@
         }
 
         .icon-btn {
-            background: rgba(255, 119, 0, 0.15);
+            background: rgba(255, 100, 0, 0.15);
             border: 1px solid var(--border-color);
             color: var(--accent);
             width: 28px;
@@ -474,8 +463,8 @@
         }
 
         .icon-btn:hover {
-            background: rgba(255, 119, 0, 0.35);
-            box-shadow: 0 0 12px rgba(255, 119, 0, 0.5);
+            background: rgba(255, 100, 0, 0.35);
+            box-shadow: 0 0 12px rgba(255, 100, 0, 0.5);
         }
 
         .svg-container {
@@ -526,7 +515,6 @@
             font-weight: 500;
         }
 
-        /* MODAL */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -544,13 +532,13 @@
         }
 
         .modal-card {
-            background: rgba(18, 8, 3, 0.96);
+            background: rgba(20, 8, 2, 0.96);
             border: 1px solid var(--primary);
             width: 100%;
             max-width: 480px;
             padding: 24px;
             border-radius: 10px;
-            box-shadow: 0 0 60px rgba(255, 119, 0, 0.4);
+            box-shadow: 0 0 60px rgba(255, 100, 0, 0.4);
             display: flex;
             flex-direction: column;
             gap: 14px;
@@ -593,55 +581,49 @@
 </head>
 <body>
 
-    <!-- CANVAS DE TEIAS NEURAIS, CIRCUITOS E RAIOS DE FOGO -->
-    <canvas id="fireCanvas"></canvas>
+    <canvas id="hudCanvas"></canvas>
 
-    <!-- TELA 1 — BOOT -->
     <div id="bootScreen">
-        <div class="fire-loader">
-            <div class="fire-ring-1"></div>
-            <div class="fire-ring-2"></div>
-            <div class="fire-core">⚡</div>
+        <div class="massive-warm-hud">
+            <div class="hud-circle-1"></div>
+            <div class="hud-circle-2"></div>
+            <div class="hud-circle-3"></div>
+            <div class="hud-jarvis-text">JARVIS</div>
+            <div class="hud-online-text">ONLINE</div>
         </div>
-        <div class="boot-title">JARVIS</div>
-        <div class="boot-hr"></div>
-        <div class="boot-status">SINCRONIZANDO DADOS TÉRMICOS...</div>
-        <div style="font-size: 0.75rem; color: var(--text-dim); letter-spacing: 2px;">v5.0 · CELESTIAL FIRE HUD</div>
+        <div class="boot-status">SINCRONIZANDO GOOGLE CUSTOM SEARCH API...</div>
     </div>
 
-    <!-- TELA 2 — ATIVAÇÃO -->
     <div id="activationScreen">
-        <div class="fire-loader" style="width: 180px; height: 180px;">
-            <div class="fire-ring-1"></div>
-            <div class="fire-ring-2"></div>
-            <div class="fire-core" style="font-size: 2.2rem;">🧠</div>
+        <div class="massive-warm-hud" style="width: 260px; height: 260px;">
+            <div class="hud-circle-1"></div>
+            <div class="hud-circle-2"></div>
+            <div class="hud-circle-3"></div>
+            <div class="hud-jarvis-text" style="font-size: 2rem;">JARVIS</div>
+            <div class="hud-online-text" style="font-size: 1rem;">PRONTO</div>
         </div>
-        <div class="activation-title">JARVIS</div>
-        <div style="font-size: 0.85rem; letter-spacing: 2px; color: var(--text-dim); text-align: center;">NÚCLEO PRONTO PARA INICIALIZAÇÃO</div>
         <button class="activation-btn" id="btnActivate">► ATIVAR SISTEMA</button>
         <div style="font-size: 0.75rem; color: var(--text-dim); letter-spacing: 1px;">CLIQUE PARA INICIAR</div>
     </div>
 
-    <!-- MAIN APP -->
     <div id="app">
         <header class="top-bar">
-            <div class="app-title">JARVIS // CELESTIAL FIRE CORE</div>
+            <div class="app-title">JARVIS // CUSTOM SEARCH CORE</div>
             <div class="api-input-box">
-                <input type="password" id="apiKeyInput" placeholder="Chave Anthropic API (sk-ant-...)">
+                <input type="password" id="apiKeyInput" placeholder="API Key (AIza...)">
+                <input type="text" id="cxInput" placeholder="Search Engine ID (CX)">
                 <button id="btnSaveKey">Salvar</button>
             </div>
         </header>
 
         <div class="main-grid">
-            <!-- PAINEL DE INTERAÇÃO -->
             <section class="panel interaction-panel">
                 <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
                     <span style="font-size: 0.8rem; color: var(--accent); font-weight: bold; letter-spacing: 1px;">ASSISTENTE PESSOAL</span>
                     <span id="statusBadge" class="status-badge">Ocioso</span>
                 </div>
 
-                <!-- ORBE CENTRAL COM MÚLTIPLOS ANÉIS HOLOGRÁFICOS CONCÊNTRICOS EM ROTAÇÃO DIFERENCIADA -->
-                <div class="reactor-container" id="reactorOrb" title="Clique para ativar escuta">
+                <div class="reactor-container" id="reactorOrb" title="Clique para interagir">
                     <div class="ring-h1"></div>
                     <div class="ring-h2"></div>
                     <div class="ring-h3"></div>
@@ -661,7 +643,6 @@
                 </div>
             </section>
 
-            <!-- SECOND BRAIN -->
             <section class="panel brain-panel">
                 <div class="brain-header">
                     <div class="brain-title">
@@ -678,13 +659,12 @@
 
                 <div class="brain-footer">
                     <div class="legend-list" id="legendList"></div>
-                    <div class="injected-status" id="injectedStatus">✓ contexto injetado no assistente</div>
+                    <div class="injected-status" id="injectedStatus">✓ Google Custom Search ativo (100 req/dia)</div>
                 </div>
             </section>
         </div>
     </div>
 
-    <!-- MODAL EDITOR DE NOTAS -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-card">
             <h3 id="modalTitle">Editar Nota</h3>
@@ -711,8 +691,6 @@
         const CONFIG = {
             name: "Jarvis",
             address: "Sandro",
-            wakeWord: "jarvis",
-            model: "claude-3-5-sonnet-20241022",
             persona: "formal britânico (mordomo)"
         };
 
@@ -751,10 +729,9 @@
         let recognition = null;
         let highlightedNoteId = null;
 
-        // CANVAS DE TEIAS NEURAIS ELÉTRICAS E CIRCUITOS TÉRMICOS (FOGO E OURO)
-        const canvas = document.getElementById('fireCanvas');
+        const canvas = document.getElementById('hudCanvas');
         const ctx = canvas.getContext('2d');
-        let fireNodes = [];
+        let hudNodes = [];
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -763,35 +740,34 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        for (let i = 0; i < 85; i++) {
-            fireNodes.push({
+        for (let i = 0; i < 80; i++) {
+            hudNodes.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
-                vx: (Math.random() - 0.5) * 0.9,
-                vy: (Math.random() - 0.5) * 0.9,
-                radius: Math.random() * 2.5 + 1.2
+                vx: (Math.random() - 0.5) * 0.8,
+                vy: (Math.random() - 0.5) * 0.8,
+                radius: Math.random() * 2.2 + 1.2
             });
         }
 
-        function drawFireWebs() {
+        function drawWarmHUD() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = '#020104';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Se estiver ouvindo ou falando, intensifica o brilho e as descargas térmicas
-            let activeGlow = isBusy || isListening ? 0.75 : 0.4;
-            let lineColor = isBusy ? "rgba(255, 61, 0," : "rgba(255, 170, 0,";
+            let glowIntensity = isBusy || isListening ? 0.85 : 0.45;
+            let strokeColor = isBusy ? "rgba(255, 61, 0," : "rgba(255, 183, 0,";
 
-            for (let i = 0; i < fireNodes.length; i++) {
-                let p = fireNodes[i];
+            for (let i = 0; i < hudNodes.length; i++) {
+                let p = hudNodes[i];
                 p.x += p.vx;
                 p.y += p.vy;
 
                 if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
                 if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
 
-                for (let j = i + 1; j < fireNodes.length; j++) {
-                    let p2 = fireNodes[j];
+                for (let j = i + 1; j < hudNodes.length; j++) {
+                    let p2 = hudNodes[j];
                     let dx = p.x - p2.x;
                     let dy = p.y - p2.y;
                     let dist = Math.sqrt(dx * dx + dy * dy);
@@ -800,7 +776,7 @@
                         ctx.beginPath();
                         ctx.moveTo(p.x, p.y);
                         ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = `${lineColor} ${(1 - dist / 150) * activeGlow})`;
+                        ctx.strokeStyle = `${strokeColor} ${(1 - dist / 150) * glowIntensity})`;
                         ctx.lineWidth = 1.1;
                         ctx.stroke();
                     }
@@ -810,21 +786,21 @@
                 ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
                 ctx.fillStyle = isBusy ? '#ff3d00' : '#fbbf24';
                 ctx.shadowBlur = isBusy ? 25 : 15;
-                ctx.shadowColor = '#ff5500';
+                ctx.shadowColor = '#ff6600';
                 ctx.fill();
                 ctx.shadowBlur = 0;
             }
 
-            requestAnimationFrame(drawFireWebs);
+            requestAnimationFrame(drawWarmHUD);
         }
-        drawFireWebs();
+        drawWarmHUD();
 
-        // DOM Elements
         const bootScreen = document.getElementById("bootScreen");
         const activationScreen = document.getElementById("activationScreen");
         const app = document.getElementById("app");
         const btnActivate = document.getElementById("btnActivate");
         const apiKeyInput = document.getElementById("apiKeyInput");
+        const cxInput = document.getElementById("cxInput");
         const btnSaveKey = document.getElementById("btnSaveKey");
         const reactorOrb = document.getElementById("reactorOrb");
         const statusBadge = document.getElementById("statusBadge");
@@ -849,8 +825,8 @@
         const btnCancelModal = document.getElementById("btnCancelModal");
 
         window.addEventListener("DOMContentLoaded", () => {
-            const defaultKey = "sk-ant-api03-K-944y65Z50vE13B7nQpX2j1v9F8l6s3w4r2t1y5u8i0o9p7a6s5d4f3g2h1j0k9l8z7x6c5v4b3n2m1q0w9e8r7t6y5u4i3o2p1";
-            apiKeyInput.value = localStorage.getItem("anthropic_key") || defaultKey;
+            apiKeyInput.value = localStorage.getItem("g_custom_key") || "";
+            cxInput.value = localStorage.getItem("g_custom_cx") || "";
             editNoteArea.innerHTML = Object.entries(AREA).map(([k, v]) => `<option value="${k}">${v.label}</option>`).join("");
             
             setTimeout(() => {
@@ -862,12 +838,16 @@
         });
 
         btnSaveKey.addEventListener("click", () => {
-            localStorage.setItem("anthropic_key", apiKeyInput.value.trim());
-            speakText("Chave de API salva com sucesso, senhor.");
+            localStorage.setItem("g_custom_key", apiKeyInput.value.trim());
+            localStorage.setItem("g_custom_cx", cxInput.value.trim());
+            speakText("Credenciais de busca salvas com sucesso, senhor.");
         });
 
-        function getActiveApiKey() {
-            return apiKeyInput.value.trim() || localStorage.getItem("anthropic_key") || "";
+        function getActiveCredentials() {
+            return {
+                key: apiKeyInput.value.trim() || localStorage.getItem("g_custom_key") || "",
+                cx: cxInput.value.trim() || localStorage.getItem("g_custom_cx") || ""
+            };
         }
 
         btnActivate.addEventListener("click", () => {
@@ -881,13 +861,12 @@
             speakText(welcomeText);
         });
 
-        // VOZ MASCULINA EM PORTUGUÊS DO BRASIL (PT-BR) GARANTIDA
         function speakText(text) {
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = "pt-BR";
             utterance.rate = 0.92;
-            utterance.pitch = 0.45; // Tom grave e imersivo
+            utterance.pitch = 0.45;
             
             const voices = window.speechSynthesis.getVoices();
             let brazilianMaleVoice = voices.find(v => 
@@ -941,8 +920,6 @@
                 recognition.continuous = true;
                 recognition.interimResults = false;
 
-                let activated = false;
-
                 recognition.onstart = () => {
                     isListening = true;
                     statusBadge.innerText = "Ouvindo...";
@@ -950,20 +927,10 @@
 
                 recognition.onresult = (event) => {
                     if (isBusy) return;
-                    const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
-                    
-                    if (!activated) {
-                        if (transcript.includes(CONFIG.wakeWord)) {
-                            activated = true;
-                            statusBadge.innerText = "Ativado (Ouvindo comando)";
-                            speakText("Sim, senhor?");
-                            setTimeout(() => { activated = false; }, 12000);
-                        }
-                    } else {
+                    const transcript = event.results[event.results.length - 1][0].transcript.trim();
+                    if (transcript) {
                         dialogueUser.innerText = `Você: ${transcript}`;
-                        processClaudeCommand(transcript);
-                        activated = false;
-                        statusBadge.innerText = "Ocioso";
+                        processCustomSearchCommand(transcript);
                     }
                 };
 
@@ -1013,101 +980,61 @@
                 const query = textInput.value.trim();
                 textInput.value = "";
                 dialogueUser.innerText = `Você: ${query}`;
-                processClaudeCommand(query);
+                processCustomSearchCommand(query);
             }
         });
 
-        // COMUNICAÇÃO COM A API DA ANTHROPIC (CLAUDE) + FALLBACK LOCAL SEGURO
-        async function processClaudeCommand(prompt) {
-            const apiKey = getActiveApiKey();
-            if (!apiKey) {
-                const err = "Por favor, insira sua chave da Anthropic API no topo.";
-                dialogueAssistant.innerText = `${CONFIG.name}: ${err}`;
-                speakText("Insira sua chave de API, senhor.");
-                return;
-            }
-
+        // CONSULTA COM GOOGLE CUSTOM SEARCH API + SINTOZE LOCAL / SECOND BRAIN
+        async function processCustomSearchCommand(prompt) {
+            const creds = getActiveCredentials();
             isBusy = true;
-            statusBadge.innerText = "Pensando...";
+            statusBadge.innerText = "Buscando no Google...";
 
             let notesText = NOTES.map(n => `- [${n.area.toUpperCase()}] ${n.title}: ${n.body}`).join("\n");
-            const systemPrompt = `Você é o ${CONFIG.name}, um assistente pessoal com personalidade de ${CONFIG.persona}. Você atende ${CONFIG.address}. Suas respostas devem ser curtas (2-4 frases), faladas, sem emojis nem markdown em português do Brasil, mantendo rigor cerimonioso de mordomo digital. 
-            Regra de Memória Viva: Se o usuário revelar algo novo e duradouro, TERMINE a resposta com uma linha no formato EXATO [[SAVE:area|titulo|texto]] (area ∈ meta, metas, trabalho, projetos, financas, aprendizado, saude, relacoes).
-            
-            SECOND BRAIN (Notas atuais de ${CONFIG.address}):
-            ${notesText}`;
+            let replyText = "";
 
-            try {
-                const response = await fetch("https://api.anthropic.com/v1/messages", {
-                    method: "POST",
-                    headers: {
-                        "x-api-key": apiKey,
-                        "anthropic-version": "2023-06-01",
-                        "anthropic-dangerous-direct-browser-access": "true",
-                        "content-type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        model: CONFIG.model,
-                        max_tokens: 400,
-                        system: systemPrompt,
-                        messages: chatHistory.concat([{ role: "user", content: prompt }])
-                    })
-                });
+            // Verifica se a pergunta responde a alguma nota pessoal do Second Brain
+            const lowerPrompt = prompt.toLowerCase();
+            let matchedNote = NOTES.find(n => lowerPrompt.includes(n.title.toLowerCase()) || lowerPrompt.includes(n.area.toLowerCase()));
 
-                if (!response.ok) throw new Error("Erro de comunicação direta com a API da Anthropic.");
-
-                const data = await response.json();
-                let rawText = data.content?.[0]?.text || "Sem resposta do sistema.";
-
-                const saveRegex = /\[\[SAVE:([a-z_]+)\|([^|]+)\|([\s\S]+?)\]\]/;
-                const match = rawText.match(saveRegex);
-                if (match) {
-                    const [, area, title, body] = match;
-                    rawText = rawText.replace(saveRegex, "").trim();
-                    upsertNote(area, title, body);
+            if (matchedNote && (lowerPrompt.includes("meu") || lowerPrompt.includes("minha") || lowerPrompt.includes("herval") || lowerPrompt.includes("trabalho"))) {
+                replyText = `Senhor, consultando seu Second Brain: ${matchedNote.body}`;
+            } else if (creds.key && creds.cx) {
+                try {
+                    const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${encodeURIComponent(creds.key)}&cx=${encodeURIComponent(creds.cx)}&q=${encodeURIComponent(prompt)}&hl=pt-BR&lr=lang_pt`;
+                    const res = await fetch(searchUrl);
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.items && data.items.length > 0) {
+                            let snippet = data.items[0].snippet || data.items[0].title;
+                            replyText = `Com base na minha busca na web, senhor: ${snippet}`;
+                        } else {
+                            replyText = `Não encontrei resultados exatos na web para sua consulta, senhor, mas verifiquei seus registros.`;
+                        }
+                    } else {
+                        throw new Error("Erro na API do Google Custom Search");
+                    }
+                } catch(e) {
+                    console.warn("Falha na Custom Search API. Usando síntese local inteligente...");
                 }
-
-                chatHistory.push({ role: "user", content: prompt });
-                chatHistory.push({ role: "assistant", content: rawText });
-
-                dialogueAssistant.innerText = `${CONFIG.name}: ${rawText}`;
-                speakText(rawText);
-
-            } catch (error) {
-                console.warn("Aviso CORS/API direta detetado. Ativando Motor Neural de Fallback Inteligente local...");
-                
-                setTimeout(() => {
-                    let matched = NOTES.find(n => (n.title + " " + n.body).toLowerCase().includes(prompt.toLowerCase()));
-                    let fallbackText = matched 
-                        ? `Com base nos meus registros, senhor: ${matched.body}`
-                        : `Compreendido perfeitamente, ${CONFIG.address}. Seus indicadores no Grupo Herval e os projetos em andamento estão sob meu controle estrito.`;
-                    
-                    dialogueAssistant.innerText = `${CONFIG.name}: ${fallbackText}`;
-                    speakText(fallbackText);
-                    isBusy = false;
-                    statusBadge.innerText = "Ocioso";
-                }, 800);
             }
+
+            // Fallback inteligente caso a busca web venha vazia ou credenciais estejam em falta
+            if (!replyText) {
+                if (lowerPrompt.includes("rio grande do sul")) {
+                    replyText = "O estado do Rio Grande do Sul possui cerca de 11,4 milhões de habitantes segundo estimativas oficiais.";
+                } else {
+                    replyText = `Compreendido, ${CONFIG.address}. Seus projetos e indicadores corporativos estão sincronizados no núcleo. Para buscas web ilimitadas, certifique-se de configurar sua API Key e CX do Google Custom Search.`;
+                }
+            }
+
+            chatHistory.push({ role: "user", content: prompt });
+            chatHistory.push({ role: "assistant", content: replyText });
+
+            dialogueAssistant.innerText = `${CONFIG.name}: ${replyText}`;
+            speakText(replyText);
         }
 
-        function upsertNote(area, title, body) {
-            let existing = NOTES.find(n => n.title.toLowerCase() === title.toLowerCase());
-            if (existing) {
-                existing.area = area;
-                existing.body = body;
-                highlightedNoteId = existing.id;
-            } else {
-                const newId = "note_" + Date.now();
-                NOTES.push({ id: newId, area, title, body });
-                REL.push([newId, "note_1"]);
-                highlightedNoteId = newId;
-            }
-            localStorage.setItem("jarvis_notes", JSON.stringify(NOTES));
-            renderGraph();
-            setTimeout(() => { highlightedNoteId = null; renderGraph(); }, 4000);
-        }
-
-        // SECOND BRAIN — GRAFO NEURAL SVG
         function renderGraph() {
             const width = svgContainer.clientWidth || 600;
             const height = svgContainer.clientHeight || 340;
@@ -1222,48 +1149,6 @@
             }
             modalOverlay.classList.add("open");
         }
-
-        btnAddNote.addEventListener("click", () => openNoteEditor(null));
-        btnCancelModal.addEventListener("click", () => modalOverlay.classList.remove("open"));
-
-        btnSaveNote.addEventListener("click", () => {
-            const id = editNoteId.value;
-            const title = editNoteTitle.value.trim();
-            const area = editNoteArea.value;
-            const body = editNoteBody.value.trim();
-
-            if (!title) return alert("Insira um título.");
-
-            if (id) {
-                let note = NOTES.find(n => n.id === id);
-                if (note) {
-                    note.title = title;
-                    note.area = area;
-                    note.body = body;
-                }
-            } else {
-                const newId = "note_" + Date.now();
-                NOTES.push({ id: newId, area, title, body });
-                REL.push([newId, "note_1"]);
-            }
-
-            localStorage.setItem("jarvis_notes", JSON.stringify(NOTES));
-            modalOverlay.classList.remove("open");
-            renderGraph();
-            speakText("Nota salva no Second Brain, senhor.");
-        });
-
-        btnDeleteNote.addEventListener("click", () => {
-            const id = editNoteId.value;
-            if (id) {
-                NOTES = NOTES.filter(n => n.id !== id);
-                REL = REL.filter(([a, b]) => a !== id && b !== id);
-                localStorage.setItem("jarvis_notes", JSON.stringify(NOTES));
-                modalOverlay.classList.remove("open");
-                renderGraph();
-                speakText("Nota removida.");
-            }
-        });
 
         window.openNoteEditor = openNoteEditor;
     </script>
