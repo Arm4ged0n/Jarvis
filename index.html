@@ -24,7 +24,6 @@
         ::-webkit-scrollbar-track { background: #020104; }
         ::-webkit-scrollbar-thumb { background: rgba(255, 119, 0, 0.4); border-radius: 2px; }
 
-        /* CANVAS DE TEIAS NEURAIS, CIRCUITOS E RAIOS DE FOGO */
         #fireCanvas {
             position: fixed;
             inset: 0;
@@ -33,7 +32,6 @@
             opacity: 0.95;
         }
 
-        /* TELA 1 — BOOT */
         #bootScreen {
             position: fixed;
             inset: 0;
@@ -128,7 +126,6 @@
 
         @keyframes blink { 0%, 49%, 100% { opacity: 1; } 50%, 99% { opacity: 0.3; } }
 
-        /* TELA 2 — ATIVAÇÃO */
         #activationScreen {
             position: fixed;
             inset: 0;
@@ -180,7 +177,6 @@
             transform: scale(1.04);
         }
 
-        /* MAIN APP */
         #app {
             display: none;
             flex-direction: column;
@@ -338,9 +334,6 @@
             border-radius: 50%;
             animation: spinCounter 4s linear infinite;
         }
-
-        @keyframes spinClockwise { to { transform: rotate(360deg); } }
-        @keyframes spinCounter { to { transform: rotate(-360deg); } }
 
         .status-badge {
             font-size: 0.75rem;
@@ -527,7 +520,6 @@
             font-weight: 500;
         }
 
-        /* MODAL */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -594,10 +586,8 @@
 </head>
 <body>
 
-    <!-- CANVAS DE TEIAS NEURAIS, CIRCUITOS E RAIOS DE FOGO -->
     <canvas id="fireCanvas"></canvas>
 
-    <!-- TELA 1 — BOOT -->
     <div id="bootScreen">
         <div class="fire-loader">
             <div class="fire-ring-1"></div>
@@ -607,10 +597,9 @@
         <div class="boot-title">JARVIS</div>
         <div class="boot-hr"></div>
         <div class="boot-status">SINCRONIZANDO DADOS TÉRMICOS...</div>
-        <div style="font-size: 0.75rem; color: var(--text-dim); letter-spacing: 2px;">v5.0 · CELESTIAL FIRE HUD</div>
+        <div style="font-size: 0.75rem; color: var(--text-dim); letter-spacing: 2px;">v5.0 · CELESTIAL FIRE HUD · API ONLY</div>
     </div>
 
-    <!-- TELA 2 — ATIVAÇÃO -->
     <div id="activationScreen">
         <div class="fire-loader" style="width: 180px; height: 180px;">
             <div class="fire-ring-1"></div>
@@ -623,7 +612,6 @@
         <div style="font-size: 0.75rem; color: var(--text-dim); letter-spacing: 1px;">CLIQUE PARA INICIAR</div>
     </div>
 
-    <!-- MAIN APP -->
     <div id="app">
         <header class="top-bar">
             <div class="app-title">JARVIS // CELESTIAL FIRE CORE</div>
@@ -634,7 +622,6 @@
         </header>
 
         <div class="main-grid">
-            <!-- PAINEL DE INTERAÇÃO -->
             <section class="panel interaction-panel">
                 <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
                     <span style="font-size: 0.8rem; color: var(--accent); font-weight: bold; letter-spacing: 1px;">ASSISTENTE PESSOAL</span>
@@ -661,7 +648,6 @@
                 </div>
             </section>
 
-            <!-- SECOND BRAIN -->
             <section class="panel brain-panel">
                 <div class="brain-header">
                     <div class="brain-title">
@@ -684,7 +670,6 @@
         </div>
     </div>
 
-    <!-- MODAL EDITOR DE NOTAS -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-card">
             <h3 id="modalTitle">Editar Nota</h3>
@@ -750,7 +735,7 @@
         let recognition = null;
         let highlightedNoteId = null;
 
-        // CANVAS DE TEIAS NEURAIS ELÉTRICAS E CIRCUITOS TÉRMICOS (FOGO E OURO)
+        // CANVAS DE TEIAS NEURAIS
         const canvas = document.getElementById('fireCanvas');
         const ctx = canvas.getContext('2d');
         let fireNodes = [];
@@ -817,7 +802,6 @@
         }
         drawFireWebs();
 
-        // DOM Elements
         const bootScreen = document.getElementById("bootScreen");
         const activationScreen = document.getElementById("activationScreen");
         const app = document.getElementById("app");
@@ -847,8 +831,7 @@
         const btnCancelModal = document.getElementById("btnCancelModal");
 
         window.addEventListener("DOMContentLoaded", () => {
-            const defaultKey = "sk-ant-api03-K-944y65Z50vE13B7nQpX2j1v9F8l6s3w4r2t1y5u8i0o9p7a6s5d4f3g2h1j0k9l8z7x6c5v4b3n2m1q0w9e8r7t6y5u4i3o2p1";
-            apiKeyInput.value = localStorage.getItem("anthropic_key") || defaultKey;
+            apiKeyInput.value = localStorage.getItem("anthropic_key") || "";
             editNoteArea.innerHTML = Object.entries(AREA).map(([k, v]) => `<option value="${k}">${v.label}</option>`).join("");
             
             setTimeout(() => {
@@ -879,7 +862,6 @@
             speakText(welcomeText);
         });
 
-        // VOZ MASCULINA EM PORTUGUÊS DO BRASIL (PT-BR) GARANTIDA
         function speakText(text) {
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
@@ -894,15 +876,12 @@
                     v.name.toLowerCase().includes("daniel") ||
                     v.name.toLowerCase().includes("lucas") ||
                     v.name.toLowerCase().includes("felipe") ||
-                    v.name.toLowerCase().includes("ricardo") ||
-                    v.name.toLowerCase().includes("google português do brasil")
+                    v.name.toLowerCase().includes("ricardo")
                 )
             ) || voices.find(v => 
                 v.lang.includes("pt-BR") && 
                 !v.name.toLowerCase().includes("female") && 
-                !v.name.toLowerCase().includes("luciana") && 
-                !v.name.toLowerCase().includes("raquel") &&
-                !v.name.toLowerCase().includes("maria")
+                !v.name.toLowerCase().includes("luciana")
             ) || voices.find(v => v.lang.includes("pt")) || voices[0];
 
             if (brazilianMaleVoice) utterance.voice = brazilianMaleVoice;
@@ -1003,7 +982,7 @@
             }
         });
 
-        // COMUNICAÇÃO COM A API DA ANTHROPIC (CLAUDE) + FALLBACK LOCAL SEGURO
+        // ⚡ API ANTHROPIC EXCLUSIVA — SEM FALLBACK LOCAL
         async function processClaudeCommand(prompt) {
             const apiKey = getActiveApiKey();
             if (!apiKey) {
@@ -1017,13 +996,15 @@
             statusBadge.innerText = "Pensando...";
 
             let notesText = NOTES.map(n => `- [${n.area.toUpperCase()}] ${n.title}: ${n.body}`).join("\n");
-            const systemPrompt = `Você é o ${CONFIG.name}, um assistente pessoal com personalidade de ${CONFIG.persona}. Você atende ${CONFIG.address}. Suas respostas devem ser curtas (2-4 frases), faladas, sem emojis nem markdown em português do Brasil, mantendo rigor cerimonioso de mordomo digital. 
+            const systemPrompt = `Você é o ${CONFIG.name}, um assistente pessoal com personalidade de ${CONFIG.persona}. Você atende ${CONFIG.address}. Suas respostas devem ser curtas (2-4 frases), faladas, sem emojis nem markdown em português do Brasil. 
             Regra de Memória Viva: Se o usuário revelar algo novo e duradouro, TERMINE a resposta com uma linha no formato EXATO [[SAVE:area|titulo|texto]] (area ∈ meta, metas, trabalho, projetos, financas, aprendizado, saude, relacoes).
             
             SECOND BRAIN (Notas atuais de ${CONFIG.address}):
             ${notesText}`;
 
             try {
+                console.log("📡 Chamando Claude via Anthropic API...");
+                
                 const response = await fetch("https://api.anthropic.com/v1/messages", {
                     method: "POST",
                     headers: {
@@ -1040,9 +1021,17 @@
                     })
                 });
 
-                if (!response.ok) throw new Error("Erro de comunicação direta com a API da Anthropic.");
+                console.log("📊 Status:", response.status);
+
+                if (!response.ok) {
+                    const errData = await response.json();
+                    console.error("❌ Erro API:", errData);
+                    throw new Error(`Erro ${response.status}: ${errData.error?.message || "Desconhecido"}`);
+                }
 
                 const data = await response.json();
+                console.log("✅ Resposta:", data);
+                
                 let rawText = data.content?.[0]?.text || "Sem resposta do sistema.";
 
                 const saveRegex = /\[\[SAVE:([a-z_]+)\|([^|]+)\|([\s\S]+?)\]\]/;
@@ -1058,21 +1047,19 @@
 
                 dialogueAssistant.innerText = `${CONFIG.name}: ${rawText}`;
                 speakText(rawText);
+                
+                isBusy = false;
+                statusBadge.innerText = "Ocioso";
 
             } catch (error) {
-                console.warn("Aviso CORS/API direta detetado. Ativando Motor Neural de Fallback Inteligente local...");
+                console.error("🔥 FALHA CRÍTICA:", error.message);
                 
-                setTimeout(() => {
-                    let matched = NOTES.find(n => (n.title + " " + n.body).toLowerCase().includes(prompt.toLowerCase()));
-                    let fallbackText = matched 
-                        ? `Com base nos meus registros, senhor: ${matched.body}`
-                        : `Compreendido perfeitamente, ${CONFIG.address}. Seus indicadores no Grupo Herval e os projetos em andamento estão sob meu controle estrito.`;
-                    
-                    dialogueAssistant.innerText = `${CONFIG.name}: ${fallbackText}`;
-                    speakText(fallbackText);
-                    isBusy = false;
-                    statusBadge.innerText = "Ocioso";
-                }, 800);
+                const errMsg = `Erro ao conectar à API: ${error.message}`;
+                dialogueAssistant.innerText = `${CONFIG.name}: ${errMsg}`;
+                speakText(errMsg);
+                
+                isBusy = false;
+                statusBadge.innerText = "❌ Erro";
             }
         }
 
@@ -1093,7 +1080,6 @@
             setTimeout(() => { highlightedNoteId = null; renderGraph(); }, 4000);
         }
 
-        // SECOND BRAIN — GRAFO NEURAL SVG
         function renderGraph() {
             const width = svgContainer.clientWidth || 600;
             const height = svgContainer.clientHeight || 340;
@@ -1255,4 +1241,3 @@
     </script>
 </body>
 </html>
-
