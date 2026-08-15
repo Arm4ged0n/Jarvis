@@ -90,7 +90,7 @@
         }
 
         .fire-core {
-            font-size: 3rem;
+            font-size: 2.8rem;
             animation: coreFlicker 0.4s infinite alternate;
         }
 
@@ -283,7 +283,6 @@
             min-height: 480px;
         }
 
-        /* ORBE COM MÚLTIPLOS ANÉIS HOLOGRÁFICOS CONCÊNTRICOS ROTATIVOS (DENTRO DO OUTRO EM ROTAÇÃO DIFERENCIADA) */
         .reactor-container {
             width: 220px;
             height: 220px;
@@ -304,13 +303,12 @@
             transform: scale(1.04);
         }
 
-        /* Anéis concêntricos independentes com rotação e tamanhos diferentes */
         .ring-h1 {
             position: absolute;
             inset: 0;
             border: 2px dashed var(--accent);
             border-radius: 50%;
-            animation: spinClockwise 14s linear infinite;
+            animation: spinClockwise 12s linear infinite;
         }
 
         .ring-h2 {
@@ -320,7 +318,7 @@
             border-top: 2px solid transparent;
             border-bottom: 2px solid transparent;
             border-radius: 50%;
-            animation: spinCounter 9s linear infinite;
+            animation: spinCounter 7s linear infinite;
         }
 
         .ring-h3 {
@@ -340,6 +338,9 @@
             border-radius: 50%;
             animation: spinCounter 4s linear infinite;
         }
+
+        @keyframes spinClockwise { to { transform: rotate(360deg); } }
+        @keyframes spinCounter { to { transform: rotate(-360deg); } }
 
         .status-badge {
             font-size: 0.75rem;
@@ -614,10 +615,10 @@
         <div class="fire-loader" style="width: 180px; height: 180px;">
             <div class="fire-ring-1"></div>
             <div class="fire-ring-2"></div>
-            <div class="fire-core" style="font-size: 2.2rem;">🧠</div>
+            <div class="fire-core" style="font-size: 2rem;">🧠</div>
         </div>
         <div class="activation-title">JARVIS</div>
-        <div style="font-size: 0.85rem; letter-spacing: 2px; color: var(--text-dim); text-align: center;">NÚCLEO PRONTO PARA INICIALIZAÇÃO</div>
+        <div style="font-size: 0.85rem; letter-spacing: 2px; color: var(--text-dim); text-align: center;">NÚCLEO TÉRMICO PRONTO PARA IGNIÇÃO</div>
         <button class="activation-btn" id="btnActivate">► ATIVAR SISTEMA</button>
         <div style="font-size: 0.75rem; color: var(--text-dim); letter-spacing: 1px;">CLIQUE PARA INICIAR</div>
     </div>
@@ -640,8 +641,7 @@
                     <span id="statusBadge" class="status-badge">Ocioso</span>
                 </div>
 
-                <!-- ORBE CENTRAL COM MÚLTIPLOS ANÉIS HOLOGRÁFICOS CONCÊNTRICOS EM ROTAÇÃO DIFERENCIADA -->
-                <div class="reactor-container" id="reactorOrb" title="Clique para ativar escuta">
+                <div class="reactor-container" id="reactorOrb" title="Clique para interagir">
                     <div class="ring-h1"></div>
                     <div class="ring-h2"></div>
                     <div class="ring-h3"></div>
@@ -711,7 +711,6 @@
         const CONFIG = {
             name: "Jarvis",
             address: "Sandro",
-            wakeWord: "jarvis",
             model: "claude-3-5-sonnet-20241022",
             persona: "formal britânico (mordomo)"
         };
@@ -778,9 +777,8 @@
             ctx.fillStyle = '#020104';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Se estiver ouvindo ou falando, intensifica o brilho e as descargas térmicas
-            let activeGlow = isBusy || isListening ? 0.75 : 0.4;
-            let lineColor = isBusy ? "rgba(255, 61, 0," : "rgba(255, 170, 0,";
+            let activeGlow = isBusy || isListening ? 0.8 : 0.45;
+            let lineColor = isBusy ? "rgba(255, 61, 0," : "rgba(251, 191, 36,";
 
             for (let i = 0; i < fireNodes.length; i++) {
                 let p = fireNodes[i];
@@ -801,7 +799,7 @@
                         ctx.moveTo(p.x, p.y);
                         ctx.lineTo(p2.x, p2.y);
                         ctx.strokeStyle = `${lineColor} ${(1 - dist / 150) * activeGlow})`;
-                        ctx.lineWidth = 1.1;
+                        ctx.lineWidth = 1.2;
                         ctx.stroke();
                     }
                 }
@@ -887,7 +885,7 @@
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = "pt-BR";
             utterance.rate = 0.92;
-            utterance.pitch = 0.45; // Tom grave e imersivo
+            utterance.pitch = 0.45;
             
             const voices = window.speechSynthesis.getVoices();
             let brazilianMaleVoice = voices.find(v => 
@@ -941,8 +939,6 @@
                 recognition.continuous = true;
                 recognition.interimResults = false;
 
-                let activated = false;
-
                 recognition.onstart = () => {
                     isListening = true;
                     statusBadge.innerText = "Ouvindo...";
@@ -950,20 +946,10 @@
 
                 recognition.onresult = (event) => {
                     if (isBusy) return;
-                    const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
-                    
-                    if (!activated) {
-                        if (transcript.includes(CONFIG.wakeWord)) {
-                            activated = true;
-                            statusBadge.innerText = "Ativado (Ouvindo comando)";
-                            speakText("Sim, senhor?");
-                            setTimeout(() => { activated = false; }, 12000);
-                        }
-                    } else {
+                    const transcript = event.results[event.results.length - 1][0].transcript.trim();
+                    if (transcript) {
                         dialogueUser.innerText = `Você: ${transcript}`;
                         processClaudeCommand(transcript);
-                        activated = false;
-                        statusBadge.innerText = "Ocioso";
                     }
                 };
 
