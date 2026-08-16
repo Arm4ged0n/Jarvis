@@ -12,15 +12,16 @@
         }
 
         :root {
-            --blue: #0084ff;
-            --blue-light: #00a8ff;
-            --blue-dark: #0066cc;
-            --dark-bg: #0a0e27;
-            --dark-secondary: #151b3d;
+            --gold: #f7931a;
+            --gold-light: #fbbf24;
+            --gold-dark: #d97706;
+            --fire: #ff4500;
+            --neon-cyan: #2dd4ff;
+            --neon-pink: #ff006e;
+            --dark-bg: #0a0a0a;
+            --dark-secondary: #1a1a2e;
             --text-primary: #f5f5f5;
             --text-secondary: #b8b8b8;
-            --purple: #9f7aea;
-            --cyan: #2dd4ff;
             --status-ok: #10b981;
             --status-listening: #f59e0b;
             --status-thinking: #ef4444;
@@ -28,11 +29,32 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, var(--dark-bg) 0%, #0f0a2e 100%);
+            background: radial-gradient(ellipse at center, #1a0f0f 0%, var(--dark-bg) 100%);
             color: var(--text-primary);
             overflow: hidden;
             height: 100vh;
             width: 100vw;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════════ */
+        /* REDE NEURAL ANIMADA */
+        /* ═══════════════════════════════════════════════════════════════════════ */
+
+        .neural-net-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        canvas#neuralCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            opacity: 0.4;
         }
 
         /* ═══════════════════════════════════════════════════════════════════════ */
@@ -45,7 +67,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, var(--dark-bg) 0%, #0f0a2e 100%);
+            background: radial-gradient(ellipse at center, #2a1510 0%, var(--dark-bg) 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -64,38 +86,53 @@
             font-family: 'Courier New', monospace;
             font-size: clamp(3rem, 10vw, 8rem);
             font-weight: bold;
-            background: linear-gradient(90deg, var(--blue) 0%, var(--cyan) 50%, var(--blue) 100%);
+            background: linear-gradient(90deg, var(--gold) 0%, var(--fire) 50%, var(--neon-pink) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             margin-bottom: 1rem;
-            text-shadow: 0 0 30px rgba(0, 132, 255, 0.3);
+            text-shadow: 0 0 60px rgba(247, 147, 26, 0.8), 0 0 120px rgba(255, 69, 0, 0.6);
+            filter: drop-shadow(0 0 30px rgba(255, 69, 0, 0.5));
+            animation: title-glow 2s ease-in-out infinite;
+        }
+
+        @keyframes title-glow {
+            0%, 100% { text-shadow: 0 0 60px rgba(247, 147, 26, 0.8), 0 0 120px rgba(255, 69, 0, 0.6); }
+            50% { text-shadow: 0 0 100px rgba(247, 147, 26, 1), 0 0 160px rgba(255, 69, 0, 0.8); }
         }
 
         .boot-line {
             width: 80%;
-            height: 2px;
-            background: linear-gradient(90deg, var(--blue), var(--cyan), var(--blue));
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), var(--fire), var(--neon-pink), var(--gold));
             margin: 2rem 0;
-            box-shadow: 0 0 15px rgba(0, 132, 255, 0.5);
+            box-shadow: 0 0 30px rgba(247, 147, 26, 0.8), 0 0 60px rgba(255, 69, 0, 0.6);
+            animation: line-pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes line-pulse {
+            0%, 100% { box-shadow: 0 0 30px rgba(247, 147, 26, 0.8), 0 0 60px rgba(255, 69, 0, 0.6); }
+            50% { box-shadow: 0 0 50px rgba(247, 147, 26, 1), 0 0 100px rgba(255, 69, 0, 0.8); }
         }
 
         .boot-status {
             font-size: 1.1rem;
-            color: var(--blue);
+            color: var(--gold);
             font-family: 'Courier New', monospace;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             animation: pulse-text 1.5s ease-in-out infinite;
+            text-shadow: 0 0 20px rgba(247, 147, 26, 0.6);
         }
 
         .boot-version {
             position: absolute;
             bottom: 2rem;
             font-size: 0.9rem;
-            color: var(--text-secondary);
+            color: var(--neon-cyan);
             font-family: 'Courier New', monospace;
             letter-spacing: 1px;
+            text-shadow: 0 0 15px rgba(45, 212, 255, 0.5);
         }
 
         @keyframes pulse-text {
@@ -113,7 +150,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, var(--dark-bg) 0%, #0f0a2e 100%);
+            background: radial-gradient(ellipse at center, #2a1510 0%, var(--dark-bg) 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -132,45 +169,50 @@
             font-family: 'Courier New', monospace;
             font-size: clamp(2.5rem, 8vw, 6rem);
             font-weight: bold;
-            background: linear-gradient(90deg, var(--blue) 0%, var(--cyan) 50%, var(--blue) 100%);
+            background: linear-gradient(90deg, var(--gold) 0%, var(--fire) 50%, var(--neon-pink) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             margin-bottom: 3rem;
-            text-shadow: 0 0 30px rgba(0, 132, 255, 0.3);
+            text-shadow: 0 0 60px rgba(247, 147, 26, 0.8);
+            filter: drop-shadow(0 0 30px rgba(255, 69, 0, 0.5));
+            animation: title-glow 2s ease-in-out infinite;
         }
 
         .activation-button {
-            padding: 1.2rem 3rem;
+            padding: 1.5rem 3.5rem;
             font-size: 1.2rem;
             font-family: 'Courier New', monospace;
-            background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+            background: linear-gradient(135deg, var(--gold) 0%, var(--fire) 100%);
             color: var(--dark-bg);
-            border: none;
+            border: 2px solid var(--neon-pink);
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
-            letter-spacing: 1px;
-            box-shadow: 0 0 30px rgba(0, 132, 255, 0.4);
+            letter-spacing: 2px;
+            box-shadow: 0 0 40px rgba(247, 147, 26, 0.6), 0 0 80px rgba(255, 69, 0, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
             margin-bottom: 2rem;
+            text-transform: uppercase;
         }
 
         .activation-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 50px rgba(0, 132, 255, 0.6);
+            transform: scale(1.08);
+            box-shadow: 0 0 60px rgba(247, 147, 26, 0.8), 0 0 120px rgba(255, 69, 0, 0.6), inset 0 0 30px rgba(255, 255, 255, 0.2);
         }
 
         .activation-button:active {
-            transform: scale(0.98);
+            transform: scale(0.96);
         }
 
         .activation-text {
             font-size: 1rem;
-            color: var(--text-secondary);
+            color: var(--neon-cyan);
             font-family: 'Courier New', monospace;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px rgba(45, 212, 255, 0.5);
+            animation: pulse-text 1.5s ease-in-out infinite;
         }
 
         /* ═══════════════════════════════════════════════════════════════════════ */
@@ -199,8 +241,9 @@
         .app-top {
             flex: 0 0 auto;
             padding: 1.5rem 2rem;
-            border-bottom: 1px solid rgba(0, 132, 255, 0.2);
-            background: linear-gradient(180deg, var(--dark-secondary) 0%, transparent 100%);
+            border-bottom: 2px solid var(--gold);
+            background: linear-gradient(180deg, rgba(26, 26, 46, 0.9) 0%, transparent 100%);
+            box-shadow: 0 0 30px rgba(247, 147, 26, 0.2);
         }
 
         .app-header {
@@ -212,21 +255,27 @@
 
         .app-name {
             font-family: 'Courier New', monospace;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: bold;
-            color: var(--blue);
-            letter-spacing: 1px;
+            background: linear-gradient(90deg, var(--gold), var(--fire));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            text-shadow: 0 0 30px rgba(247, 147, 26, 0.6);
+            filter: drop-shadow(0 0 15px rgba(255, 69, 0, 0.3));
         }
 
         .api-key-input {
-            padding: 0.6rem 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--blue);
-            border-radius: 4px;
+            padding: 0.8rem 1.2rem;
+            background: rgba(26, 26, 46, 0.8);
+            border: 2px solid var(--gold);
+            border-radius: 6px;
             color: var(--text-primary);
             font-size: 0.9rem;
             max-width: 300px;
             font-family: monospace;
+            box-shadow: 0 0 15px rgba(247, 147, 26, 0.2);
         }
 
         .api-key-input::placeholder {
@@ -235,8 +284,8 @@
 
         .api-key-input:focus {
             outline: none;
-            border-color: var(--blue-light);
-            box-shadow: 0 0 10px rgba(0, 132, 255, 0.3);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 25px rgba(247, 147, 26, 0.4), 0 0 15px rgba(45, 212, 255, 0.3);
         }
 
         .status-line {
@@ -244,14 +293,17 @@
             color: var(--text-secondary);
             font-family: 'Courier New', monospace;
             margin-bottom: 0.5rem;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
 
         .status-line.user {
-            color: var(--blue);
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px rgba(45, 212, 255, 0.4);
         }
 
         .status-line.assistant {
-            color: var(--cyan);
+            color: var(--gold);
+            text-shadow: 0 0 10px rgba(247, 147, 26, 0.4);
         }
 
         /* ═══════════════════════════════════════════════════════════════════════ */
@@ -266,6 +318,7 @@
             justify-content: center;
             padding: 2rem;
             overflow-y: auto;
+            position: relative;
         }
 
         .orb-container {
@@ -284,17 +337,19 @@
             width: 160px;
             height: 160px;
             border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, var(--blue-light), var(--blue), var(--blue-dark));
+            background: radial-gradient(circle at 30% 30%, var(--gold-light), var(--gold), var(--fire));
             box-shadow: 
-                0 0 40px rgba(0, 132, 255, 0.6),
-                inset -10px -10px 20px rgba(0, 0, 0, 0.5),
-                inset 10px 10px 20px rgba(255, 255, 255, 0.1);
+                0 0 60px rgba(247, 147, 26, 0.8),
+                0 0 120px rgba(255, 69, 0, 0.6),
+                inset -10px -10px 20px rgba(0, 0, 0, 0.7),
+                inset 10px 10px 20px rgba(255, 255, 255, 0.15);
             animation: orb-pulse 2s ease-in-out infinite;
+            filter: drop-shadow(0 0 40px rgba(255, 69, 0, 0.5));
         }
 
         @keyframes orb-pulse {
-            0%, 100% { box-shadow: 0 0 40px rgba(0, 132, 255, 0.6), inset -10px -10px 20px rgba(0, 0, 0, 0.5), inset 10px 10px 20px rgba(255, 255, 255, 0.1); }
-            50% { box-shadow: 0 0 60px rgba(0, 132, 255, 0.8), inset -10px -10px 20px rgba(0, 0, 0, 0.5), inset 10px 10px 20px rgba(255, 255, 255, 0.15); }
+            0%, 100% { box-shadow: 0 0 60px rgba(247, 147, 26, 0.8), 0 0 120px rgba(255, 69, 0, 0.6), inset -10px -10px 20px rgba(0, 0, 0, 0.7), inset 10px 10px 20px rgba(255, 255, 255, 0.15); }
+            50% { box-shadow: 0 0 100px rgba(247, 147, 26, 1), 0 0 160px rgba(255, 69, 0, 0.8), inset -10px -10px 20px rgba(0, 0, 0, 0.7), inset 10px 10px 20px rgba(255, 255, 255, 0.2); }
         }
 
         .orb.listening {
@@ -303,7 +358,7 @@
 
         @keyframes orb-wave {
             0%, 100% { transform: translate(-50%, -50%) scale(1); }
-            50% { transform: translate(-50%, -50%) scale(1.1); }
+            50% { transform: translate(-50%, -50%) scale(1.15); }
         }
 
         .orb.thinking {
@@ -312,7 +367,7 @@
 
         @keyframes orb-think {
             0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
-            50% { transform: translate(-50%, -50%) rotate(5deg); }
+            50% { transform: translate(-50%, -50%) rotate(8deg); }
         }
 
         .orb-ring {
@@ -322,15 +377,35 @@
             transform: translate(-50%, -50%);
             width: 180px;
             height: 180px;
-            border: 2px solid var(--blue);
+            border: 2px solid var(--gold);
+            border-radius: 50%;
+            opacity: 0.4;
+            animation: orb-ring-breathe 2.5s ease-in-out infinite;
+            box-shadow: 0 0 20px rgba(247, 147, 26, 0.4);
+        }
+
+        .orb-ring-2 {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 220px;
+            height: 220px;
+            border: 2px dashed var(--fire);
             border-radius: 50%;
             opacity: 0.3;
-            animation: orb-ring-breathe 2.5s ease-in-out infinite;
+            animation: orb-ring-rotate 4s linear infinite;
+            box-shadow: 0 0 25px rgba(255, 69, 0, 0.3);
         }
 
         @keyframes orb-ring-breathe {
-            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
-            50% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.1; }
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.2; }
+        }
+
+        @keyframes orb-ring-rotate {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
         .conversation-area {
@@ -347,13 +422,15 @@
         }
 
         .user-line {
-            color: var(--blue);
+            color: var(--neon-cyan);
             font-family: 'Courier New', monospace;
+            text-shadow: 0 0 10px rgba(45, 212, 255, 0.3);
         }
 
         .assistant-line {
-            color: var(--cyan);
+            color: var(--gold);
             font-family: 'Courier New', monospace;
+            text-shadow: 0 0 10px rgba(247, 147, 26, 0.3);
         }
 
         /* ═══════════════════════════════════════════════════════════════════════ */
@@ -363,8 +440,9 @@
         .app-input-section {
             flex: 0 0 auto;
             padding: 1.5rem 2rem;
-            border-top: 1px solid rgba(0, 132, 255, 0.2);
-            background: linear-gradient(180deg, transparent 0%, var(--dark-secondary) 100%);
+            border-top: 2px solid var(--gold);
+            background: linear-gradient(180deg, transparent 0%, rgba(26, 26, 46, 0.9) 100%);
+            box-shadow: 0 0 30px rgba(247, 147, 26, 0.2);
         }
 
         .input-wrapper {
@@ -375,14 +453,15 @@
 
         .text-input {
             flex: 1;
-            padding: 0.8rem 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(0, 132, 255, 0.3);
-            border-radius: 4px;
+            padding: 1rem;
+            background: rgba(26, 26, 46, 0.8);
+            border: 2px solid var(--gold);
+            border-radius: 6px;
             color: var(--text-primary);
             font-size: 0.95rem;
             font-family: 'Courier New', monospace;
             transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(247, 147, 26, 0.15);
         }
 
         .text-input::placeholder {
@@ -391,8 +470,8 @@
 
         .text-input:focus {
             outline: none;
-            border-color: var(--blue);
-            box-shadow: 0 0 10px rgba(0, 132, 255, 0.3);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 25px rgba(247, 147, 26, 0.3), 0 0 15px rgba(45, 212, 255, 0.2);
         }
 
         .control-buttons {
@@ -401,20 +480,22 @@
         }
 
         .btn-control {
-            padding: 0.8rem 1rem;
-            background: rgba(0, 132, 255, 0.2);
-            border: 1px solid var(--blue);
-            border-radius: 4px;
-            color: var(--blue);
+            padding: 1rem 1.2rem;
+            background: linear-gradient(135deg, var(--gold), var(--fire));
+            border: 2px solid var(--neon-pink);
+            border-radius: 6px;
+            color: var(--dark-bg);
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 1.1rem;
             transition: all 0.3s ease;
             font-weight: bold;
+            box-shadow: 0 0 20px rgba(247, 147, 26, 0.3), 0 0 10px rgba(255, 69, 0, 0.2);
         }
 
         .btn-control:hover {
-            background: rgba(0, 132, 255, 0.3);
-            box-shadow: 0 0 10px rgba(0, 132, 255, 0.3);
+            background: linear-gradient(135deg, var(--gold-light), var(--fire));
+            box-shadow: 0 0 40px rgba(247, 147, 26, 0.5), 0 0 20px rgba(255, 69, 0, 0.4);
+            transform: scale(1.05);
         }
 
         .btn-control:active {
@@ -422,8 +503,8 @@
         }
 
         .btn-control.active {
-            background: var(--blue);
-            color: var(--dark-bg);
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+            box-shadow: 0 0 40px rgba(45, 212, 255, 0.5), 0 0 20px rgba(255, 0, 110, 0.3);
         }
 
         /* ═══════════════════════════════════════════════════════════════════════ */
@@ -434,8 +515,9 @@
             flex: 0 0 auto;
             max-height: 280px;
             overflow: hidden;
-            border-top: 1px solid rgba(0, 132, 255, 0.2);
-            background: linear-gradient(180deg, transparent 0%, var(--dark-secondary) 100%);
+            border-top: 2px solid var(--gold);
+            background: linear-gradient(180deg, transparent 0%, rgba(26, 26, 46, 0.9) 100%);
+            box-shadow: 0 0 30px rgba(247, 147, 26, 0.15);
         }
 
         .brain-header {
@@ -443,7 +525,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(0, 132, 255, 0.1);
+            border-bottom: 1px solid rgba(247, 147, 26, 0.2);
         }
 
         .brain-title {
@@ -451,16 +533,19 @@
             font-family: 'Courier New', monospace;
             color: var(--text-primary);
             letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
 
         .brain-title strong {
-            color: var(--blue);
+            color: var(--gold);
+            text-shadow: 0 0 10px rgba(247, 147, 26, 0.3);
         }
 
         .brain-stats {
             font-size: 0.8rem;
-            color: var(--status-ok);
+            color: var(--neon-cyan);
             font-family: 'Courier New', monospace;
+            text-shadow: 0 0 10px rgba(45, 212, 255, 0.3);
         }
 
         .brain-controls {
@@ -469,18 +554,21 @@
         }
 
         .btn-brain {
-            padding: 0.4rem 0.8rem;
-            background: rgba(0, 132, 255, 0.15);
-            border: 1px solid rgba(0, 132, 255, 0.4);
-            border-radius: 3px;
-            color: var(--blue);
+            padding: 0.5rem 1rem;
+            background: rgba(247, 147, 26, 0.15);
+            border: 2px solid var(--gold);
+            border-radius: 4px;
+            color: var(--gold);
             cursor: pointer;
             font-size: 0.8rem;
+            font-weight: bold;
             transition: all 0.2s ease;
+            box-shadow: 0 0 10px rgba(247, 147, 26, 0.15);
         }
 
         .btn-brain:hover {
-            background: rgba(0, 132, 255, 0.25);
+            background: rgba(247, 147, 26, 0.25);
+            box-shadow: 0 0 20px rgba(247, 147, 26, 0.3);
         }
 
         .graph-container {
@@ -506,7 +594,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             display: none;
             flex-direction: column;
             align-items: center;
@@ -519,21 +607,25 @@
         }
 
         .modal-box {
-            background: var(--dark-secondary);
-            border: 1px solid var(--blue);
+            background: radial-gradient(ellipse at top, rgba(26, 26, 46, 0.95), var(--dark-bg));
+            border: 2px solid var(--gold);
             border-radius: 8px;
             padding: 2rem;
             width: 90%;
             max-width: 500px;
-            box-shadow: 0 0 40px rgba(0, 132, 255, 0.3);
+            box-shadow: 0 0 60px rgba(247, 147, 26, 0.4), 0 0 30px rgba(255, 69, 0, 0.2);
         }
 
         .modal-title {
             font-size: 1.2rem;
             font-weight: bold;
-            color: var(--blue);
+            background: linear-gradient(90deg, var(--gold), var(--fire));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 1.5rem;
             font-family: 'Courier New', monospace;
+            text-shadow: 0 0 15px rgba(247, 147, 26, 0.3);
         }
 
         .form-group {
@@ -543,22 +635,24 @@
         .form-label {
             display: block;
             font-size: 0.9rem;
-            color: var(--text-secondary);
+            color: var(--neon-cyan);
             margin-bottom: 0.5rem;
             font-family: 'Courier New', monospace;
             letter-spacing: 0.5px;
+            text-shadow: 0 0 10px rgba(45, 212, 255, 0.2);
         }
 
         .form-input, .form-select, .form-textarea {
             width: 100%;
             padding: 0.8rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(0, 132, 255, 0.3);
+            background: rgba(26, 26, 46, 0.8);
+            border: 2px solid var(--gold);
             border-radius: 4px;
             color: var(--text-primary);
             font-size: 0.95rem;
             font-family: 'Courier New', monospace;
             transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(247, 147, 26, 0.1);
         }
 
         .form-textarea {
@@ -568,8 +662,8 @@
 
         .form-input:focus, .form-select:focus, .form-textarea:focus {
             outline: none;
-            border-color: var(--blue);
-            box-shadow: 0 0 10px rgba(0, 132, 255, 0.3);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(247, 147, 26, 0.2), 0 0 10px rgba(45, 212, 255, 0.2);
         }
 
         .form-select option {
@@ -585,29 +679,31 @@
 
         .btn-modal {
             padding: 0.7rem 1.5rem;
-            border: none;
+            border: 2px solid transparent;
             border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
             font-family: 'Courier New', monospace;
             transition: all 0.3s ease;
             font-size: 0.9rem;
+            text-transform: uppercase;
         }
 
         .btn-modal.primary {
-            background: var(--blue);
+            background: linear-gradient(135deg, var(--gold), var(--fire));
             color: var(--dark-bg);
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 20px rgba(247, 147, 26, 0.3);
         }
 
         .btn-modal.primary:hover {
-            background: var(--blue-light);
-            box-shadow: 0 0 15px rgba(0, 132, 255, 0.4);
+            box-shadow: 0 0 40px rgba(247, 147, 26, 0.5), 0 0 20px rgba(255, 69, 0, 0.3);
         }
 
         .btn-modal.secondary {
             background: rgba(255, 255, 255, 0.1);
             color: var(--text-primary);
-            border: 1px solid var(--text-secondary);
+            border: 2px solid var(--text-secondary);
         }
 
         .btn-modal.secondary:hover {
@@ -617,12 +713,13 @@
 
         .btn-modal.danger {
             background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-            border: 1px solid #ef4444;
+            color: #ff6b6b;
+            border: 2px solid #ff6b6b;
         }
 
         .btn-modal.danger:hover {
             background: rgba(239, 68, 68, 0.3);
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
         }
 
         /* ═══════════════════════════════════════════════════════════════════════ */
@@ -648,6 +745,11 @@
             .orb-ring {
                 width: 140px;
                 height: 140px;
+            }
+
+            .orb-ring-2 {
+                width: 180px;
+                height: 180px;
             }
 
             .conversation-area {
@@ -686,12 +788,17 @@
             }
 
             .app-name {
-                font-size: 1.2rem;
+                font-size: 1.4rem;
             }
         }
     </style>
 </head>
 <body>
+
+    <!-- NEURAL NETWORK CANVAS -->
+    <div class="neural-net-container" id="neuralContainer">
+        <canvas id="neuralCanvas"></canvas>
+    </div>
 
     <!-- BOOT SCREEN -->
     <div class="boot-screen" id="bootScreen">
@@ -725,6 +832,7 @@
             <div class="orb-container" id="orbContainer">
                 <div class="orb" id="orb"></div>
                 <div class="orb-ring"></div>
+                <div class="orb-ring-2"></div>
             </div>
             <div class="conversation-area" id="conversationArea">
                 <div class="conversation-line assistant-line">Bem-vindo, Senhor Sandro. Estou à sua disposição.</div>
@@ -798,13 +906,114 @@
 
     <script>
         /* ═══════════════════════════════════════════════════════════════════════ */
+        /* NEURAL NETWORK ANIMATION */
+        /* ═══════════════════════════════════════════════════════════════════════ */
+
+        class NeuralNetwork {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.resizeCanvas();
+                this.nodes = [];
+                this.connections = [];
+                this.initNodes();
+                this.animate();
+                window.addEventListener('resize', () => this.resizeCanvas());
+            }
+
+            resizeCanvas() {
+                this.canvas.width = this.canvas.offsetWidth;
+                this.canvas.height = this.canvas.offsetHeight;
+            }
+
+            initNodes() {
+                const nodeCount = 15;
+                for (let i = 0; i < nodeCount; i++) {
+                    this.nodes.push({
+                        x: Math.random() * this.canvas.width,
+                        y: Math.random() * this.canvas.height,
+                        vx: (Math.random() - 0.5) * 0.5,
+                        vy: (Math.random() - 0.5) * 0.5,
+                        size: Math.random() * 2 + 1
+                    });
+                }
+            }
+
+            animate() {
+                this.ctx.fillStyle = 'rgba(10, 10, 10, 0.05)';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                this.nodes.forEach((node) => {
+                    node.x += node.vx;
+                    node.y += node.vy;
+
+                    if (node.x < 0 || node.x > this.canvas.width) node.vx *= -1;
+                    if (node.y < 0 || node.y > this.canvas.height) node.vy *= -1;
+
+                    node.x = Math.max(0, Math.min(this.canvas.width, node.x));
+                    node.y = Math.max(0, Math.min(this.canvas.height, node.y));
+                });
+
+                this.drawConnections();
+                this.drawNodes();
+
+                requestAnimationFrame(() => this.animate());
+            }
+
+            drawConnections() {
+                this.nodes.forEach((node1, i) => {
+                    this.nodes.forEach((node2, j) => {
+                        if (i < j) {
+                            const dx = node2.x - node1.x;
+                            const dy = node2.y - node1.y;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+
+                            if (dist < 200) {
+                                const opacity = (1 - dist / 200) * 0.4;
+                                this.ctx.strokeStyle = `rgba(247, 147, 26, ${opacity})`;
+                                this.ctx.lineWidth = 1;
+                                this.ctx.beginPath();
+                                this.ctx.moveTo(node1.x, node1.y);
+                                this.ctx.lineTo(node2.x, node2.y);
+                                this.ctx.stroke();
+                            }
+                        }
+                    });
+                });
+            }
+
+            drawNodes() {
+                this.nodes.forEach((node) => {
+                    this.ctx.fillStyle = `rgba(255, 69, 0, 0.6)`;
+                    this.ctx.beginPath();
+                    this.ctx.arc(node.x, node.y, node.size, 0, Math.PI * 2);
+                    this.ctx.fill();
+
+                    this.ctx.strokeStyle = `rgba(247, 147, 26, 0.8)`;
+                    this.ctx.lineWidth = 1;
+                    this.ctx.stroke();
+                });
+            }
+        }
+
+        let neuralNet = null;
+
+        function initNeuralNet() {
+            if (!neuralNet) {
+                setTimeout(() => {
+                    neuralNet = new NeuralNetwork('neuralCanvas');
+                }, 100);
+            }
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════════ */
         /* CONFIG E STATE */
         /* ═══════════════════════════════════════════════════════════════════════ */
 
         const CONFIG = {
             name: "Jarvis",
             address: "Senhor Sandro",
-            themeColor: "azul reator",
+            themeColor: "dourado-fogo-neon",
             persona: "formal britânico",
             wakeWord: "ei jarvis",
             voiceGender: "male",
@@ -854,6 +1063,7 @@
         /* ═══════════════════════════════════════════════════════════════════════ */
 
         window.addEventListener('load', () => {
+            initNeuralNet();
             loadNotesFromStorage();
             initBoot();
             setupSpeechRecognition();
@@ -923,7 +1133,6 @@
                 if (needsWakeWord) {
                     if (cleanTranscript.includes('ei jarvis')) {
                         needsWakeWord = false;
-                        // Captura o que vem DEPOIS da wake word
                         const afterWake = cleanTranscript.split('ei jarvis')[1]?.trim() || '';
                         if (afterWake) {
                             handleUserInput(afterWake);
@@ -945,13 +1154,10 @@
             recognition.onend = () => {
                 isListening = false;
                 updateOrbState('idle');
-                // Reinicia se não estiver ocupado
                 if (!isBusy) {
                     try {
                         recognition.start();
-                    } catch (e) {
-                        // já iniciado
-                    }
+                    } catch (e) {}
                 }
             };
         }
@@ -960,22 +1166,18 @@
             if (!recognition) return;
             try {
                 recognition.start();
-            } catch (e) {
-                // já iniciado
-            }
+            } catch (e) {}
         }
 
         function stopListening() {
             if (!recognition) return;
             try {
                 recognition.stop();
-            } catch (e) {
-                // já parado
-            }
+            } catch (e) {}
         }
 
         /* ═══════════════════════════════════════════════════════════════════════ */
-        /* TEXT-TO-SPEECH */
+        /* TEXT-TO-SPEECH — VOZ MASCULINA PT-BR */
         /* ═══════════════════════════════════════════════════════════════════════ */
 
         function speak(text) {
@@ -986,10 +1188,8 @@
                     return;
                 }
 
-                // Para qualquer fala anterior
                 synthesis.cancel();
 
-                // Aguarda vozes carregarem
                 if (synthesis.getVoices().length === 0) {
                     synthesis.onvoiceschanged = () => doSpeak(text, resolve);
                 } else {
@@ -1003,13 +1203,20 @@
             utterance.lang = 'pt-BR';
             
             const voices = synthesis.getVoices();
-            const maleVoice = voices.find(v => v.lang === 'pt-BR' && v.name.includes('male')) || 
-                             voices.find(v => v.lang.startsWith('pt')) ||
-                             voices[0];
             
-            if (maleVoice) utterance.voice = maleVoice;
+            // Prioridade: voz masculina PT-BR
+            let selectedVoice = voices.find(v => v.lang === 'pt-BR' && (v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('homem') || v.name.toLowerCase().includes('brazilian'))) ||
+                               voices.find(v => v.lang === 'pt-BR' && !v.name.toLowerCase().includes('female')) ||
+                               voices.find(v => v.lang === 'pt-BR') ||
+                               voices.find(v => v.lang.startsWith('pt'));
+            
+            if (selectedVoice) {
+                utterance.voice = selectedVoice;
+            }
+            
             utterance.rate = 1;
-            utterance.pitch = 0.9;
+            utterance.pitch = 0.95;
+            utterance.volume = 1;
 
             isBusy = true;
             stopListening();
@@ -1102,7 +1309,6 @@
                 localStorage.setItem('gemini_key', e.target.value);
             });
 
-            // Modal
             document.getElementById('btnCancel').addEventListener('click', closeModal);
             document.getElementById('noteForm').addEventListener('submit', handleNoteSave);
             document.getElementById('btnDelete').addEventListener('click', handleNoteDelete);
@@ -1118,23 +1324,19 @@
             updateOrbState('thinking');
             stopListening();
 
-            // Mostra no histórico
             updateUserLine(text);
             sessionHistory.push({ role: 'user', parts: { text } });
 
-            // Chama Gemini
             callGemini(text).then((response) => {
                 updateAssistantLine(response);
                 sessionHistory.push({ role: 'model', parts: { text: response } });
 
-                // Processa [[SAVE:...]]
                 const saveMatch = response.match(/\[\[SAVE:([a-z_]+)\|([^|]+)\|([\s\S]+?)\]\]/);
                 if (saveMatch) {
                     const [, area, title, body] = saveMatch;
                     const cleanBody = body.trim();
                     saveOrUpdateNote(area, title, cleanBody);
 
-                    // Remove da resposta antes de falar
                     const cleanResponse = response.replace(/\[\[SAVE:([a-z_]+)\|([^|]+)\|([\s\S]+?)\]\]/, '').trim();
                     speak(cleanResponse);
                 } else {
@@ -1322,11 +1524,9 @@ Responda sempre considerando esse contexto. Seja assertivo, crítico construtivo
             const cx = width / 2, cy = height / 2.2;
             const radius = 140;
 
-            // Conta por área
             const areaCount = new Set(NOTES.map(n => n.area)).size;
             document.getElementById('brainStats').textContent = `${NOTES.length} notas · ${areaCount} áreas`;
 
-            // SVG inline
             let svg = `<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" style="background: transparent;">
                 <defs>
                     <filter id="glow">
@@ -1337,16 +1537,16 @@ Responda sempre considerando esse contexto. Seja assertivo, crítico construtivo
                         </feMerge>
                     </filter>
                     <linearGradient id="edgeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#9f7aea;stop-opacity:0.6" />
-                        <stop offset="100%" style="stop-color:#2dd4ff;stop-opacity:0.4" />
+                        <stop offset="0%" style="stop-color:#f7931a;stop-opacity:0.7" />
+                        <stop offset="100%" style="stop-color:#2dd4ff;stop-opacity:0.5" />
                     </linearGradient>
                     <linearGradient id="coreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#0084ff;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#0066cc;stop-opacity:1" />
+                        <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#ff4500;stop-opacity:1" />
                     </linearGradient>
                     <style>
-                        @keyframes breath { 0%, 100% { r: 18px; opacity: 0.4; } 50% { r: 24px; opacity: 0.1; } }
-                        @keyframes corePulse { 0%, 100% { r: 16px; } 50% { r: 20px; } }
+                        @keyframes breath { 0%, 100% { r: 18px; opacity: 0.5; } 50% { r: 26px; opacity: 0.2; } }
+                        @keyframes corePulse { 0%, 100% { r: 16px; } 50% { r: 22px; } }
                         @keyframes dash { to { stroke-dashoffset: -1000; } }
                         .core-pulse { animation: corePulse 2s ease-in-out infinite; }
                         .node-ring { animation: breath 2.5s ease-in-out infinite; }
@@ -1354,8 +1554,7 @@ Responda sempre considerando esse contexto. Seja assertivo, crítico construtivo
                     </style>
                 </defs>`;
 
-            // Arestas (curvas)
-            svg += '<g id="edges" opacity="0.7">';
+            svg += '<g id="edges" opacity="0.8">';
             REL.forEach((edge, idx) => {
                 const [idA, idB] = edge;
                 const noteA = NOTES.find(n => n.id === idA);
@@ -1370,31 +1569,27 @@ Responda sempre considerando esse contexto. Seja assertivo, crítico construtivo
                     const x2 = cx + Math.cos(angle2) * radius;
                     const y2 = cy + Math.sin(angle2) * radius;
 
-                    // Ponto de controle para curvatura
                     const ctrlX = cx + (Math.cos(angle1) + Math.cos(angle2)) / 2 * (radius * 0.35);
                     const ctrlY = cy + (Math.sin(angle1) + Math.sin(angle2)) / 2 * (radius * 0.35);
 
-                    svg += `<path d="M ${x1} ${y1} Q ${ctrlX} ${ctrlY} ${x2} ${y2}" stroke="url(#edgeGradient)" stroke-width="1.5" fill="none" class="edge-dash" style="stroke-dasharray: 1000;"/>`;
+                    svg += `<path d="M ${x1} ${y1} Q ${ctrlX} ${ctrlY} ${x2} ${y2}" stroke="url(#edgeGradient)" stroke-width="2" fill="none" class="edge-dash" style="stroke-dasharray: 1000; filter: drop-shadow(0 0 5px rgba(247, 147, 26, 0.4));"/>`;
                 }
             });
             svg += '</g>';
 
-            // Raios do núcleo
-            svg += '<g id="rays" opacity="0.4">';
+            svg += '<g id="rays" opacity="0.5">';
             NOTES.forEach((note, idx) => {
                 const angle = (idx / NOTES.length) * Math.PI * 2 - Math.PI / 2;
                 const x = cx + Math.cos(angle) * radius;
                 const y = cy + Math.sin(angle) * radius;
                 const color = AREA[note.area]?.color || '#8a90a6';
-                svg += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="${color}" stroke-width="1" opacity="0.3"/>`;
+                svg += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="${color}" stroke-width="1.5" opacity="0.4" style="filter: drop-shadow(0 0 3px ${color});"/>`;
             });
             svg += '</g>';
 
-            // Núcleo (core)
-            svg += `<circle cx="${cx}" cy="${cy}" r="16" fill="url(#coreGradient)" filter="url(#glow)" class="core-pulse"/>`;
+            svg += `<circle cx="${cx}" cy="${cy}" r="16" fill="url(#coreGradient)" filter="url(#glow)" class="core-pulse" style="filter: drop-shadow(0 0 20px rgba(247, 147, 26, 0.6));"/>`;
             svg += `<text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central" font-size="20" fill="#fff" font-weight="bold">🧠</text>`;
 
-            // Nós
             svg += '<g id="nodes">';
             NOTES.forEach((note, idx) => {
                 const angle = (idx / NOTES.length) * Math.PI * 2 - Math.PI / 2;
@@ -1402,19 +1597,18 @@ Responda sempre considerando esse contexto. Seja assertivo, crítico construtivo
                 const y = cy + Math.sin(angle) * radius;
                 const color = AREA[note.area]?.color || '#8a90a6';
                 const connections = REL.filter(e => e.includes(note.id)).length;
-                const size = 8 + connections * 2;
+                const size = 10 + connections * 2;
 
                 svg += `<g class="node" data-id="${note.id}" style="cursor: pointer;" onclick="window.openNoteFromGraph('${note.id}')">`;
-                svg += `<circle cx="${x}" cy="${y}" r="${size}" fill="${color}" opacity="0.8" filter="url(#glow)"/>`;
-                svg += `<circle cx="${x}" cy="${y}" r="${size + 8}" fill="none" stroke="${color}" stroke-width="1.5" class="node-ring"/>`;
-                svg += `<text x="${x}" y="${y + size + 18}" text-anchor="middle" font-size="11" fill="#f5f5f5" pointer-events="none">${note.title.substring(0, 12)}</text>`;
+                svg += `<circle cx="${x}" cy="${y}" r="${size}" fill="${color}" opacity="0.9" filter="url(#glow)" style="filter: drop-shadow(0 0 10px ${color});"/>`;
+                svg += `<circle cx="${x}" cy="${y}" r="${size + 10}" fill="none" stroke="${color}" stroke-width="2" class="node-ring" opacity="0.6"/>`;
+                svg += `<text x="${x}" y="${y + size + 18}" text-anchor="middle" font-size="11" fill="#f5f5f5" pointer-events="none" style="text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);">${note.title.substring(0, 12)}</text>`;
                 svg += `</g>`;
             });
             svg += '</g>';
 
-            // Pulsos de sinapse (pontos brilhantes)
-            const pulseCount = 12;
-            svg += '<g id="pulses" opacity="0.8">';
+            const pulseCount = 16;
+            svg += '<g id="pulses" opacity="0.9">';
             for (let i = 0; i < pulseCount; i++) {
                 const edgeIdx = i % REL.length;
                 if (REL[edgeIdx]) {
@@ -1437,13 +1631,12 @@ Responda sempre considerando esse contexto. Seja assertivo, crítico construtivo
                         const px = Math.pow(1 - t, 2) * x1 + 2 * (1 - t) * t * ctrlX + Math.pow(t, 2) * x2;
                         const py = Math.pow(1 - t, 2) * y1 + 2 * (1 - t) * t * ctrlY + Math.pow(t, 2) * y2;
 
-                        svg += `<circle cx="${px}" cy="${py}" r="2.5" fill="#fff" opacity="${0.5 + Math.sin(i) * 0.3}"/>`;
+                        svg += `<circle cx="${px}" cy="${py}" r="3" fill="#2dd4ff" opacity="${0.6 + Math.sin(i) * 0.3}" style="filter: drop-shadow(0 0 5px rgba(45, 212, 255, 0.8));"/>`;
                     }
                 }
             }
             svg += '</g>';
 
-            // Legenda
             const legendX = 20, legendY = height - 50;
             svg += '<g id="legend" font-size="11">';
             let legendOffset = 0;
@@ -1451,17 +1644,16 @@ Responda sempre considerando esse contexto. Seja assertivo, crítico construtivo
                 const hasNotes = NOTES.some(n => n.area === areaKey);
                 if (hasNotes) {
                     const color = AREA[areaKey].color;
-                    svg += `<rect x="${legendX + legendOffset}" y="${legendY}" width="12" height="12" fill="${color}" opacity="0.8"/>`;
-                    svg += `<text x="${legendX + legendOffset + 16}" y="${legendY + 10}" fill="#f5f5f5">${AREA[areaKey].label}</text>`;
+                    svg += `<rect x="${legendX + legendOffset}" y="${legendY}" width="12" height="12" fill="${color}" opacity="0.9" style="filter: drop-shadow(0 0 3px ${color});"/>`;
+                    svg += `<text x="${legendX + legendOffset + 16}" y="${legendY + 10}" fill="#f5f5f5" style="text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);">${AREA[areaKey].label}</text>`;
                     legendOffset += 140;
                 }
             });
-            svg += `<text x="${width - 220}" y="${legendY + 10}" fill="#10b981" font-size="10">✓ contexto injetado em todos os comandos</text>`;
+            svg += `<text x="${width - 220}" y="${legendY + 10}" fill="#2dd4ff" font-size="10" style="text-shadow: 0 0 5px rgba(45, 212, 255, 0.6);">✓ contexto injetado</text>`;
             svg += '</g>';
 
             svg += '</svg>';
 
-            // Injeta via innerHTML (CRÍTICO para namespace SVG)
             container.innerHTML = svg;
         }
 
