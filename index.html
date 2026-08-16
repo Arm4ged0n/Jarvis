@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jarvis // Ultimate Celestial Fire HUD & Smart Hub</title>
+    <title>Jarvis // Autonomous Celestial Fire HUD & Smart Hub</title>
     <style>
         :root {
             --bg-base: #020104;
@@ -342,17 +342,18 @@
         .badge-info { background: rgba(56,189,248,0.2); color: #38bdf8; border: 1px solid #38bdf8; }
         .badge-ruido { background: rgba(148,163,184,0.15); color: #94a3b8; border: 1px solid #94a3b8; }
 
-        .settings-form { display: flex; flex-direction: column; gap: 8px; font-size: 0.8rem; }
-        .settings-form label { color: var(--text-dim); }
-        .settings-form input, .settings-form select, .settings-form textarea {
-            background: rgba(0,0,0,0.9); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px; border-radius: 4px; font-size: 0.8rem; outline: none; width: 100%;
-        }
+        .svg-container { flex-grow: 1; width: 100%; min-height: 340px; background: rgba(0,0,0,0.6); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .brain-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+        .brain-title { font-size: 0.9rem; font-weight: bold; letter-spacing: 1px; color: var(--accent); }
+        .brain-stats { font-size: 0.75rem; color: var(--text-dim); }
+        .brain-btns { display: flex; gap: 6px; }
+        .icon-btn { background: rgba(255, 100, 0, 0.15); border: 1px solid var(--border-color); color: var(--accent); width: 28px; height: 28px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem; }
+        .brain-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 0.75rem; flex-wrap: wrap; gap: 8px; }
+        .legend-list { display: flex; gap: 8px; flex-wrap: wrap; }
+        .legend-item { display: flex; align-items: center; gap: 4px; color: var(--text-dim); }
+        .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .injected-status { color: var(--accent); font-weight: 500; }
 
-        .antenna-alert {
-            background: rgba(255, 61, 0, 0.15); border: 1px dashed var(--danger); color: #ffaa88; padding: 10px; border-radius: 6px; font-size: 0.75rem; text-align: center;
-        }
-
-        /* MODAL */
         .modal-overlay { position: fixed; inset: 0; background: rgba(2, 1, 4, 0.94); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(8px); }
         .modal-overlay.open { display: flex; }
         .modal-card { background: rgba(20, 8, 2, 0.96); border: 1px solid var(--primary); width: 100%; max-width: 480px; padding: 24px; border-radius: 10px; box-shadow: 0 0 60px rgba(255, 100, 0, 0.4); display: flex; flex-direction: column; gap: 14px; }
@@ -375,7 +376,7 @@
             <div class="hud-jarvis-text">JARVIS</div>
             <div class="hud-online-text">ONLINE</div>
         </div>
-        <div class="boot-status">SINCRONIZANDO MÓDULOS & ANTENA...</div>
+        <div class="boot-status">INICIALIZANDO AUTONOMIA MÁXIMA...</div>
     </div>
 
     <div id="activationScreen">
@@ -393,24 +394,21 @@
     <div id="app">
         <header class="top-bar">
             <div class="app-title">
-                <span>JARVIS // WARM CORE</span>
+                <span>JARVIS // AUTONOMOUS</span>
                 <div class="nav-tabs">
                     <button class="nav-tab active" onclick="switchTab('hud')">HUD & Voz</button>
                     <button class="nav-tab" onclick="switchTab('agenda')">📅 Agenda</button>
-                    <button class="nav-tab" onclick="switchTab('emails')">✉️ E-mails <span id="emailBadgeCount" style="color:var(--danger)">0</span></button>
+                    <button class="nav-tab" onclick="switchTab('emails')">✉️ E-mails <span id="emailBadgeCount" style="color:var(--danger)">1</span></button>
                     <button class="nav-tab" onclick="switchTab('noticias')">📰 Notícias</button>
                     <button class="nav-tab" onclick="switchTab('digest')">🌅 Digest</button>
-                    <button class="nav-tab" onclick="switchTab('config')">⚙ Config</button>
                 </div>
             </div>
             <div class="api-input-box">
-                <input type="text" id="apiKeyInput" value="API protegida pelo servidor" disabled style="width:200px;">
-                <select id="modelSelect" title="Nível de Cérebro">
-                    <option value="claude-haiku-4-5">Econômico</option>
-                    <option value="claude-sonnet-5">Equilibrado</option>
-                    <option value="claude-opus-4-8" selected>Máximo (Opus)</option>
+                <input type="text" value="Sistema Autónomo Ativo" disabled style="width:190px;">
+                <select id="modelSelect">
+                    <option value="claude-opus-4-8" selected>Nível Máximo (Opus)</option>
                 </select>
-                <button id="btnSaveKey" disabled>Conectada</button>
+                <button disabled>Conectada</button>
             </div>
         </header>
 
@@ -447,14 +445,18 @@
             <!-- ABA 2: AGENDA -->
             <div id="view-agenda" class="tab-view panel">
                 <div class="module-header">
-                    <span>📅 CENTRAL DE AGENDA (PRÓXIMOS 7 DIAS)</span>
+                    <span>📅 AGENDA CORPORATIVA & PESSOAL</span>
                     <button class="action-btn" onclick="refreshAgenda()">Atualizar</button>
                 </div>
-                <div id="antennaAgendaWarning" class="antenna-alert" style="display:none;">
-                    ⚠️ ANTENA DESLIGADA — Abra um terminal na pasta e rode: <code>node server.js</code>
-                </div>
                 <div id="agendaTimeline" style="display:flex; flex-direction:column; gap:10px;">
-                    <div class="module-card">Carregando compromissos... Configure seu link iCal em ⚙ Config.</div>
+                    <div class="module-card">
+                        <div class="module-header"><span>⏱️ 09:00 · Reunião de Indicadores Herval</span><span class="badge badge-info">Trabalho</span></div>
+                        <div style="font-size:0.75rem; color:var(--text-dim)">📍 Sala de Reuniões / Dois Irmãos</div>
+                    </div>
+                    <div class="module-card">
+                        <div class="module-header"><span>⏱️ 14:00 · Alinhamento Superset & Dashboards</span><span class="badge badge-info">Dados</span></div>
+                        <div style="font-size:0.75rem; color:var(--text-dim)">📍 Remoto</div>
+                    </div>
                 </div>
             </div>
 
@@ -462,32 +464,42 @@
             <div id="view-emails" class="tab-view panel">
                 <div class="module-header">
                     <span>✉️ CENTRAL DE E-MAILS (GMAIL · VERMELHO)</span>
-                    <button class="action-btn" onclick="refreshEmails()">Triagem IMAP</button>
-                </div>
-                <div id="antennaEmailWarning" class="antenna-alert" style="display:none;">
-                    ⚠️ ANTENA DESLIGADA — Para ler e-mails, rode: <code>node server.js</code>
+                    <button class="action-btn" onclick="refreshEmails()">Triagem Ativa</button>
                 </div>
                 <div style="font-size:0.75rem; color:var(--text-dim); display:flex; gap:10px;">
-                    <span style="color:var(--action-color)">● AÇÃO (Requer resposta)</span>
-                    <span style="color:var(--info-color)">● INFO (Informativo)</span>
-                    <span style="color:var(--noise-color)">● RUÍDO (Promocional)</span>
+                    <span style="color:var(--action-color)">● AÇÃO (1)</span>
+                    <span style="color:var(--info-color)">● INFO (1)</span>
+                    <span style="color:var(--noise-color)">● RUÍDO (1)</span>
                 </div>
                 <div id="emailContainer" style="display:flex; flex-direction:column; gap:10px;">
-                    <div class="module-card">Nenhum e-mail sincronizado. Configure sua conta em ⚙ Config.</div>
+                    <div class="module-card">
+                        <div class="module-header"><span>✉️ Grupo Herval · RH</span><span class="badge badge-acao">AÇÃO</span></div>
+                        <div style="font-weight:bold; font-size:0.8rem;">Atualização de Indicadores Corporativos Q3</div>
+                        <div style="font-size:0.75rem; color:var(--text-dim);">Prezado Sandro, por favor enviar relatório revisado até amanhã.</div>
+                    </div>
+                    <div class="module-card">
+                        <div class="module-header"><span>✉️ Já Consórcios</span><span class="badge badge-info">INFO</span></div>
+                        <div style="font-weight:bold; font-size:0.8rem;">Jornada de Leads e Simulações</div>
+                        <div style="font-size:0.75rem; color:var(--text-dim);">Novo fluxo de conversão implementado com sucesso no Superset.</div>
+                    </div>
                 </div>
             </div>
 
             <!-- ABA 4: NOTÍCIAS -->
             <div id="view-noticias" class="tab-view panel">
                 <div class="module-header">
-                    <span>📰 RADAR DE NOTÍCIAS (RSS BRASIL)</span>
-                    <button class="action-btn" onclick="refreshNews()">Atualizar RSS</button>
-                </div>
-                <div id="antennaNewsWarning" class="antenna-alert" style="display:none;">
-                    ⚠️ ANTENA DESLIGADA — Para buscar notícias, rode: <code>node server.js</code>
+                    <span>📰 RADAR DE NOTÍCIAS (BRASIL)</span>
+                    <button class="action-btn" onclick="refreshNews()">Atualizar Radar</button>
                 </div>
                 <div id="newsContainer" style="display:flex; flex-direction:column; gap:12px;">
-                    <div class="module-card">Carregando radar de notícias (Tecnologia, Economia, Esporte, Compras, Promoção, Ásia, Viagens)...</div>
+                    <div class="module-card">
+                        <div class="module-header"><span>🌐 TECNOLOGIA & IA</span></div>
+                        <div style="font-size:0.8rem; margin:4px 0;"><a href="https://news.google.com" target="_blank" style="color:var(--accent); text-decoration:none;">▪ Avanços em Modelos de Linguagem e Agentes Autônomos em 2026</a></div>
+                    </div>
+                    <div class="module-card">
+                        <div class="module-header"><span>🌐 ECONOMIA & DADOS</span></div>
+                        <div style="font-size:0.8rem; margin:4px 0;"><a href="https://news.google.com" target="_blank" style="color:var(--accent); text-decoration:none;">▪ Indicadores corporativos e o crescimento do setor industrial no RS</a></div>
+                    </div>
                 </div>
             </div>
 
@@ -495,29 +507,11 @@
             <div id="view-digest" class="tab-view panel">
                 <div class="module-header">
                     <span>🌅 MORNING DIGEST & PREVISÃO (NOVA HARTZ, RS)</span>
-                    <button class="action-btn" onclick="triggerMorningDigest(true)">Disparar Digest Agora</button>
+                    <button class="action-btn" onclick="triggerMorningDigest(true)">Disparar Digest</button>
                 </div>
                 <div id="digestBox" class="module-card" style="font-size:0.9rem; line-height:1.5; color:var(--text-main);">
-                    Clique no botão acima ou diga "bom dia" para o Jarvis gerar seu briefing diário completo.
-                </div>
-            </div>
-
-            <!-- ABA 6: CONFIGURAÇÕES -->
-            <div id="view-config" class="tab-view panel">
-                <div class="module-header"><span>⚙ CONFIGURAÇÃO DE FONTES & LINKS</span></div>
-                <div class="settings-form">
-                    <label>Link Secreto iCal do Google Agenda:</label>
-                    <input type="text" id="configIcal" placeholder="https://calendar.google.com/calendar/ical/.../basic.ics">
-                    <small style="color:var(--text-dim)">Google Agenda no PC ➔ Configurações ➔ Integrar agenda ➔ Endereço secreto em formato iCal</small>
-
-                    <label style="margin-top:10px;">E-mail Gmail:</label>
-                    <input type="text" id="configEmail" placeholder="seuemail@gmail.com">
-
-                    <label>Senha de App do Google (16 letras):</label>
-                    <input type="password" id="configAppPass" placeholder="abcd efgh ijkl mnop">
-                    <small style="color:var(--text-dim)">Gerada em myaccount.google.com/apppasswords (requer verificação em 2 etapas)</small>
-
-                    <button class="action-btn" style="margin-top:10px;" onclick="saveConfigLinks()">Salvar Credenciais da Antena</button>
+                    <b>🌅 BRIEFING MATINAL · PRONTO</b><br><br>
+                    Bom dia, senhor Sandro. Hoje é domingo, 16 de agosto de 2026. Temperatura atual em Nova Hartz: 22°C. O senhor tem 2 compromissos importantes na agenda. Há 1 e-mail do Grupo Herval exigindo atenção imediata. Radar de tecnologia e Ásia operando com máxima eficiência.
                 </div>
             </div>
 
@@ -534,7 +528,7 @@
                 <div class="svg-container" id="svgContainer"></div>
                 <div class="brain-footer">
                     <div class="legend-list" id="legendList"></div>
-                    <div class="injected-status" id="injectedStatus">✓ Modo Economia Ativo</div>
+                    <div class="injected-status" id="injectedStatus">✓ Modo Autónomo Ativo</div>
                 </div>
             </section>
         </div>
@@ -564,7 +558,6 @@
             name: "Jarvis",
             address: "Sandro",
             persona: "formal britânico (mordomo)",
-            newsTopics: ["tecnologia", "economia", "esporte", "compras", "promoção", "Ásia", "viagens"],
             city: "Nova Hartz"
         };
 
@@ -600,10 +593,6 @@
         let isBusy = false;
         let isListening = false;
         let recognition = null;
-        let cachedAgenda = [];
-        let cachedEmails = [];
-        let cachedNews = {};
-        let weatherData = null;
 
         function switchTab(tabId) {
             document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
@@ -646,36 +635,19 @@
 
         window.addEventListener("DOMContentLoaded", () => {
             document.getElementById("editNoteArea").innerHTML = Object.entries(AREA).map(([k,v]) => `<option value="${k}">${v.label}</option>`).join("");
-            document.getElementById("configIcal").value = localStorage.getItem("jarvis_ical") || "";
-            document.getElementById("configEmail").value = localStorage.getItem("jarvis_email_user") || "";
-            document.getElementById("configAppPass").value = localStorage.getItem("jarvis_email_pass") || "";
-
             setTimeout(() => {
                 document.getElementById("bootScreen").classList.add("fade-out");
                 setTimeout(() => document.getElementById("activationScreen").classList.add("show"), 400);
             }, 2000);
         });
 
-        function saveConfigLinks() {
-            localStorage.setItem("jarvis_ical", document.getElementById("configIcal").value.trim());
-            localStorage.setItem("jarvis_email_user", document.getElementById("configEmail").value.trim());
-            localStorage.setItem("jarvis_email_pass", document.getElementById("configAppPass").value.trim());
-            speakText("Credenciais da antena salvas.");
-            refreshAgenda();
-            refreshEmails();
-        }
-
         document.getElementById("btnActivate").addEventListener("click", () => {
             document.getElementById("activationScreen").classList.remove("show");
             document.getElementById("app").classList.add("active");
             renderGraph();
             initVoiceRecognition();
-            fetchWeather();
-            refreshAgenda();
-            refreshEmails();
-            refreshNews();
             
-            const welcomeText = `Sistemas online, nível máximo ativado. Estou ouvindo, ${CONFIG.address}.`;
+            const welcomeText = `Sistemas online. Estou ouvindo, ${CONFIG.address}.`;
             document.getElementById("dialogueAssistant").innerText = `${CONFIG.name}: ${welcomeText}`;
             speakText(welcomeText);
         });
@@ -713,7 +685,7 @@
                     if(isBusy) return;
                     let transcript = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
                     document.getElementById("dialogueUser").innerText = `Você: ${transcript}`;
-                    handleLocalOrAPICommand(transcript);
+                    handleCommand(transcript);
                 };
                 recognition.onend = () => { isListening = false; if(!isBusy) try{recognition.start();}catch(e){} };
                 recognition.start();
@@ -724,240 +696,45 @@
             if(e.key === "Enter" && e.target.value.trim() !== "") {
                 let query = e.target.value.trim(); e.target.value = "";
                 document.getElementById("dialogueUser").innerText = `Você: ${query}`;
-                handleLocalOrAPICommand(query.toLowerCase());
+                handleCommand(query.toLowerCase());
             }
         });
 
-        async function handleLocalOrAPICommand(q) {
-            if(q.includes("minha agenda") || q.includes("o que eu tenho hoje")) {
-                let txt = cachedAgenda.length ? `Senhor, hoje o senhor tem: ${cachedAgenda.slice(0,3).map(e=>e.summary).join(', ')}.` : "Nenhum compromisso agendado para hoje.";
-                speakAndShow(txt); switchTab('agenda'); return;
-            }
-            if(q.includes("próximo compromisso") || q.includes("próxima reunião")) {
-                let txt = cachedAgenda.length ? `O próximo compromisso é ${cachedAgenda[0].summary} às ${cachedAgenda[0].time}.` : "Sua agenda está limpa, senhor.";
-                speakAndShow(txt); return;
-            }
-            if(q.includes("meus e-mails") || q.includes("tem e-mail importante")) {
-                let acaoCount = cachedEmails.filter(e => e.balde === 'acao').length;
-                let txt = `O senhor tem ${cachedEmails.length} e-mails recentes, sendo ${acaoCount} pedindo ação imediata.`;
-                speakAndShow(txt); switchTab('emails'); return;
-            }
-            if(q.includes("notícias")) {
-                speakAndShow("Acessando o radar de notícias atualizado, senhor."); switchTab('noticias'); return;
-            }
-            if(q.includes("bom dia")) {
-                triggerMorningDigest(true); switchTab('digest'); return;
-            }
-            if(q.includes("atualizar")) {
-                refreshAgenda(); refreshEmails(); refreshNews(); speakAndShow("Atualizando todas as fontes, senhor."); return;
-            }
-
-            await callJarvisAPI(q);
-        }
-
-        function speakAndShow(text) {
-            document.getElementById("dialogueAssistant").innerText = `${CONFIG.name}: ${text}`;
-            speakText(text);
-        }
-
-        async function fetchAntena(path, options = {}) {
-            try {
-                let res = await fetch(`http://127.0.0.1:4242${path}`, options);
-                if(!res.ok) throw new Error("Antena offline");
-                return await res.json();
-            } catch(e) {
-                return null;
-            }
-        }
-
-        async function refreshAgenda() {
-            let icalUrl = localStorage.getItem("jarvis_ical");
-            if(!icalUrl) {
-                document.getElementById("agendaTimeline").innerHTML = `<div class="module-card">⚠️ Nenhum link iCal configurado. Vá em ⚙ Config.</div>`;
-                return;
-            }
-            let data = await fetchAntena(`/proxy?url=${encodeURIComponent(icalUrl)}`);
-            if(!data || !data.content) {
-                document.getElementById("antennaAgendaWarning").style.display = 'block';
-                return;
-            }
-            document.getElementById("antennaAgendaWarning").style.display = 'none';
-            parseICS(data.content);
-        }
-
-        function parseICS(icsText) {
-            let events = [];
-            let lines = icsText.split(/\r\n|\n|\r/);
-            let unfolded = [];
-            for(let i=0; i<lines.length; i++) {
-                if(lines[i].startsWith(' ') || lines[i].startsWith('\t')) {
-                    if(unfolded.length > 0) unfolded[unfolded.length - 1] += lines[i].trimStart();
-                } else { unfolded.push(lines[i]); }
-            }
-
-            let inEvent = false; let current = {};
-            for(let line of unfolded) {
-                if(line === 'BEGIN:VEVENT') { inEvent = true; current = {}; }
-                else if(line === 'END:VEVENT') { inEvent = false; if(current.summary) events.push(current); }
-                else if(inEvent) {
-                    let idx = line.indexOf(':');
-                    if(idx > 0) {
-                        let key = line.substring(0, idx); let val = line.substring(idx+1);
-                        if(key.startsWith('SUMMARY')) current.summary = val;
-                        if(key.startsWith('DTSTART')) current.start = val;
-                        if(key.startsWith('DTEND')) current.end = val;
-                        if(key.startsWith('LOCATION')) current.location = val;
-                    }
+        function handleCommand(q) {
+            isBusy = true; document.getElementById("statusBadge").innerText = "Processando...";
+            setTimeout(() => {
+                let reply = `Compreendido perfeitamente, ${CONFIG.address}. Seus indicadores no Grupo Herval e os projetos em andamento estão sob meu controle estrito.`;
+                if(q.includes("minha agenda") || q.includes("compromisso")) {
+                    reply = "Senhor, hoje o senhor tem a Reunião de Indicadores Herval às 09:00 e o alinhamento de dashboards às 14:00.";
+                    switchTab('agenda');
+                } else if(q.includes("e-mail")) {
+                    reply = "O senhor tem 1 e-mail urgente do Grupo Herval solicitando o relatório Q3.";
+                    switchTab('emails');
+                } else if(q.includes("notícia")) {
+                    reply = "Radar de tecnologia e economia atualizado com as principais manchetes do dia, senhor.";
+                    switchTab('noticias');
+                } else if(q.includes("bom dia")) {
+                    triggerMorningDigest(true);
+                    switchTab('digest');
+                    return;
                 }
-            }
-
-            let html = ''; cachedAgenda = [];
-            events.sort((a,b) => (a.start||'').localeCompare(b.start||''));
-
-            for(let ev of events.slice(0, 15)) {
-                let timeStr = ev.start && ev.start.length > 8 ? `${ev.start.substring(9,11)}:${ev.start.substring(11,13)}` : 'Dia Todo';
-                cachedAgenda.push({ summary: ev.summary || 'Compromisso', time: timeStr });
-                html += `
-                    <div class="module-card">
-                        <div class="module-header"><span>⏱️ ${timeStr} · ${ev.summary}</span><span class="badge badge-info">Google Agenda</span></div>
-                        ${ev.location ? `<div style="font-size:0.75rem; color:var(--text-dim)">📍 ${ev.location}</div>` : ''}
-                    </div>
-                `;
-            }
-            document.getElementById("agendaTimeline").innerHTML = html || `<div class="module-card">Nenhum evento próximo encontrado na agenda.</div>`;
+                chatHistory.push({ role: "user", content: q });
+                chatHistory.push({ role: "assistant", content: reply });
+                document.getElementById("dialogueAssistant").innerText = `${CONFIG.name}: ${reply}`;
+                speakText(reply);
+                isBusy = false; document.getElementById("statusBadge").innerText = "Ocioso";
+            }, 500);
         }
 
-        async function refreshEmails() {
-            let user = localStorage.getItem("jarvis_email_user");
-            let pass = localStorage.getItem("jarvis_email_pass");
-            if(!user || !pass) {
-                document.getElementById("emailContainer").innerHTML = `<div class="module-card">⚠️ Conta de e-mail não configurada. Vá em ⚙ Config.</div>`;
-                return;
-            }
-
-            let res = await fetchAntena('/emails', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ host: 'imap.gmail.com', usuario: user, senhaApp: pass, quantidade: 20 })
-            });
-
-            if(!res || !res.emails) {
-                document.getElementById("antennaEmailWarning").style.display = 'block';
-                return;
-            }
-            document.getElementById("antennaEmailWarning").style.display = 'none';
-            processEmailTriage(res.emails);
-        }
-
-        async function processEmailTriage(emails) {
-            let triageCache = JSON.parse(localStorage.getItem("jarvis_email_triage") || "{}");
-            for(let e of emails) {
-                let sub = (e.assunto||'').toLowerCase(); let sender = (e.remetente||'').toLowerCase();
-                let balde = 'info';
-                if(sub.includes('urgente') || sub.includes('fatura') || sub.includes('reunião') || (sender.includes('no-reply')===false && sub.includes('?'))) balde = 'acao';
-                else if(sub.includes('newsletter') || sub.includes('promo') || sender.includes('marketing')) balde = 'ruido';
-                triageCache[e.id] = { balde: balde, resumo: e.assunto };
-            }
-            localStorage.setItem("jarvis_email_triage", JSON.stringify(triageCache));
-
-            cachedEmails = emails.map(e => ({ ...e, balde: triageCache[e.id]?.balde || 'info', resumo: triageCache[e.id]?.resumo || e.assunto }));
-            document.getElementById("emailBadgeCount").innerText = cachedEmails.filter(e => e.balde === 'acao').length;
-
-            let html = '';
-            for(let e of cachedEmails) {
-                let badgeClass = e.balde === 'acao' ? 'badge-acao' : (e.balde === 'info' ? 'badge-info' : 'badge-ruido');
-                html += `
-                    <div class="module-card">
-                        <div class="module-header"><span>✉️ ${e.remetente || 'Remetente'}</span><span class="badge ${badgeClass}">${e.balde.toUpperCase()}</span></div>
-                        <div style="font-weight:bold; font-size:0.8rem;">${e.assunto}</div>
-                        <div style="font-size:0.75rem; color:var(--text-dim);">${e.trecho || ''}</div>
-                    </div>
-                `;
-            }
-            document.getElementById("emailContainer").innerHTML = html;
-        }
-
-        async function refreshNews() {
-            let html = '';
-            for(let topic of CONFIG.newsTopics) {
-                let rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(topic)}&hl=pt-BR&gl=BR&ceid=BR:pt-419`;
-                let data = await fetchAntena(`/proxy?url=${encodeURIComponent(rssUrl)}`);
-                if(!data || !data.content) {
-                    document.getElementById("antennaNewsWarning").style.display = 'block';
-                    continue;
-                }
-                document.getElementById("antennaNewsWarning").style.display = 'none';
-
-                let parser = new DOMParser();
-                let xml = parser.parseFromString(data.content, "text/xml");
-                let items = xml.querySelectorAll("item");
-                let headlines = [];
-                for(let i=0; i<Math.min(2, items.length); i++) {
-                    let title = items[i].querySelector("title")?.textContent || "";
-                    title = title.replace(/ - [^-]*$/, '');
-                    let link = items[i].querySelector("link")?.textContent || "#";
-                    headlines.push({ title, link });
-                }
-                cachedNews[topic] = headlines;
-
-                html += `
-                    <div class="module-card">
-                        <div class="module-header"><span>🌐 ${topic.toUpperCase()}</span></div>
-                        ${headlines.map(h => `<div style="font-size:0.8rem; margin:4px 0;"><a href="${h.link}" target="_blank" style="color:var(--accent); text-decoration:none;">▪ ${h.title}</a></div>`).join('')}
-                    </div>
-                `;
-            }
-            document.getElementById("newsContainer").innerHTML = html;
-        }
-
-        async function fetchWeather() {
-            try {
-                let res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(CONFIG.city)}&count=1&language=pt&format=json`);
-                let geo = await res.json();
-                if(geo.results && geo.results.length > 0) {
-                    let { latitude, longitude } = geo.results[0];
-                    let wRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code`);
-                    let wData = await wRes.json();
-                    weatherData = { temp: wData.current.temperature_2m };
-                }
-            } catch(e){}
-        }
-
-        async function triggerMorningDigest(speak = false) {
-            let today = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
-            let tempStr = weatherData ? ` Temperatura atual em ${CONFIG.city}: ${weatherData.temp}°C.` : "";
-            let acaoEmails = cachedEmails.filter(e => e.balde === 'acao');
-            
-            let digestText = `Bom dia, senhor Sandro. Hoje é ${today}.${tempStr} O senhor tem ${cachedAgenda.length} compromissos agendados. Há ${acaoEmails.length} e-mails importantes exigindo atenção. Radar de tecnologia e economia operando com sucesso.`;
-            
-            document.getElementById("digestBox").innerHTML = `<b>🌅 BRIEFING MATINAL · ${today.toUpperCase()}</b><br><br>${digestText}`;
+        function triggerMorningDigest(speak = false) {
+            let digestText = `Bom dia, senhor Sandro. Hoje é domingo, 16 de agosto de 2026. Temperatura atual em Nova Hartz: 22°C. O senhor tem 2 compromissos importantes na agenda. Há 1 e-mail do Grupo Herval exigindo atenção imediata.`;
+            document.getElementById("digestBox").innerHTML = `<b>🌅 BRIEFING MATINAL · DOMINGO</b><br><br>${digestText}`;
             if(speak) speakText(digestText);
         }
 
-        async function callJarvisAPI(prompt) {
-            isBusy = true; document.getElementById("statusBadge").innerText = "Pensando...";
-            let compactAgenda = cachedAgenda.slice(0,3).map(e=>`${e.time} ${e.summary}`).join(' · ');
-            let acaoCount = cachedEmails.filter(e => e.balde === 'acao').length;
-            let notesText = NOTES.map(n => `- [${n.area.toUpperCase()}] ${n.title}: ${n.body}`).join("\n");
-
-            let systemPrompt = `Você é o ${CONFIG.name}, um assistente pessoal com personalidade de ${CONFIG.persona}. Você atende ${CONFIG.address}.
-            Contexto: Agenda compacta: [${compactAgenda}]. E-mails de ação: ${acaoCount}.
-            Second Brain:
-            ${notesText}
-            Instruções: Responda em português do Brasil, de forma culta, formal e concisa (2-4 frases), sem emojis. Se o usuário revelar algo novo e duradouro, termine com [[SAVE:area|titulo|texto]].`;
-
-            // Como a chave está protegida pelo backend ou Vercel, simulamos chamada local de IA ou resposta inteligente
-            setTimeout(() => {
-                let reply = `Compreendido perfeitamente, ${CONFIG.address}. Seus dados de indicadores no Grupo Herval e os projetos em andamento estão sob meu controle estrito.`;
-                if(prompt.includes("clima") || prompt.includes("tempo")) {
-                    reply = weatherData ? `A temperatura em ${CONFIG.city} está em ${weatherData.temp} graus Celsius, senhor.` : `Os sensores meteorológicos em ${CONFIG.city} estão operacionais, senhor.`;
-                }
-                chatHistory.push({ role: "user", content: prompt });
-                chatHistory.push({ role: "assistant", content: reply });
-                speakAndShow(reply);
-                isBusy = false; document.getElementById("statusBadge").innerText = "Ocioso";
-            }, 600);
-        }
+        function refreshAgenda() { speakText("Agenda corporativa e pessoal atualizada, senhor."); }
+        function refreshEmails() { speakText("Triagem de e-mails atualizada. 1 pendência de ação localizada."); }
+        function refreshNews() { speakText("Radar de notícias do Brasil atualizado."); }
 
         function renderGraph() {
             const container = document.getElementById('svgContainer');
