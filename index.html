@@ -272,6 +272,13 @@
             text-shadow: 0 0 20px rgba(247, 147, 26, 0.6);
         }
 
+        .api-key-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
         .api-key-input {
             padding: 0.6rem 1rem;
             background: rgba(26, 26, 46, 0.9);
@@ -279,7 +286,7 @@
             border-radius: 6px;
             color: var(--text-primary);
             font-size: 0.85rem;
-            width: min(100%, 260px);
+            width: min(100%, 240px);
             font-family: monospace;
             box-shadow: 0 0 10px rgba(247, 147, 26, 0.2);
         }
@@ -292,6 +299,21 @@
             outline: none;
             border-color: var(--neon-cyan);
             box-shadow: 0 0 20px rgba(247, 147, 26, 0.4), 0 0 10px rgba(45, 212, 255, 0.3);
+        }
+
+        .api-status-badge {
+            font-size: 0.75rem;
+            font-family: 'Courier New', monospace;
+            padding: 0.4rem 0.6rem;
+            border-radius: 4px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid var(--status-ok);
+            color: var(--status-ok);
+            display: none;
+        }
+
+        .api-status-badge.show {
+            display: inline-block;
         }
 
         .status-line {
@@ -745,6 +767,10 @@
                 align-items: stretch;
             }
 
+            .api-key-container {
+                width: 100%;
+            }
+
             .api-key-input {
                 width: 100%;
                 max-width: none;
@@ -789,7 +815,7 @@
         <div class="boot-title">JARVIS</div>
         <div class="boot-line"></div>
         <div class="boot-status">SINCRONIZANDO DADOS...</div>
-        <div class="boot-version">v5.1 · RESPONSIVE</div>
+        <div class="boot-version">v5.2 · AUTO-KEY</div>
     </div>
 
     <!-- ACTIVATION SCREEN -->
@@ -805,7 +831,10 @@
         <div class="app-top">
             <div class="app-header">
                 <div class="app-name">JARVIS</div>
-                <input type="password" class="api-key-input" id="apiKeyInput" placeholder="Cole sua API key do Gemini...">
+                <div class="api-key-container">
+                    <input type="password" class="api-key-input" id="apiKeyInput" placeholder="Cole sua API key do Gemini...">
+                    <span class="api-status-badge" id="apiStatusBadge">✓ Salvo</span>
+                </div>
             </div>
             <div class="status-line user" id="userLine">Você: [aguardando]</div>
             <div class="status-line assistant" id="assistantLine">Jarvis: [inicializando...]</div>
@@ -1000,7 +1029,7 @@
             persona: "formal britânico",
             wakeWord: "ei jarvis",
             voiceGender: "male",
-            model: "gemini-1.5-flash"
+            model: "gemini-2.5-flash-preview-09-2025"
         };
 
         const AREA = {
@@ -1280,16 +1309,29 @@
                 renderGraph();
             });
 
-            document.getElementById('apiKeyInput').addEventListener('change', (e) => {
-                localStorage.setItem('gemini_key', e.target.value);
+            // SALVAMENTO AUTOMÁTICO DA API KEY AO DIGITAR
+            const apiKeyInput = document.getElementById('apiKeyInput');
+            const apiStatusBadge = document.getElementById('apiStatusBadge');
+            
+            apiKeyInput.addEventListener('input', (e) => {
+                const key = e.target.value.trim();
+                localStorage.setItem('gemini_key', key);
+                if (key.length > 5) {
+                    apiStatusBadge.classList.add('show');
+                } else {
+                    apiStatusBadge.classList.remove('show');
+                }
             });
+
+            const savedKey = localStorage.getItem('gemini_key') || '';
+            apiKeyInput.value = savedKey;
+            if (savedKey.length > 5) {
+                apiStatusBadge.classList.add('show');
+            }
 
             document.getElementById('btnCancel').addEventListener('click', closeModal);
             document.getElementById('noteForm').addEventListener('submit', handleNoteSave);
             document.getElementById('btnDelete').addEventListener('click', handleNoteDelete);
-
-            const apiKey = localStorage.getItem('gemini_key') || '';
-            document.getElementById('apiKeyInput').value = apiKey;
         }
 
         function handleUserInput(text) {
@@ -1300,11 +1342,11 @@
             stopListening();
 
             updateUserLine(text);
-            sessionHistory.push({ role: 'user', parts: { text } });
+            sessionHistory.push({ role: 'user', parts: [{ text }] });
 
             callGemini(text).then((response) => {
                 updateAssistantLine(response);
-                sessionHistory.push({ role: 'model', parts: { text: response } });
+                sessionHistory.push({ role: 'model', parts: [{ text: response }] });
 
                 const saveMatch = response.match(/\[\[SAVE:([a-z_]+)\|([^|]+)\|([\s\S]+?)\]\]/);
                 if (saveMatch) {
@@ -1331,7 +1373,7 @@
         async function callGemini(userMessage) {
             const apiKey = localStorage.getItem('gemini_key');
             if (!apiKey) {
-                throw new Error("Cole sua API key do Gemini no campo de entrada.");
+                throw new Error("Insira sua API key gratuita do Gemini no campo superior.");
             }
 
             const systemPrompt = buildSystemPrompt();
@@ -1345,7 +1387,7 @@
                     systemInstruction: { parts: [{ text: systemPrompt }] },
                     contents: sessionHistory.map(msg => ({
                         role: msg.role,
-                        parts: [typeof msg.parts === 'string' ? { text: msg.parts } : msg.parts]
+                        parts: msg.parts
                     })),
                     generationConfig: {
                         maxOutputTokens: 400
@@ -1355,7 +1397,7 @@
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(`Erro na API: ${errorData.error?.message || 'Desconhecido'}`);
+                throw new Error(`Erro na API: ${errorData.error?.message || 'Chave inválida ou limite excedido'}`);
             }
 
             const data = await response.json();
@@ -1453,9 +1495,7 @@ Responda sempre considerando esse contexto. Seja assertivo, crítico construtivo
             const area = document.getElementById('noteArea').value;
             const body = document.getElementById('noteBody').value.trim();
 
-            if (!title || !area || !body) {
-                return;
-            }
+            if (!title || !area || !body) return;
 
             if (currentEditId) {
                 const note = NOTES.find(n => n.id === currentEditId);
