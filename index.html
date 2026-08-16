@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anúbis — Assistente Pessoal</title>
+    <title>Jarvis — Assistente Pessoal</title>
     <style>
         * {
             margin: 0;
@@ -12,11 +12,11 @@
         }
 
         :root {
-            --gold: #f7931a;
-            --gold-light: #fbbf24;
-            --gold-dark: #d97706;
-            --dark-bg: #0f0a1a;
-            --dark-secondary: #1a1426;
+            --blue: #0084ff;
+            --blue-light: #00a8ff;
+            --blue-dark: #0066cc;
+            --dark-bg: #0a0e27;
+            --dark-secondary: #151b3d;
             --text-primary: #f5f5f5;
             --text-secondary: #b8b8b8;
             --purple: #9f7aea;
@@ -28,7 +28,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, var(--dark-bg) 0%, #1a0f2e 100%);
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #0f0a2e 100%);
             color: var(--text-primary);
             overflow: hidden;
             height: 100vh;
@@ -45,7 +45,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, var(--dark-bg) 0%, #1a0f2e 100%);
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #0f0a2e 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -64,26 +64,26 @@
             font-family: 'Courier New', monospace;
             font-size: clamp(3rem, 10vw, 8rem);
             font-weight: bold;
-            background: linear-gradient(90deg, var(--gold) 0%, var(--purple) 50%, var(--gold) 100%);
+            background: linear-gradient(90deg, var(--blue) 0%, var(--cyan) 50%, var(--blue) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             letter-spacing: 2px;
             margin-bottom: 1rem;
-            text-shadow: 0 0 30px rgba(247, 147, 26, 0.3);
+            text-shadow: 0 0 30px rgba(0, 132, 255, 0.3);
         }
 
         .boot-line {
             width: 80%;
             height: 2px;
-            background: linear-gradient(90deg, var(--gold), var(--purple), var(--gold));
+            background: linear-gradient(90deg, var(--blue), var(--cyan), var(--blue));
             margin: 2rem 0;
-            box-shadow: 0 0 15px rgba(247, 147, 26, 0.5);
+            box-shadow: 0 0 15px rgba(0, 132, 255, 0.5);
         }
 
         .boot-status {
             font-size: 1.1rem;
-            color: var(--gold);
+            color: var(--blue);
             font-family: 'Courier New', monospace;
             letter-spacing: 1px;
             animation: pulse-text 1.5s ease-in-out infinite;
@@ -113,7 +113,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, var(--dark-bg) 0%, #1a0f2e 100%);
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #0f0a2e 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -132,34 +132,34 @@
             font-family: 'Courier New', monospace;
             font-size: clamp(2.5rem, 8vw, 6rem);
             font-weight: bold;
-            background: linear-gradient(90deg, var(--gold) 0%, var(--purple) 50%, var(--gold) 100%);
+            background: linear-gradient(90deg, var(--blue) 0%, var(--cyan) 50%, var(--blue) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             letter-spacing: 2px;
             margin-bottom: 3rem;
-            text-shadow: 0 0 30px rgba(247, 147, 26, 0.3);
+            text-shadow: 0 0 30px rgba(0, 132, 255, 0.3);
         }
 
         .activation-button {
             padding: 1.2rem 3rem;
             font-size: 1.2rem;
             font-family: 'Courier New', monospace;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
             color: var(--dark-bg);
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
             letter-spacing: 1px;
-            box-shadow: 0 0 30px rgba(247, 147, 26, 0.4);
+            box-shadow: 0 0 30px rgba(0, 132, 255, 0.4);
             transition: all 0.3s ease;
             margin-bottom: 2rem;
         }
 
         .activation-button:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 50px rgba(247, 147, 26, 0.6);
+            box-shadow: 0 0 50px rgba(0, 132, 255, 0.6);
         }
 
         .activation-button:active {
@@ -199,7 +199,7 @@
         .app-top {
             flex: 0 0 auto;
             padding: 1.5rem 2rem;
-            border-bottom: 1px solid rgba(247, 147, 26, 0.2);
+            border-bottom: 1px solid rgba(0, 132, 255, 0.2);
             background: linear-gradient(180deg, var(--dark-secondary) 0%, transparent 100%);
         }
 
@@ -214,14 +214,14 @@
             font-family: 'Courier New', monospace;
             font-size: 1.5rem;
             font-weight: bold;
-            color: var(--gold);
+            color: var(--blue);
             letter-spacing: 1px;
         }
 
         .api-key-input {
             padding: 0.6rem 1rem;
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--gold);
+            border: 1px solid var(--blue);
             border-radius: 4px;
             color: var(--text-primary);
             font-size: 0.9rem;
@@ -235,8 +235,8 @@
 
         .api-key-input:focus {
             outline: none;
-            border-color: var(--gold-light);
-            box-shadow: 0 0 10px rgba(247, 147, 26, 0.3);
+            border-color: var(--blue-light);
+            box-shadow: 0 0 10px rgba(0, 132, 255, 0.3);
         }
 
         .status-line {
@@ -247,7 +247,7 @@
         }
 
         .status-line.user {
-            color: var(--gold);
+            color: var(--blue);
         }
 
         .status-line.assistant {
@@ -284,17 +284,17 @@
             width: 160px;
             height: 160px;
             border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, var(--gold-light), var(--gold), var(--gold-dark));
+            background: radial-gradient(circle at 30% 30%, var(--blue-light), var(--blue), var(--blue-dark));
             box-shadow: 
-                0 0 40px rgba(247, 147, 26, 0.6),
+                0 0 40px rgba(0, 132, 255, 0.6),
                 inset -10px -10px 20px rgba(0, 0, 0, 0.5),
                 inset 10px 10px 20px rgba(255, 255, 255, 0.1);
             animation: orb-pulse 2s ease-in-out infinite;
         }
 
         @keyframes orb-pulse {
-            0%, 100% { box-shadow: 0 0 40px rgba(247, 147, 26, 0.6), inset -10px -10px 20px rgba(0, 0, 0, 0.5), inset 10px 10px 20px rgba(255, 255, 255, 0.1); }
-            50% { box-shadow: 0 0 60px rgba(247, 147, 26, 0.8), inset -10px -10px 20px rgba(0, 0, 0, 0.5), inset 10px 10px 20px rgba(255, 255, 255, 0.15); }
+            0%, 100% { box-shadow: 0 0 40px rgba(0, 132, 255, 0.6), inset -10px -10px 20px rgba(0, 0, 0, 0.5), inset 10px 10px 20px rgba(255, 255, 255, 0.1); }
+            50% { box-shadow: 0 0 60px rgba(0, 132, 255, 0.8), inset -10px -10px 20px rgba(0, 0, 0, 0.5), inset 10px 10px 20px rgba(255, 255, 255, 0.15); }
         }
 
         .orb.listening {
@@ -322,7 +322,7 @@
             transform: translate(-50%, -50%);
             width: 180px;
             height: 180px;
-            border: 2px solid var(--gold);
+            border: 2px solid var(--blue);
             border-radius: 50%;
             opacity: 0.3;
             animation: orb-ring-breathe 2.5s ease-in-out infinite;
@@ -347,7 +347,7 @@
         }
 
         .user-line {
-            color: var(--gold);
+            color: var(--blue);
             font-family: 'Courier New', monospace;
         }
 
@@ -363,7 +363,7 @@
         .app-input-section {
             flex: 0 0 auto;
             padding: 1.5rem 2rem;
-            border-top: 1px solid rgba(247, 147, 26, 0.2);
+            border-top: 1px solid rgba(0, 132, 255, 0.2);
             background: linear-gradient(180deg, transparent 0%, var(--dark-secondary) 100%);
         }
 
@@ -377,7 +377,7 @@
             flex: 1;
             padding: 0.8rem 1rem;
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(247, 147, 26, 0.3);
+            border: 1px solid rgba(0, 132, 255, 0.3);
             border-radius: 4px;
             color: var(--text-primary);
             font-size: 0.95rem;
@@ -391,8 +391,8 @@
 
         .text-input:focus {
             outline: none;
-            border-color: var(--gold);
-            box-shadow: 0 0 10px rgba(247, 147, 26, 0.3);
+            border-color: var(--blue);
+            box-shadow: 0 0 10px rgba(0, 132, 255, 0.3);
         }
 
         .control-buttons {
@@ -402,10 +402,10 @@
 
         .btn-control {
             padding: 0.8rem 1rem;
-            background: rgba(247, 147, 26, 0.2);
-            border: 1px solid var(--gold);
+            background: rgba(0, 132, 255, 0.2);
+            border: 1px solid var(--blue);
             border-radius: 4px;
-            color: var(--gold);
+            color: var(--blue);
             cursor: pointer;
             font-size: 1rem;
             transition: all 0.3s ease;
@@ -413,8 +413,8 @@
         }
 
         .btn-control:hover {
-            background: rgba(247, 147, 26, 0.3);
-            box-shadow: 0 0 10px rgba(247, 147, 26, 0.3);
+            background: rgba(0, 132, 255, 0.3);
+            box-shadow: 0 0 10px rgba(0, 132, 255, 0.3);
         }
 
         .btn-control:active {
@@ -422,7 +422,7 @@
         }
 
         .btn-control.active {
-            background: var(--gold);
+            background: var(--blue);
             color: var(--dark-bg);
         }
 
@@ -434,7 +434,7 @@
             flex: 0 0 auto;
             max-height: 280px;
             overflow: hidden;
-            border-top: 1px solid rgba(247, 147, 26, 0.2);
+            border-top: 1px solid rgba(0, 132, 255, 0.2);
             background: linear-gradient(180deg, transparent 0%, var(--dark-secondary) 100%);
         }
 
@@ -443,7 +443,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(247, 147, 26, 0.1);
+            border-bottom: 1px solid rgba(0, 132, 255, 0.1);
         }
 
         .brain-title {
@@ -454,7 +454,7 @@
         }
 
         .brain-title strong {
-            color: var(--gold);
+            color: var(--blue);
         }
 
         .brain-stats {
@@ -470,17 +470,17 @@
 
         .btn-brain {
             padding: 0.4rem 0.8rem;
-            background: rgba(247, 147, 26, 0.15);
-            border: 1px solid rgba(247, 147, 26, 0.4);
+            background: rgba(0, 132, 255, 0.15);
+            border: 1px solid rgba(0, 132, 255, 0.4);
             border-radius: 3px;
-            color: var(--gold);
+            color: var(--blue);
             cursor: pointer;
             font-size: 0.8rem;
             transition: all 0.2s ease;
         }
 
         .btn-brain:hover {
-            background: rgba(247, 147, 26, 0.25);
+            background: rgba(0, 132, 255, 0.25);
         }
 
         .graph-container {
@@ -520,18 +520,18 @@
 
         .modal-box {
             background: var(--dark-secondary);
-            border: 1px solid var(--gold);
+            border: 1px solid var(--blue);
             border-radius: 8px;
             padding: 2rem;
             width: 90%;
             max-width: 500px;
-            box-shadow: 0 0 40px rgba(247, 147, 26, 0.3);
+            box-shadow: 0 0 40px rgba(0, 132, 255, 0.3);
         }
 
         .modal-title {
             font-size: 1.2rem;
             font-weight: bold;
-            color: var(--gold);
+            color: var(--blue);
             margin-bottom: 1.5rem;
             font-family: 'Courier New', monospace;
         }
@@ -553,7 +553,7 @@
             width: 100%;
             padding: 0.8rem;
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(247, 147, 26, 0.3);
+            border: 1px solid rgba(0, 132, 255, 0.3);
             border-radius: 4px;
             color: var(--text-primary);
             font-size: 0.95rem;
@@ -568,8 +568,8 @@
 
         .form-input:focus, .form-select:focus, .form-textarea:focus {
             outline: none;
-            border-color: var(--gold);
-            box-shadow: 0 0 10px rgba(247, 147, 26, 0.3);
+            border-color: var(--blue);
+            box-shadow: 0 0 10px rgba(0, 132, 255, 0.3);
         }
 
         .form-select option {
@@ -595,13 +595,13 @@
         }
 
         .btn-modal.primary {
-            background: var(--gold);
+            background: var(--blue);
             color: var(--dark-bg);
         }
 
         .btn-modal.primary:hover {
-            background: var(--gold-light);
-            box-shadow: 0 0 15px rgba(247, 147, 26, 0.4);
+            background: var(--blue-light);
+            box-shadow: 0 0 15px rgba(0, 132, 255, 0.4);
         }
 
         .btn-modal.secondary {
@@ -695,7 +695,7 @@
 
     <!-- BOOT SCREEN -->
     <div class="boot-screen" id="bootScreen">
-        <div class="boot-title">ANÚBIS</div>
+        <div class="boot-title">JARVIS</div>
         <div class="boot-line"></div>
         <div class="boot-status">SINCRONIZANDO DADOS...</div>
         <div class="boot-version">v5.0 · REBUILD</div>
@@ -703,7 +703,7 @@
 
     <!-- ACTIVATION SCREEN -->
     <div class="activation-screen" id="activationScreen">
-        <div class="activation-title">ANÚBIS</div>
+        <div class="activation-title">JARVIS</div>
         <button class="activation-button" id="activateBtn">► ATIVAR SISTEMA</button>
         <div class="activation-text">CLIQUE PARA INICIAR</div>
     </div>
@@ -713,11 +713,11 @@
         <!-- TOP: API KEY + STATUS -->
         <div class="app-top">
             <div class="app-header">
-                <div class="app-name">ANÚBIS</div>
-                <input type="password" class="api-key-input" id="apiKeyInput" placeholder="Cole sua API key do Anthropic...">
+                <div class="app-name">JARVIS</div>
+                <input type="password" class="api-key-input" id="apiKeyInput" placeholder="Cole sua API key do Gemini...">
             </div>
             <div class="status-line user" id="userLine">Você: [aguardando]</div>
-            <div class="status-line assistant" id="assistantLine">Anúbis: [inicializando...]</div>
+            <div class="status-line assistant" id="assistantLine">Jarvis: [inicializando...]</div>
         </div>
 
         <!-- CENTER: ORB + CONVERSATION -->
@@ -802,13 +802,13 @@
         /* ═══════════════════════════════════════════════════════════════════════ */
 
         const CONFIG = {
-            name: "Anúbis",
+            name: "Jarvis",
             address: "Senhor Sandro",
-            themeColor: "dourado",
+            themeColor: "azul reator",
             persona: "formal britânico",
-            wakeWord: "ei anúbis",
+            wakeWord: "ei jarvis",
             voiceGender: "male",
-            model: "claude-sonnet-5"
+            model: "gemini-1.5-flash"
         };
 
         const AREA = {
@@ -828,7 +828,7 @@
             { id: "3", area: "trabalho", title: "Superset & SQL", body: "Migração de dashboards para Apache Superset. Aprendizado profundo de SQL e plataforma Superset via CS." },
             { id: "4", area: "projetos", title: "Monitoramento Hidrológico", body: "Rios RS — 7 nós, cotas, precipitação, fluxo até o mar. Impacto real em defesa civil e previsão de enchentes. Em finalização." },
             { id: "5", area: "projetos", title: "StoreNhz", body: "Apple products resale (refurbished/pre-owned). iPhones, Apple Watch, AirPods, acessórios. Loja Integrada + Magazine Luiza." },
-            { id: "6", area: "projetos", title: "J.A.R.V.I.S. Fagundes", body: "Assistente IA pessoal. Single-file HTML, integração Anthropic API, theme customizado." },
+            { id: "6", area: "projetos", title: "J.A.R.V.I.S. Fagundes", body: "Assistente IA pessoal. Single-file HTML, integração API, theme customizado." },
             { id: "7", area: "financas", title: "Liberdade Financeira", body: "Viagens, cultura, conhecimento. Aquisição de empresas e imóveis. Diversificação de investimentos." },
             { id: "8", area: "aprendizado", title: "Stack Dev", body: "SQL, Python, JavaScript. Fundamentos para automação, backend e frontend." },
             { id: "9", area: "saude", title: "Retomar Treino", body: "Histórico: corrida, futebol, trilhas, bicicleta, calistenia. Parado agora. Meta: retomar calistenia verão 2026." },
@@ -921,10 +921,10 @@
                 const cleanTranscript = transcript.toLowerCase().trim();
 
                 if (needsWakeWord) {
-                    if (cleanTranscript.includes('ei anúbis')) {
+                    if (cleanTranscript.includes('ei jarvis')) {
                         needsWakeWord = false;
                         // Captura o que vem DEPOIS da wake word
-                        const afterWake = cleanTranscript.split('ei anúbis')[1]?.trim() || '';
+                        const afterWake = cleanTranscript.split('ei jarvis')[1]?.trim() || '';
                         if (afterWake) {
                             handleUserInput(afterWake);
                         }
@@ -1099,7 +1099,7 @@
             });
 
             document.getElementById('apiKeyInput').addEventListener('change', (e) => {
-                localStorage.setItem('anthropic_key', e.target.value);
+                localStorage.setItem('gemini_key', e.target.value);
             });
 
             // Modal
@@ -1107,7 +1107,7 @@
             document.getElementById('noteForm').addEventListener('submit', handleNoteSave);
             document.getElementById('btnDelete').addEventListener('click', handleNoteDelete);
 
-            const apiKey = localStorage.getItem('anthropic_key') || '';
+            const apiKey = localStorage.getItem('gemini_key') || '';
             document.getElementById('apiKeyInput').value = apiKey;
         }
 
@@ -1120,12 +1120,12 @@
 
             // Mostra no histórico
             updateUserLine(text);
-            sessionHistory.push({ role: 'user', content: text });
+            sessionHistory.push({ role: 'user', parts: { text } });
 
-            // Chama Claude
-            callClaude(text).then((response) => {
+            // Chama Gemini
+            callGemini(text).then((response) => {
                 updateAssistantLine(response);
-                sessionHistory.push({ role: 'assistant', content: response });
+                sessionHistory.push({ role: 'model', parts: { text: response } });
 
                 // Processa [[SAVE:...]]
                 const saveMatch = response.match(/\[\[SAVE:([a-z_]+)\|([^|]+)\|([\s\S]+?)\]\]/);
@@ -1148,30 +1148,31 @@
         }
 
         /* ═══════════════════════════════════════════════════════════════════════ */
-        /* API — CLAUDE */
+        /* API — GEMINI */
         /* ═══════════════════════════════════════════════════════════════════════ */
 
-        async function callClaude(userMessage) {
-            const apiKey = localStorage.getItem('anthropic_key');
+        async function callGemini(userMessage) {
+            const apiKey = localStorage.getItem('gemini_key');
             if (!apiKey) {
-                throw new Error("Cole sua API key do Anthropic no campo de entrada.");
+                throw new Error("Cole sua API key do Gemini no campo de entrada.");
             }
 
             const systemPrompt = buildSystemPrompt();
 
-            const response = await fetch("https://api.anthropic.com/v1/messages", {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                 method: "POST",
                 headers: {
-                    "x-api-key": apiKey,
-                    "anthropic-version": "2023-06-01",
-                    "anthropic-dangerous-direct-browser-access": "true",
                     "content-type": "application/json"
                 },
                 body: JSON.stringify({
-                    model: CONFIG.model,
-                    max_tokens: 400,
-                    system: systemPrompt,
-                    messages: sessionHistory
+                    system_instruction: { parts: { text: systemPrompt } },
+                    contents: sessionHistory.map(msg => ({
+                        role: msg.role,
+                        parts: msg.parts
+                    })),
+                    generation_config: {
+                        max_output_tokens: 400
+                    }
                 })
             });
 
@@ -1181,21 +1182,21 @@
             }
 
             const data = await response.json();
-            if (!data.content || !data.content[0]) {
+            if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
                 throw new Error("Resposta vazia da API");
             }
 
-            return data.content[0].text || "Desculpe, não consegui gerar uma resposta.";
+            return data.candidates[0].content.parts[0].text || "Desculpe, não consegui gerar uma resposta.";
         }
 
         function buildSystemPrompt() {
-            let braonText = "";
+            let brainText = "";
             Object.keys(AREA).forEach((areaKey) => {
                 const notesInArea = NOTES.filter(n => n.area === areaKey);
                 if (notesInArea.length > 0) {
-                    braonText += `\n## ${AREA[areaKey].label}\n`;
+                    brainText += `\n## ${AREA[areaKey].label}\n`;
                     notesInArea.forEach((note) => {
-                        braonText += `- **${note.title}**: ${note.body}\n`;
+                        brainText += `- **${note.title}**: ${note.body}\n`;
                     });
                 }
             });
@@ -1209,7 +1210,7 @@ Regras de resposta:
 - Se o usuário revelar algo novo e duradouro sobre sua vida, termina a resposta com: [[SAVE:area|titulo|conteúdo]] (area ∈ metas, trabalho, projetos, financas, aprendizado, saude, relacoes, meta). Se existir nota com esse título, atualiza; senão cria nova.
 
 SECOND BRAIN — Contexto de vida do ${CONFIG.address}:
-${braonText}
+${brainText}
 
 Responda sempre considerando esse contexto. Seja assertivo, crítico construtivo, e aja como um conselheiro estratégico.`;
         }
@@ -1245,7 +1246,6 @@ Responda sempre considerando esse contexto. Seja assertivo, crítico construtivo
         function flashNode(noteTitle) {
             const note = NOTES.find(n => n.title === noteTitle);
             if (!note) return;
-            // Simples: re-renderiza com uma animação (feita via renderGraph)
             setTimeout(renderGraph, 100);
         }
 
@@ -1341,8 +1341,8 @@ Responda sempre considerando esse contexto. Seja assertivo, crítico construtivo
                         <stop offset="100%" style="stop-color:#2dd4ff;stop-opacity:0.4" />
                     </linearGradient>
                     <linearGradient id="coreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#c084fc;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+                        <stop offset="0%" style="stop-color:#0084ff;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#0066cc;stop-opacity:1" />
                     </linearGradient>
                     <style>
                         @keyframes breath { 0%, 100% { r: 18px; opacity: 0.4; } 50% { r: 24px; opacity: 0.1; } }
@@ -1480,7 +1480,7 @@ Responda sempre considerando esse contexto. Seja assertivo, crítico construtivo
 
         function updateAssistantLine(text) {
             const truncated = text.length > 60 ? text.substring(0, 60) + "..." : text;
-            document.getElementById('assistantLine').textContent = `Anúbis: ${truncated}`;
+            document.getElementById('assistantLine').textContent = `Jarvis: ${truncated}`;
         }
     </script>
 
