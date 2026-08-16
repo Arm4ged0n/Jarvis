@@ -1,11 +1,6 @@
-Sim. Abaixo está o conteúdo completo do arquivo `index.html`.
+Este é o conteúdo completo e atualizado do arquivo `index.html`.
 
-No GitHub:
-
-1. Crie um arquivo chamado exatamente `index.html`.
-2. Cole todo o código abaixo.
-3. Faça o commit.
-4. Mantenha também o arquivo `api/jarvis.js` dentro da pasta `api`.
+No GitHub, abra o arquivo `index.html`, toque no lápis, apague tudo e cole o código abaixo inteiro. Depois clique em **Commit changes**.
 
 ```html
 <!DOCTYPE html>
@@ -57,7 +52,7 @@ background: rgba(255, 100, 0, 0.4);
 border-radius: 2px;
 }
 
-/* CANVAS DE TEIAS NEURAIS E CIRCUITOS TÉRMICOS EM BACKGROUND */
+/* CANVAS DE TEIAS NEURAIS E CIRCUITOS TÉRMICOS */
 
 #hudCanvas {
 position: fixed;
@@ -676,8 +671,6 @@ margin-top: 10px;
 
 <canvas id="hudCanvas"></canvas>
 
-<!-- TELA DE BOOT -->
-
 <div id="bootScreen">
 <div class="massive-warm-hud">
 <div class="hud-circle-1"></div>
@@ -691,8 +684,6 @@ margin-top: 10px;
 SINCRONIZANDO NÚCLEO HOLOGRÁFICO...
 </div>
 </div>
-
-<!-- TELA DE ATIVAÇÃO -->
 
 <div id="activationScreen">
 <div class="massive-warm-hud" style="width: 260px; height: 260px;">
@@ -711,8 +702,6 @@ SINCRONIZANDO NÚCLEO HOLOGRÁFICO...
 CLIQUE PARA INICIAR
 </div>
 </div>
-
-<!-- APLICAÇÃO PRINCIPAL -->
 
 <div id="app">
 
@@ -738,8 +727,6 @@ Conectada
 
 <div class="main-grid">
 
-<!-- PAINEL DE INTERAÇÃO -->
-
 <section class="panel interaction-panel">
 
 <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
@@ -751,8 +738,6 @@ ASSISTENTE PESSOAL
 Ocioso
 </span>
 </div>
-
-<!-- ORBE CENTRAL -->
 
 <div
 class="reactor-container"
@@ -813,8 +798,6 @@ Parar Fala
 
 </section>
 
-<!-- SECOND BRAIN -->
-
 <section class="panel brain-panel">
 
 <div class="brain-header">
@@ -870,8 +853,6 @@ id="injectedStatus"
 
 </div>
 </div>
-
-<!-- MODAL EDITOR DE NOTAS -->
 
 <div
 class="modal-overlay"
@@ -996,7 +977,7 @@ const INITIAL_NOTES = [
 id: "note_1",
 area: "meta",
 title: "Sandro Fagundes",
-body: "Sandro de Souza Fagundes, 40 anos, mora em Nova Hartz, trabalha em Dois Irmãos no Grupo Herval como cientista de dados e analista de indicadores corporativos. Licenciado em computação, ex-professor de informática, empreendedor com lojas online e criador de plataformas e dashboards via IA."
+body: "Sandro de Souza Fagundes, 40 anos, mora em Nova Hartz, trabalha em Dois Irmãos no Grupo Herval como cientista de dados e analista de indicadores corporativos. Licenciado em computação, ex-professor de informática, empreendedor com lojas online e criador de plataformas/dashboards via IA."
 },
 
 {
@@ -1010,7 +991,7 @@ body: "Meta geral: ajudar a sanar dores de processos corporativos com visão de 
 id: "note_3",
 area: "trabalho",
 title: "Grupo Herval",
-body: "Analista de indicadores corporativos e cientista de dados no Grupo Herval. Migrando dashboards do Power BI para o Apache Superset, com melhorias nos charts. Montando dashboard para a Já Consórcios, incluindo jornada de leads, simulações, distribuição e conversão."
+body: "Analista de indicadores corporativos e cientista de dados no Grupo Herval. Migrando dashboards do Power BI para o Apache Superset (melhorias nos charts). Montando dashboard para a Já Consórcios (jornada de leads, simulações, distribuição e conversão)."
 },
 
 {
@@ -1024,7 +1005,7 @@ body: "Plataforma de monitoramento de rios e cotas de inundação. Fase 1 comple
 id: "note_5",
 area: "projetos",
 title: "Motor IA com Voz",
-body: "Jarvis personal assistant, assistente inteligente operado por voz e texto integrado ao Second Brain neural."
+body: "Jarvis personal assistant — assistente inteligente operado por voz e texto integrado ao Second Brain neural."
 },
 
 {
@@ -1037,15 +1018,15 @@ body: "Objetivos financeiros: aproveitar o dinheiro investindo em Bitcoin, Tesou
 {
 id: "note_7",
 area: "aprendizado",
-title: "Estudos e IA",
+title: "Estudos & IA",
 body: "Estuda veias culturais, com foco na cultura asiática, livros de empreendedorismo, LLMs, IA, RPA, MCP e Cloud."
 },
 
 {
 id: "note_8",
 area: "saude",
-title: "Rotina e Família",
-body: "Acorda às 06:00, faz alongamento, come fruta, cuida do filho, leva à escola e assiste desenho. Trabalha em outra cidade de carro. Aos sábados faz bicicleta, caminhada e trilha. Adora boa comida e passeios com a família, esposa e filhos Heitor e Melissa."
+title: "Rotina & Família",
+body: "Acorda às 06:00, alongamento, fruta, cuida do filho, leva à escola e assiste desenho. Trabalho em outra cidade de carro. Sábados: bicicleta, caminhada e trilha. Adora boa comida e passeios com a família, esposa e filhos Heitor e Melissa."
 }
 ];
 
@@ -1070,8 +1051,6 @@ let isBusy = false;
 let isListening = false;
 let recognition = null;
 let highlightedNoteId = null;
-
-// CANVAS DE TEIAS NEURAIS
 
 const canvas = document.getElementById("hudCanvas");
 const ctx = canvas.getContext("2d");
@@ -1151,8 +1130,6 @@ requestAnimationFrame(drawWarmHUD);
 
 drawWarmHUD();
 
-// ELEMENTOS DOM
-
 const bootScreen = document.getElementById("bootScreen");
 const activationScreen = document.getElementById("activationScreen");
 const app = document.getElementById("app");
@@ -1212,7 +1189,55 @@ dialogueAssistant.innerText =
 speakText(welcomeText);
 });
 
-// VOZ EM PORTUGUÊS DO BRASIL
+/* VOZ EM PORTUGUÊS DO BRASIL */
+
+const FEMALE_VOICE_NAMES = [
+"female",
+"feminina",
+"luciana",
+"lucy",
+"raquel",
+"maria",
+"francisca",
+"helena",
+"samantha",
+"joana"
+];
+
+const MALE_VOICE_NAMES = [
+"male",
+"masculina",
+"antonio",
+"daniel",
+"felipe",
+"lucas",
+"ricardo",
+"jorge",
+"paulo",
+"bruno",
+"guilherme",
+"thiago",
+"google português do brasil"
+];
+
+function getPreferredPortugueseVoice() {
+const voices = window.speechSynthesis.getVoices();
+
+const portugueseBrazilianVoices = voices.filter((voice) =>
+/^pt[-_]BR$/i.test(voice.lang)
+);
+
+const maleVoice = portugueseBrazilianVoices.find((voice) => {
+const name = voice.name.toLowerCase();
+
+return (
+MALE_VOICE_NAMES.some((term) => name.includes(term)) &&
+!FEMALE_VOICE_NAMES.some((term) => name.includes(term))
+);
+});
+
+return maleVoice || portugueseBrazilianVoices[0] || null;
+}
 
 function speakText(text) {
 window.speechSynthesis.cancel();
@@ -1223,47 +1248,27 @@ utterance.lang = "pt-BR";
 utterance.rate = 0.92;
 utterance.pitch = 0.45;
 
-const voices = window.speechSynthesis.getVoices();
+let hasSpoken = false;
 
-let brazilianMaleVoice = voices.find((voice) =>
-voice.lang === "pt-BR" &&
-(
-voice.name.toLowerCase().includes("antonio") ||
-voice.name.toLowerCase().includes("daniel") ||
-voice.name.toLowerCase().includes("lucas") ||
-voice.name.toLowerCase().includes("felipe") ||
-voice.name.toLowerCase().includes("ricardo") ||
-voice.name.toLowerCase().includes("google português do brasil")
-)
-);
+const speakWhenReady = () => {
+if (hasSpoken) {
+return;
+}
 
-brazilianMaleVoice =
-brazilianMaleVoice ||
-voices.find((voice) =>
-voice.lang.includes("pt-BR") &&
-!voice.name.toLowerCase().includes("female") &&
-!voice.name.toLowerCase().includes("luciana") &&
-!voice.name.toLowerCase().includes("raquel") &&
-!voice.name.toLowerCase().includes("maria")
-);
+hasSpoken = true;
 
-brazilianMaleVoice =
-brazilianMaleVoice ||
-voices.find((voice) =>
-voice.lang.includes("pt")
-);
+const brazilianVoice = getPreferredPortugueseVoice();
 
-brazilianMaleVoice =
-brazilianMaleVoice ||
-voices[0];
-
-if (brazilianMaleVoice) {
-utterance.voice = brazilianMaleVoice;
+if (brazilianVoice) {
+utterance.voice = brazilianVoice;
 }
 
 utterance.onstart = () => {
 isBusy = true;
-statusBadge.innerText = "Falando";
+
+statusBadge.innerText = brazilianVoice
+? "Falando em português"
+: "Voz PT-BR não instalada";
 
 if (recognition) {
 try {
@@ -1284,6 +1289,21 @@ recognition.start();
 };
 
 window.speechSynthesis.speak(utterance);
+};
+
+const voices = window.speechSynthesis.getVoices();
+
+if (voices.length > 0) {
+speakWhenReady();
+} else {
+window.speechSynthesis.addEventListener(
+"voiceschanged",
+speakWhenReady,
+{ once: true }
+);
+
+setTimeout(speakWhenReady, 500);
+}
 }
 
 function initVoiceRecognition() {
@@ -1389,7 +1409,7 @@ processJarvisCommand(query);
 }
 });
 
-// COMUNICAÇÃO COM O MOTOR JARVIS NO SERVIDOR
+/* COMUNICAÇÃO COM O MOTOR JARVIS */
 
 async function processJarvisCommand(prompt) {
 isBusy = true;
@@ -1517,7 +1537,7 @@ renderGraph();
 }, 4000);
 }
 
-// SECOND BRAIN — GRAFO NEURAL SVG
+/* SECOND BRAIN — GRAFO NEURAL SVG */
 
 function renderGraph() {
 const width = svgContainer.clientWidth || 600;
@@ -1914,22 +1934,4 @@ window.openNoteEditor = openNoteEditor;
 </html>
 ```
 
-Importante: este `index.html` chama a API externa em:
-
-```javascript
-/api/jarvis
-```
-
-Portanto, para o chat funcionar publicado, o GitHub precisa conter também:
-
-```text
-api/jarvis.js
-```
-
-E a Vercel precisa ter a variável secreta:
-
-```text
-GEMINI_API_KEY
-```
-
-A chave não deve ser colada dentro do `index.html`.
+Depois de salvar o `index.html` no GitHub, faça um novo **Redeploy** na Vercel.
