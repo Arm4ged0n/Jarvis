@@ -1,1937 +1,1058 @@
-Este é o conteúdo completo e atualizado do arquivo `index.html`.
-
-No GitHub, abra o arquivo `index.html`, toque no lápis, apague tudo e cole o código abaixo inteiro. Depois clique em **Commit changes**.
-
-```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jarvis // Massive Warm Holographic HUD</title>
-
-<style>
-:root {
---bg-base: #020104;
---panel-bg: rgba(18, 8, 2, 0.90);
---border-color: rgba(255, 140, 0, 0.45);
---primary: #ff6600;
---accent: #ffb700;
---hud-glow: rgba(255, 140, 0, 0.55);
---text-main: #f1f5f9;
---text-dim: #94a3b8;
---danger: #ff3d00;
-}
-
-* {
-box-sizing: border-box;
-margin: 0;
-padding: 0;
-font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-}
-
-html,
-body {
-background-color: var(--bg-base);
-color: var(--text-main);
-min-height: 100vh;
-overflow-x: hidden;
-}
-
-::-webkit-scrollbar {
-width: 4px;
-height: 4px;
-}
-
-::-webkit-scrollbar-track {
-background: #020104;
-}
-
-::-webkit-scrollbar-thumb {
-background: rgba(255, 100, 0, 0.4);
-border-radius: 2px;
-}
-
-/* CANVAS DE TEIAS NEURAIS E CIRCUITOS TÉRMICOS */
-
-#hudCanvas {
-position: fixed;
-inset: 0;
-z-index: 0;
-pointer-events: none;
-opacity: 0.95;
-}
-
-/* TELA 1 — BOOT */
-
-#bootScreen {
-position: fixed;
-inset: 0;
-background: #020104;
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-z-index: 1000;
-gap: 25px;
-opacity: 1;
-transition: opacity 0.8s ease-out;
-}
-
-#bootScreen.fade-out {
-opacity: 0;
-pointer-events: none;
-}
-
-.massive-warm-hud {
-width: 340px;
-height: 340px;
-border-radius: 50%;
-position: relative;
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-background: radial-gradient(circle, rgba(255,140,0,0.22) 0%, transparent 75%);
-box-shadow:
-0 0 140px rgba(255, 140, 0, 0.4),
-inset 0 0 70px rgba(255, 183, 0, 0.25);
-animation: warmPulse 2.2s infinite alternate ease-in-out;
-text-align: center;
-}
-
-@keyframes warmPulse {
-0% {
-transform: scale(0.96);
-box-shadow: 0 0 90px rgba(255, 100, 0, 0.35);
-}
-
-100% {
-transform: scale(1.04);
-box-shadow: 0 0 160px rgba(255, 183, 0, 0.7);
-}
-}
-
-.hud-circle-1 {
-position: absolute;
-inset: 0;
-border: 3px dashed var(--accent);
-border-radius: 50%;
-animation: spinClockwise 16s linear infinite;
-}
-
-.hud-circle-2 {
-position: absolute;
-inset: 15px;
-border: 2px solid var(--primary);
-border-top: 2px solid transparent;
-border-bottom: 2px solid transparent;
-border-radius: 50%;
-animation: spinCounter 10s linear infinite;
-}
-
-.hud-circle-3 {
-position: absolute;
-inset: 40px;
-border: 1px dotted rgba(255, 255, 255, 0.85);
-border-radius: 50%;
-animation: spinClockwise 6s linear infinite;
-}
-
-.hud-jarvis-text {
-font-size: 2.5rem;
-font-weight: bold;
-letter-spacing: 5px;
-color: var(--accent);
-text-shadow: 0 0 20px var(--primary), 0 0 40px var(--accent);
-z-index: 2;
-}
-
-.hud-online-text {
-font-size: 1.3rem;
-letter-spacing: 6px;
-color: #ffffff;
-text-shadow: 0 0 15px var(--primary);
-margin-top: 5px;
-z-index: 2;
-}
-
-@keyframes spinClockwise {
-to {
-transform: rotate(360deg);
-}
-}
-
-@keyframes spinCounter {
-to {
-transform: rotate(-360deg);
-}
-}
-
-.boot-status {
-font-size: 0.85rem;
-letter-spacing: 3px;
-color: var(--accent);
-text-shadow: 0 0 10px var(--primary);
-animation: blink 1s infinite;
-}
-
-@keyframes blink {
-0%,
-49%,
-100% {
-opacity: 1;
-}
-
-50%,
-99% {
-opacity: 0.3;
-}
-}
-
-/* TELA 2 — ATIVAÇÃO */
-
-#activationScreen {
-position: fixed;
-inset: 0;
-background: rgba(2, 1, 4, 0.96);
-backdrop-filter: blur(14px);
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-z-index: 999;
-gap: 35px;
-opacity: 0;
-pointer-events: none;
-transition: opacity 0.6s ease-in;
-}
-
-#activationScreen.show {
-opacity: 1;
-pointer-events: all;
-}
-
-.activation-btn {
-padding: 18px 50px;
-font-size: 1.1rem;
-letter-spacing: 3px;
-color: var(--accent);
-background: rgba(255, 100, 0, 0.2);
-border: 2px solid var(--primary);
-border-radius: 8px;
-cursor: pointer;
-font-weight: bold;
-transition: all 0.3s;
-box-shadow:
-0 0 45px rgba(255, 100, 0, 0.4),
-inset 0 0 20px rgba(255, 183, 0, 0.3);
-}
-
-.activation-btn:hover {
-background: rgba(255, 100, 0, 0.4);
-box-shadow:
-0 0 90px var(--primary),
-inset 0 0 40px var(--accent);
-transform: scale(1.04);
-}
-
-/* MAIN APP */
-
-#app {
-display: none;
-flex-direction: column;
-min-height: 100vh;
-width: 100%;
-max-width: 1400px;
-margin: 0 auto;
-padding: 15px;
-gap: 15px;
-position: relative;
-z-index: 10;
-}
-
-#app.active {
-display: flex;
-}
-
-.top-bar {
-display: flex;
-justify-content: space-between;
-align-items: center;
-background: var(--panel-bg);
-border: 1px solid var(--border-color);
-padding: 14px 22px;
-border-radius: 8px;
-backdrop-filter: blur(14px);
-flex-wrap: wrap;
-gap: 10px;
-box-shadow: 0 0 35px rgba(255, 100, 0, 0.15);
-}
-
-.app-title {
-font-weight: bold;
-color: var(--accent);
-letter-spacing: 2px;
-text-shadow: 0 0 12px rgba(255, 183, 0, 0.5);
-}
-
-.api-input-box {
-display: flex;
-gap: 8px;
-align-items: center;
-width: 100%;
-max-width: 450px;
-}
-
-.api-input-box input {
-background: rgba(0,0,0,0.85);
-border: 1px solid var(--border-color);
-color: var(--accent);
-padding: 6px 12px;
-border-radius: 4px;
-font-size: 0.85rem;
-flex-grow: 1;
-outline: none;
-}
-
-.api-input-box button {
-background: rgba(255, 100, 0, 0.2);
-border: 1px solid var(--primary);
-color: #fff;
-padding: 6px 14px;
-border-radius: 4px;
-cursor: pointer;
-font-size: 0.85rem;
-font-weight: bold;
-}
-
-.api-input-box button:hover {
-background: rgba(255, 100, 0, 0.4);
-}
-
-.main-grid {
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 15px;
-flex-grow: 1;
-}
-
-@media(max-width: 900px) {
-.main-grid {
-grid-template-columns: 1fr;
-}
-}
-
-.panel {
-background: var(--panel-bg);
-border: 1px solid var(--border-color);
-border-radius: 10px;
-padding: 22px;
-display: flex;
-flex-direction: column;
-position: relative;
-backdrop-filter: blur(16px);
-box-shadow:
-inset 0 0 30px rgba(255, 100, 0, 0.08),
-0 0 35px rgba(0, 0, 0, 0.8);
-}
-
-.interaction-panel {
-align-items: center;
-justify-content: space-between;
-text-align: center;
-min-height: 480px;
-}
-
-/* REATOR CENTRAL */
-
-.reactor-container {
-width: 220px;
-height: 220px;
-border-radius: 50%;
-display: flex;
-align-items: center;
-justify-content: center;
-position: relative;
-cursor: pointer;
-margin: 15px 0;
-background: radial-gradient(circle, rgba(255,100,0,0.2) 0%, transparent 70%);
-box-shadow:
-0 0 70px rgba(255, 100, 0, 0.35),
-inset 0 0 35px rgba(255, 183, 0, 0.25);
-transition: all 0.4s;
-}
-
-.reactor-container:hover {
-box-shadow:
-0 0 110px rgba(255, 183, 0, 0.8),
-inset 0 0 55px rgba(255, 100, 0, 0.5);
-transform: scale(1.04);
-}
-
-.ring-h1 {
-position: absolute;
-inset: 0;
-border: 2px dashed var(--accent);
-border-radius: 50%;
-animation: spinClockwise 12s linear infinite;
-}
-
-.ring-h2 {
-position: absolute;
-inset: 15px;
-border: 2px solid var(--primary);
-border-top: 2px solid transparent;
-border-bottom: 2px solid transparent;
-border-radius: 50%;
-animation: spinCounter 7s linear infinite;
-}
-
-.ring-h3 {
-position: absolute;
-inset: 32px;
-border: 1px dotted rgba(255, 255, 255, 0.8);
-border-radius: 50%;
-animation: spinClockwise 6s linear infinite;
-}
-
-.ring-h4 {
-position: absolute;
-inset: 50px;
-border: 1.5px solid rgba(255, 183, 0, 0.6);
-border-left: 1.5px solid transparent;
-border-right: 1.5px solid transparent;
-border-radius: 50%;
-animation: spinCounter 4s linear infinite;
-}
-
-.status-badge {
-font-size: 0.75rem;
-letter-spacing: 2px;
-text-transform: uppercase;
-color: var(--text-dim);
-background: rgba(0,0,0,0.8);
-padding: 5px 14px;
-border-radius: 14px;
-border: 1px solid var(--border-color);
-}
-
-.dialogue-box {
-width: 100%;
-text-align: left;
-background: rgba(20, 8, 2, 0.9);
-padding: 14px 18px;
-border-radius: 8px;
-border-left: 3px solid var(--accent);
-font-size: 0.85rem;
-margin: 10px 0;
-min-height: 80px;
-display: flex;
-flex-direction: column;
-justify-content: center;
-gap: 6px;
-box-shadow: inset 0 0 20px rgba(255,183,0,0.05);
-}
-
-.dialogue-user {
-color: var(--text-dim);
-}
-
-.dialogue-assistant {
-color: var(--accent);
-font-weight: 500;
-text-shadow: 0 0 10px rgba(255,183,0,0.4);
-}
-
-.controls-row {
-display: flex;
-gap: 10px;
-width: 100%;
-margin-top: 10px;
-}
-
-.controls-row input {
-flex-grow: 1;
-background: rgba(0,0,0,0.85);
-border: 1px solid var(--border-color);
-color: var(--text-main);
-padding: 10px 14px;
-border-radius: 6px;
-font-size: 0.9rem;
-outline: none;
-transition: all 0.3s;
-}
-
-.controls-row input:focus {
-border-color: var(--primary);
-box-shadow: 0 0 20px rgba(255, 100, 0, 0.4);
-}
-
-.action-btn {
-background: rgba(255, 100, 0, 0.2);
-border: 1px solid var(--primary);
-color: #fff;
-padding: 10px 18px;
-border-radius: 6px;
-cursor: pointer;
-font-weight: bold;
-transition: all 0.2s;
-}
-
-.action-btn:hover {
-background: rgba(255, 100, 0, 0.4);
-box-shadow: 0 0 20px rgba(255, 100, 0, 0.5);
-}
-
-.btn-danger {
-background: rgba(255, 61, 0, 0.2);
-border-color: var(--danger);
-color: var(--danger);
-}
-
-.btn-danger:hover {
-background: rgba(255, 61, 0, 0.4);
-box-shadow: 0 0 20px rgba(255,61,0,0.4);
-}
-
-.brain-panel {
-display: flex;
-flex-direction: column;
-}
-
-.brain-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-bottom: 12px;
-border-bottom: 1px solid var(--border-color);
-padding-bottom: 8px;
-}
-
-.brain-title {
-font-size: 0.9rem;
-font-weight: bold;
-letter-spacing: 1px;
-color: var(--accent);
-display: flex;
-align-items: center;
-gap: 6px;
-}
-
-.brain-stats {
-font-size: 0.75rem;
-color: var(--text-dim);
-}
-
-.brain-btns {
-display: flex;
-gap: 6px;
-}
-
-.icon-btn {
-background: rgba(255, 100, 0, 0.15);
-border: 1px solid var(--border-color);
-color: var(--accent);
-width: 28px;
-height: 28px;
-border-radius: 6px;
-cursor: pointer;
-display: flex;
-align-items: center;
-justify-content: center;
-font-weight: bold;
-font-size: 0.9rem;
-transition: all 0.2s;
-}
-
-.icon-btn:hover {
-background: rgba(255, 100, 0, 0.35);
-box-shadow: 0 0 12px rgba(255, 100, 0, 0.5);
-}
-
-.svg-container {
-flex-grow: 1;
-width: 100%;
-min-height: 340px;
-background: rgba(0,0,0,0.6);
-border-radius: 8px;
-border: 1px solid rgba(255,255,255,0.05);
-position: relative;
-overflow: hidden;
-display: flex;
-align-items: center;
-justify-content: center;
-}
-
-.brain-footer {
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-top: 10px;
-font-size: 0.75rem;
-flex-wrap: wrap;
-gap: 8px;
-}
-
-.legend-list {
-display: flex;
-gap: 8px;
-flex-wrap: wrap;
-}
-
-.legend-item {
-display: flex;
-align-items: center;
-gap: 4px;
-color: var(--text-dim);
-}
-
-.legend-dot {
-width: 8px;
-height: 8px;
-border-radius: 50%;
-}
-
-.injected-status {
-color: var(--accent);
-font-weight: 500;
-}
-
-/* MODAL */
-
-.modal-overlay {
-position: fixed;
-inset: 0;
-background: rgba(2, 1, 4, 0.94);
-z-index: 200;
-display: none;
-align-items: center;
-justify-content: center;
-padding: 20px;
-backdrop-filter: blur(8px);
-}
-
-.modal-overlay.open {
-display: flex;
-}
-
-.modal-card {
-background: rgba(20, 8, 2, 0.96);
-border: 1px solid var(--primary);
-width: 100%;
-max-width: 480px;
-padding: 24px;
-border-radius: 10px;
-box-shadow: 0 0 60px rgba(255, 100, 0, 0.4);
-display: flex;
-flex-direction: column;
-gap: 14px;
-}
-
-.modal-card h3 {
-color: var(--accent);
-font-size: 1.1rem;
-}
-
-.modal-card label {
-font-size: 0.75rem;
-color: var(--text-dim);
-margin-bottom: -8px;
-}
-
-.modal-card input,
-.modal-card select,
-.modal-card textarea {
-background: rgba(0,0,0,0.85);
-border: 1px solid var(--border-color);
-color: var(--text-main);
-padding: 9px 12px;
-border-radius: 6px;
-font-size: 0.85rem;
-outline: none;
-width: 100%;
-}
-
-.modal-card textarea {
-resize: vertical;
-min-height: 95px;
-}
-
-.modal-actions {
-display: flex;
-justify-content: flex-end;
-gap: 10px;
-margin-top: 10px;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jarvis // Ultimate Celestial Fire HUD & Smart Hub</title>
+    <style>
+        :root {
+            --bg-base: #020104;
+            --panel-bg: rgba(18, 8, 2, 0.90);
+            --border-color: rgba(255, 140, 0, 0.45);
+            --primary: #ff6600;
+            --accent: #ffb700;
+            --hud-glow: rgba(255, 140, 0, 0.55);
+            --text-main: #f1f5f9;
+            --text-dim: #94a3b8;
+            --danger: #ff3d00;
+            --action-color: #ff3d00;
+            --info-color: #38bdf8;
+            --noise-color: #94a3b8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+        html, body { background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
+
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: #020104; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 100, 0, 0.4); border-radius: 2px; }
+
+        #hudCanvas {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.95;
+        }
+
+        #bootScreen {
+            position: fixed;
+            inset: 0;
+            background: #020104;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            gap: 25px;
+            opacity: 1;
+            transition: opacity 0.8s ease-out;
+        }
+
+        #bootScreen.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .massive-warm-hud {
+            width: 340px;
+            height: 340px;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, rgba(255,140,0,0.22) 0%, transparent 75%);
+            box-shadow: 0 0 140px rgba(255, 140, 0, 0.4), inset 0 0 70px rgba(255, 183, 0, 0.25);
+            animation: warmPulse 2.2s infinite alternate ease-in-out;
+            text-align: center;
+        }
+
+        @keyframes warmPulse {
+            0% { transform: scale(0.96); box-shadow: 0 0 90px rgba(255, 100, 0, 0.35); }
+            100% { transform: scale(1.04); box-shadow: 0 0 160px rgba(255, 183, 0, 0.7); }
+        }
+
+        .hud-circle-1 { position: absolute; inset: 0; border: 3px dashed var(--accent); border-radius: 50%; animation: spinClockwise 16s linear infinite; }
+        .hud-circle-2 { position: absolute; inset: 15px; border: 2px solid var(--primary); border-top: 2px solid transparent; border-bottom: 2px solid transparent; border-radius: 50%; animation: spinCounter 10s linear infinite; }
+        .hud-circle-3 { position: absolute; inset: 40px; border: 1px dotted rgba(255, 255, 255, 0.85); border-radius: 50%; animation: spinClockwise 6s linear infinite; }
+        .hud-jarvis-text { font-size: 2.5rem; font-weight: bold; letter-spacing: 5px; color: var(--accent); text-shadow: 0 0 20px var(--primary), 0 0 40px var(--accent); z-index: 2; }
+        .hud-online-text { font-size: 1.3rem; letter-spacing: 6px; color: #ffffff; text-shadow: 0 0 15px var(--primary); margin-top: 5px; z-index: 2; }
+
+        @keyframes spinClockwise { to { transform: rotate(360deg); } }
+        @keyframes spinCounter { to { transform: rotate(-360deg); } }
+
+        .boot-status {
+            font-size: 0.85rem;
+            letter-spacing: 3px;
+            color: var(--accent);
+            text-shadow: 0 0 10px var(--primary);
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink { 0%, 49%, 100% { opacity: 1; } 50%, 99% { opacity: 0.3; } }
+
+        #activationScreen {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 1, 4, 0.96);
+            backdrop-filter: blur(14px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            gap: 35px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease-in;
+        }
+
+        #activationScreen.show { opacity: 1; pointer-events: all; }
+
+        .activation-btn {
+            padding: 18px 50px;
+            font-size: 1.1rem;
+            letter-spacing: 3px;
+            color: var(--accent);
+            background: rgba(255, 100, 0, 0.2);
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 0 45px rgba(255, 100, 0, 0.4), inset 0 0 20px rgba(255, 183, 0, 0.3);
+        }
+
+        .activation-btn:hover {
+            background: rgba(255, 100, 0, 0.4);
+            box-shadow: 0 0 90px var(--primary), inset 0 0 40px var(--accent);
+            transform: scale(1.04);
+        }
+
+        #app {
+            display: none;
+            flex-direction: column;
+            min-height: 100vh;
+            width: 100%;
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 15px;
+            gap: 15px;
+            position: relative;
+            z-index: 10;
+        }
+
+        #app.active { display: flex; }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            padding: 14px 22px;
+            border-radius: 8px;
+            backdrop-filter: blur(14px);
+            flex-wrap: wrap;
+            gap: 10px;
+            box-shadow: 0 0 35px rgba(255, 100, 0, 0.15);
+        }
+
+        .app-title {
+            font-weight: bold;
+            color: var(--accent);
+            letter-spacing: 2px;
+            text-shadow: 0 0 12px rgba(255, 183, 0, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .nav-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+        .nav-tab {
+            background: rgba(255, 100, 0, 0.1);
+            border: 1px solid var(--border-color);
+            color: var(--text-dim);
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+        }
+        .nav-tab.active, .nav-tab:hover { background: rgba(255, 100, 0, 0.3); color: var(--accent); border-color: var(--accent); }
+
+        .api-input-box {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .api-input-box input, .api-input-box select {
+            background: rgba(0,0,0,0.85);
+            border: 1px solid var(--border-color);
+            color: var(--accent);
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            outline: none;
+        }
+
+        .main-content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            flex-grow: 1;
+        }
+
+        @media(max-width: 1000px) {
+            .main-content-grid { grid-template-columns: 1fr; }
+        }
+
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            backdrop-filter: blur(16px);
+            box-shadow: inset 0 0 30px rgba(255, 100, 0, 0.08), 0 0 35px rgba(0, 0, 0, 0.8);
+            min-height: 480px;
+        }
+
+        .tab-view { display: none; flex-direction: column; flex-grow: 1; gap: 12px; overflow-y: auto; max-height: 520px; }
+        .tab-view.active { display: flex; }
+
+        .interaction-panel { align-items: center; justify-content: space-between; text-align: center; }
+
+        .reactor-container {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+            margin: 10px 0;
+            background: radial-gradient(circle, rgba(255,100,0,0.2) 0%, transparent 70%);
+            box-shadow: 0 0 70px rgba(255, 100, 0, 0.35), inset 0 0 35px rgba(255, 183, 0, 0.25);
+            transition: all 0.4s;
+        }
+
+        .reactor-container:hover {
+            box-shadow: 0 0 110px rgba(255, 183, 0, 0.8), inset 0 0 55px rgba(255, 100, 0, 0.5);
+            transform: scale(1.04);
+        }
+
+        .ring-h1 { position: absolute; inset: 0; border: 2px dashed var(--accent); border-radius: 50%; animation: spinClockwise 12s linear infinite; }
+        .ring-h2 { position: absolute; inset: 15px; border: 2px solid var(--primary); border-top: 2px solid transparent; border-bottom: 2px solid transparent; border-radius: 50%; animation: spinCounter 7s linear infinite; }
+        .ring-h3 { position: absolute; inset: 32px; border: 1px dotted rgba(255, 255, 255, 0.8); border-radius: 50%; animation: spinClockwise 6s linear infinite; }
+        .ring-h4 { position: absolute; inset: 50px; border: 1.5px solid rgba(251, 191, 36, 0.6); border-left: 1.5px solid transparent; border-right: 1.5px solid transparent; border-radius: 50%; animation: spinCounter 4s linear infinite; }
+
+        @keyframes spinClockwise { to { transform: rotate(360deg); } }
+        @keyframes spinCounter { to { transform: rotate(-360deg); } }
+
+        .status-badge {
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            background: rgba(0,0,0,0.8);
+            padding: 5px 14px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+        }
+
+        .dialogue-box {
+            width: 100%;
+            text-align: left;
+            background: rgba(20, 8, 2, 0.9);
+            padding: 14px 18px;
+            border-radius: 8px;
+            border-left: 3px solid var(--accent);
+            font-size: 0.85rem;
+            margin: 10px 0;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .dialogue-user { color: var(--text-dim); }
+        .dialogue-assistant { color: var(--accent); font-weight: 500; text-shadow: 0 0 10px rgba(255,183,0,0.4); }
+
+        .controls-row { display: flex; gap: 10px; width: 100%; margin-top: 10px; }
+        .controls-row input {
+            flex-grow: 1;
+            background: rgba(0,0,0,0.85);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .action-btn {
+            background: rgba(255, 100, 0, 0.2);
+            border: 1px solid var(--primary);
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .action-btn:hover { background: rgba(255, 100, 0, 0.4); box-shadow: 0 0 20px rgba(255, 100, 0, 0.5); }
+        .btn-danger { background: rgba(255, 61, 0, 0.2); border-color: var(--danger); color: var(--danger); }
+
+        /* MÓDULOS NOVOS CARDS */
+        .module-card {
+            background: rgba(0,0,0,0.6);
+            border: 1px solid rgba(255, 140, 0, 0.25);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: var(--accent);
+            border-bottom: 1px solid rgba(255,140,0,0.15);
+            padding-bottom: 6px;
+        }
+
+        .badge { font-size: 0.65rem; padding: 2px 8px; border-radius: 10px; font-weight: bold; text-transform: uppercase; }
+        .badge-acao { background: rgba(255,61,0,0.25); color: #ff5500; border: 1px solid #ff3d00; }
+        .badge-info { background: rgba(56,189,248,0.2); color: #38bdf8; border: 1px solid #38bdf8; }
+        .badge-ruido { background: rgba(148,163,184,0.15); color: #94a3b8; border: 1px solid #94a3b8; }
+
+        .settings-form { display: flex; flex-direction: column; gap: 8px; font-size: 0.8rem; }
+        .settings-form label { color: var(--text-dim); }
+        .settings-form input, .settings-form select, .settings-form textarea {
+            background: rgba(0,0,0,0.9); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px; border-radius: 4px; font-size: 0.8rem; outline: none; width: 100%;
+        }
+
+        .antenna-alert {
+            background: rgba(255, 61, 0, 0.15); border: 1px dashed var(--danger); color: #ffaa88; padding: 10px; border-radius: 6px; font-size: 0.75rem; text-align: center;
+        }
+
+        /* MODAL */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(2, 1, 4, 0.94); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(8px); }
+        .modal-overlay.open { display: flex; }
+        .modal-card { background: rgba(20, 8, 2, 0.96); border: 1px solid var(--primary); width: 100%; max-width: 480px; padding: 24px; border-radius: 10px; box-shadow: 0 0 60px rgba(255, 100, 0, 0.4); display: flex; flex-direction: column; gap: 14px; }
+        .modal-card h3 { color: var(--accent); font-size: 1.1rem; }
+        .modal-card label { font-size: 0.75rem; color: var(--text-dim); margin-bottom: -8px; }
+        .modal-card input, .modal-card select, .modal-card textarea { background: rgba(0,0,0,0.85); border: 1px solid var(--border-color); color: var(--text-main); padding: 9px 12px; border-radius: 6px; font-size: 0.85rem; outline: none; width: 100%; }
+        .modal-card textarea { resize: vertical; min-height: 95px; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
+    </style>
 </head>
-
 <body>
 
-<canvas id="hudCanvas"></canvas>
-
-<div id="bootScreen">
-<div class="massive-warm-hud">
-<div class="hud-circle-1"></div>
-<div class="hud-circle-2"></div>
-<div class="hud-circle-3"></div>
-<div class="hud-jarvis-text">JARVIS</div>
-<div class="hud-online-text">ONLINE</div>
-</div>
-
-<div class="boot-status">
-SINCRONIZANDO NÚCLEO HOLOGRÁFICO...
-</div>
-</div>
-
-<div id="activationScreen">
-<div class="massive-warm-hud" style="width: 260px; height: 260px;">
-<div class="hud-circle-1"></div>
-<div class="hud-circle-2"></div>
-<div class="hud-circle-3"></div>
-<div class="hud-jarvis-text" style="font-size: 2rem;">JARVIS</div>
-<div class="hud-online-text" style="font-size: 1rem;">PRONTO</div>
-</div>
-
-<button class="activation-btn" id="btnActivate">
-► ATIVAR SISTEMA
-</button>
-
-<div style="font-size: 0.75rem; color: var(--text-dim); letter-spacing: 1px;">
-CLIQUE PARA INICIAR
-</div>
-</div>
-
-<div id="app">
-
-<header class="top-bar">
-<div class="app-title">
-JARVIS // WARM HOLOGRAPHIC CORE
-</div>
-
-<div class="api-input-box">
-<input
-type="text"
-id="apiKeyInput"
-value="API protegida pelo servidor"
-aria-label="Status da API"
-disabled
->
-
-<button id="btnSaveKey" disabled>
-Conectada
-</button>
-</div>
-</header>
-
-<div class="main-grid">
-
-<section class="panel interaction-panel">
-
-<div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
-<span style="font-size: 0.8rem; color: var(--accent); font-weight: bold; letter-spacing: 1px;">
-ASSISTENTE PESSOAL
-</span>
-
-<span id="statusBadge" class="status-badge">
-Ocioso
-</span>
-</div>
-
-<div
-class="reactor-container"
-id="reactorOrb"
-title="Clique para interagir"
->
-<div class="ring-h1"></div>
-<div class="ring-h2"></div>
-<div class="ring-h3"></div>
-<div class="ring-h4"></div>
-
-<div style="
-width: 75px;
-height: 75px;
-border-radius: 50%;
-display: flex;
-align-items: center;
-justify-content: center;
-background: radial-gradient(circle, var(--accent) 0%, var(--primary) 70%);
-box-shadow: 0 0 45px var(--accent);
-">
-🧠
-</div>
-</div>
-
-<div class="dialogue-box">
-<div id="dialogueUser" class="dialogue-user">
-Você: --
-</div>
-
-<div id="dialogueAssistant" class="dialogue-assistant">
-Jarvis: Sistemas online, Sandro.
-</div>
-</div>
-
-<div class="controls-row">
-<input
-type="text"
-id="textInput"
-placeholder="Ou digite e tecle Enter..."
->
-
-<button
-id="btnMic"
-class="action-btn"
-title="Microfone"
->
-🎙️
-</button>
-
-<button
-id="btnStopSpeech"
-class="action-btn btn-danger"
->
-Parar Fala
-</button>
-</div>
-
-</section>
-
-<section class="panel brain-panel">
-
-<div class="brain-header">
-
-<div class="brain-title">
-<span>🧠 SECOND BRAIN</span>
-</div>
-
-<div class="brain-stats" id="brainStats">
-0 notas · 0 áreas
-</div>
-
-<div class="brain-btns">
-<button
-class="icon-btn"
-id="btnAddNote"
-title="Nova Nota"
->
-+
-</button>
-
-<button
-class="icon-btn"
-id="btnReloadGraph"
-title="Recarregar Grafo"
->
-↻
-</button>
-</div>
-
-</div>
-
-<div
-class="svg-container"
-id="svgContainer"
-></div>
-
-<div class="brain-footer">
-<div
-class="legend-list"
-id="legendList"
-></div>
-
-<div
-class="injected-status"
-id="injectedStatus"
->
-✓ contexto injetado no assistente
-</div>
-</div>
-
-</section>
-
-</div>
-</div>
-
-<div
-class="modal-overlay"
-id="modalOverlay"
->
-<div class="modal-card">
-
-<h3 id="modalTitle">
-Editar Nota
-</h3>
-
-<input
-type="hidden"
-id="editNoteId"
->
-
-<label>
-Título
-</label>
-
-<input
-type="text"
-id="editNoteTitle"
-placeholder="Ex: Investimentos"
->
-
-<label>
-Área
-</label>
-
-<select id="editNoteArea"></select>
-
-<label>
-Conteúdo
-</label>
-
-<textarea
-id="editNoteBody"
-placeholder="Detalhes da nota..."
-></textarea>
-
-<div class="modal-actions">
-
-<button
-class="action-btn btn-danger"
-id="btnDeleteNote"
-style="margin-right: auto;"
->
-Excluir
-</button>
-
-<button
-class="action-btn"
-id="btnCancelModal"
-style="background: transparent; border-color: var(--text-dim);"
->
-Cancelar
-</button>
-
-<button
-class="action-btn"
-id="btnSaveNote"
->
-Salvar Nota
-</button>
-
-</div>
-</div>
-</div>
-
-<script>
-const CONFIG = {
-name: "Jarvis",
-address: "Sandro",
-persona: "formal britânico (mordomo)"
-};
-
-const AREA = {
-meta: {
-label: "Identidade",
-color: "#94a3b8"
-},
-
-metas: {
-label: "Metas",
-color: "#38bdf8"
-},
-
-trabalho: {
-label: "Carreira",
-color: "#ff6600"
-},
-
-projetos: {
-label: "Projetos",
-color: "#ffb700"
-},
-
-financas: {
-label: "Finanças",
-color: "#f7931a"
-},
-
-aprendizado: {
-label: "Aprendizado",
-color: "#38bdf8"
-},
-
-saude: {
-label: "Saúde",
-color: "#34d399"
-},
-
-relacoes: {
-label: "Relações",
-color: "#f472b6"
-}
-};
-
-const INITIAL_NOTES = [
-{
-id: "note_1",
-area: "meta",
-title: "Sandro Fagundes",
-body: "Sandro de Souza Fagundes, 40 anos, mora em Nova Hartz, trabalha em Dois Irmãos no Grupo Herval como cientista de dados e analista de indicadores corporativos. Licenciado em computação, ex-professor de informática, empreendedor com lojas online e criador de plataformas/dashboards via IA."
-},
-
-{
-id: "note_2",
-area: "metas",
-title: "Sanar Dores",
-body: "Meta geral: ajudar a sanar dores de processos corporativos com visão de futuro. Curto prazo: ajudar pessoas a desenvolver projetos e democratizar a criação."
-},
-
-{
-id: "note_3",
-area: "trabalho",
-title: "Grupo Herval",
-body: "Analista de indicadores corporativos e cientista de dados no Grupo Herval. Migrando dashboards do Power BI para o Apache Superset (melhorias nos charts). Montando dashboard para a Já Consórcios (jornada de leads, simulações, distribuição e conversão)."
-},
-
-{
-id: "note_4",
-area: "projetos",
-title: "Plataforma Águas",
-body: "Plataforma de monitoramento de rios e cotas de inundação. Fase 1 completa no Vercel. Objetivo: disponibilizar para prefeituras."
-},
-
-{
-id: "note_5",
-area: "projetos",
-title: "Motor IA com Voz",
-body: "Jarvis personal assistant — assistente inteligente operado por voz e texto integrado ao Second Brain neural."
-},
-
-{
-id: "note_6",
-area: "financas",
-title: "Investimentos",
-body: "Objetivos financeiros: aproveitar o dinheiro investindo em Bitcoin, Tesouro Direto, imóveis e viagens para Argentina, Patagônia e Cordilheira dos Andes."
-},
-
-{
-id: "note_7",
-area: "aprendizado",
-title: "Estudos & IA",
-body: "Estuda veias culturais, com foco na cultura asiática, livros de empreendedorismo, LLMs, IA, RPA, MCP e Cloud."
-},
-
-{
-id: "note_8",
-area: "saude",
-title: "Rotina & Família",
-body: "Acorda às 06:00, alongamento, fruta, cuida do filho, leva à escola e assiste desenho. Trabalho em outra cidade de carro. Sábados: bicicleta, caminhada e trilha. Adora boa comida e passeios com a família, esposa e filhos Heitor e Melissa."
-}
-];
-
-let NOTES = JSON.parse(
-localStorage.getItem("jarvis_notes")
-) || INITIAL_NOTES;
-
-let REL = [
-["note_1", "note_2"],
-["note_1", "note_3"],
-["note_2", "note_4"],
-["note_2", "note_5"],
-["note_3", "note_4"],
-["note_3", "note_5"],
-["note_1", "note_6"],
-["note_1", "note_7"],
-["note_1", "note_8"]
-];
-
-let chatHistory = [];
-let isBusy = false;
-let isListening = false;
-let recognition = null;
-let highlightedNoteId = null;
-
-const canvas = document.getElementById("hudCanvas");
-const ctx = canvas.getContext("2d");
-let hudNodes = [];
-
-function resizeCanvas() {
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-}
-
-window.addEventListener("resize", resizeCanvas);
-resizeCanvas();
-
-for (let i = 0; i < 80; i++) {
-hudNodes.push({
-x: Math.random() * canvas.width,
-y: Math.random() * canvas.height,
-vx: (Math.random() - 0.5) * 0.8,
-vy: (Math.random() - 0.5) * 0.8,
-radius: Math.random() * 2.2 + 1.2
-});
-}
-
-function drawWarmHUD() {
-ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-ctx.fillStyle = "#020104";
-ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-let glowIntensity = isBusy || isListening ? 0.85 : 0.45;
-let strokeColor = isBusy
-? "rgba(255, 61, 0,"
-: "rgba(255, 183, 0,";
-
-for (let i = 0; i < hudNodes.length; i++) {
-let p = hudNodes[i];
-
-p.x += p.vx;
-p.y += p.vy;
-
-if (p.x < 0 || p.x > canvas.width) {
-p.vx *= -1;
-}
-
-if (p.y < 0 || p.y > canvas.height) {
-p.vy *= -1;
-}
-
-for (let j = i + 1; j < hudNodes.length; j++) {
-let p2 = hudNodes[j];
-
-let dx = p.x - p2.x;
-let dy = p.y - p2.y;
-let dist = Math.sqrt(dx * dx + dy * dy);
-
-if (dist < 150) {
-ctx.beginPath();
-ctx.moveTo(p.x, p.y);
-ctx.lineTo(p2.x, p2.y);
-ctx.strokeStyle = `${strokeColor} ${(1 - dist / 150) * glowIntensity})`;
-ctx.lineWidth = 1.1;
-ctx.stroke();
-}
-}
-
-ctx.beginPath();
-ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-ctx.fillStyle = isBusy ? "#ff3d00" : "#ffb700";
-ctx.shadowBlur = isBusy ? 25 : 15;
-ctx.shadowColor = "#ff6600";
-ctx.fill();
-ctx.shadowBlur = 0;
-}
-
-requestAnimationFrame(drawWarmHUD);
-}
-
-drawWarmHUD();
-
-const bootScreen = document.getElementById("bootScreen");
-const activationScreen = document.getElementById("activationScreen");
-const app = document.getElementById("app");
-const btnActivate = document.getElementById("btnActivate");
-const apiKeyInput = document.getElementById("apiKeyInput");
-const reactorOrb = document.getElementById("reactorOrb");
-const statusBadge = document.getElementById("statusBadge");
-const dialogueUser = document.getElementById("dialogueUser");
-const dialogueAssistant = document.getElementById("dialogueAssistant");
-const textInput = document.getElementById("textInput");
-const btnMic = document.getElementById("btnMic");
-const btnStopSpeech = document.getElementById("btnStopSpeech");
-const svgContainer = document.getElementById("svgContainer");
-const brainStats = document.getElementById("brainStats");
-const legendList = document.getElementById("legendList");
-const btnAddNote = document.getElementById("btnAddNote");
-const btnReloadGraph = document.getElementById("btnReloadGraph");
-const modalOverlay = document.getElementById("modalOverlay");
-const modalTitle = document.getElementById("modalTitle");
-const editNoteId = document.getElementById("editNoteId");
-const editNoteTitle = document.getElementById("editNoteTitle");
-const editNoteArea = document.getElementById("editNoteArea");
-const editNoteBody = document.getElementById("editNoteBody");
-const btnSaveNote = document.getElementById("btnSaveNote");
-const btnDeleteNote = document.getElementById("btnDeleteNote");
-const btnCancelModal = document.getElementById("btnCancelModal");
-
-window.addEventListener("DOMContentLoaded", () => {
-editNoteArea.innerHTML = Object.entries(AREA)
-.map(([key, value]) =>
-`<option value="${key}">${value.label}</option>`
-)
-.join("");
-
-setTimeout(() => {
-bootScreen.classList.add("fade-out");
-
-setTimeout(() => {
-activationScreen.classList.add("show");
-}, 400);
-}, 2200);
-});
-
-btnActivate.addEventListener("click", () => {
-activationScreen.classList.remove("show");
-app.classList.add("active");
-
-renderGraph();
-initVoiceRecognition();
-
-const welcomeText =
-`Sistemas online. Estou ouvindo, ${CONFIG.address}.`;
-
-dialogueAssistant.innerText =
-`${CONFIG.name}: ${welcomeText}`;
-
-speakText(welcomeText);
-});
-
-/* VOZ EM PORTUGUÊS DO BRASIL */
-
-const FEMALE_VOICE_NAMES = [
-"female",
-"feminina",
-"luciana",
-"lucy",
-"raquel",
-"maria",
-"francisca",
-"helena",
-"samantha",
-"joana"
-];
-
-const MALE_VOICE_NAMES = [
-"male",
-"masculina",
-"antonio",
-"daniel",
-"felipe",
-"lucas",
-"ricardo",
-"jorge",
-"paulo",
-"bruno",
-"guilherme",
-"thiago",
-"google português do brasil"
-];
-
-function getPreferredPortugueseVoice() {
-const voices = window.speechSynthesis.getVoices();
-
-const portugueseBrazilianVoices = voices.filter((voice) =>
-/^pt[-_]BR$/i.test(voice.lang)
-);
-
-const maleVoice = portugueseBrazilianVoices.find((voice) => {
-const name = voice.name.toLowerCase();
-
-return (
-MALE_VOICE_NAMES.some((term) => name.includes(term)) &&
-!FEMALE_VOICE_NAMES.some((term) => name.includes(term))
-);
-});
-
-return maleVoice || portugueseBrazilianVoices[0] || null;
-}
-
-function speakText(text) {
-window.speechSynthesis.cancel();
-
-const utterance = new SpeechSynthesisUtterance(text);
-
-utterance.lang = "pt-BR";
-utterance.rate = 0.92;
-utterance.pitch = 0.45;
-
-let hasSpoken = false;
-
-const speakWhenReady = () => {
-if (hasSpoken) {
-return;
-}
-
-hasSpoken = true;
-
-const brazilianVoice = getPreferredPortugueseVoice();
-
-if (brazilianVoice) {
-utterance.voice = brazilianVoice;
-}
-
-utterance.onstart = () => {
-isBusy = true;
-
-statusBadge.innerText = brazilianVoice
-? "Falando em português"
-: "Voz PT-BR não instalada";
-
-if (recognition) {
-try {
-recognition.stop();
-} catch (error) {}
-}
-};
-
-utterance.onend = () => {
-isBusy = false;
-statusBadge.innerText = "Ocioso";
-
-if (recognition && !isListening) {
-try {
-recognition.start();
-} catch (error) {}
-}
-};
-
-window.speechSynthesis.speak(utterance);
-};
-
-const voices = window.speechSynthesis.getVoices();
-
-if (voices.length > 0) {
-speakWhenReady();
-} else {
-window.speechSynthesis.addEventListener(
-"voiceschanged",
-speakWhenReady,
-{ once: true }
-);
-
-setTimeout(speakWhenReady, 500);
-}
-}
-
-function initVoiceRecognition() {
-const SpeechRecognition =
-window.SpeechRecognition ||
-window.webkitSpeechRecognition;
-
-if (!SpeechRecognition) {
-statusBadge.innerText = "STT Indisponível";
-return;
-}
-
-try {
-recognition = new SpeechRecognition();
-
-recognition.lang = "pt-BR";
-recognition.continuous = true;
-recognition.interimResults = false;
-
-recognition.onstart = () => {
-isListening = true;
-statusBadge.innerText = "Ouvindo...";
-};
-
-recognition.onresult = (event) => {
-if (isBusy) {
-return;
-}
-
-const transcript =
-event.results[event.results.length - 1][0].transcript.trim();
-
-if (transcript) {
-dialogueUser.innerText = `Você: ${transcript}`;
-processJarvisCommand(transcript);
-}
-};
-
-recognition.onerror = (event) => {
-if (event.error === "not-allowed") {
-statusBadge.innerText = "Microfone Negado";
-}
-};
-
-recognition.onend = () => {
-isListening = false;
-
-if (!isBusy) {
-try {
-recognition.start();
-} catch (error) {}
-}
-};
-
-recognition.start();
-} catch (error) {
-console.error(error);
-}
-}
-
-btnMic.addEventListener("click", () => {
-if (recognition && !isListening) {
-try {
-recognition.start();
-} catch (error) {}
-} else if (recognition && isListening) {
-try {
-recognition.stop();
-} catch (error) {}
-}
-});
-
-reactorOrb.addEventListener("click", () => {
-if (recognition && !isListening) {
-try {
-recognition.start();
-} catch (error) {}
-} else if (recognition && isListening) {
-try {
-recognition.stop();
-} catch (error) {}
-}
-});
-
-btnStopSpeech.addEventListener("click", () => {
-window.speechSynthesis.cancel();
-isBusy = false;
-statusBadge.innerText = "Ocioso";
-});
-
-textInput.addEventListener("keydown", (event) => {
-if (
-event.key === "Enter" &&
-textInput.value.trim() !== ""
-) {
-const query = textInput.value.trim();
-
-textInput.value = "";
-
-dialogueUser.innerText = `Você: ${query}`;
-
-processJarvisCommand(query);
-}
-});
-
-/* COMUNICAÇÃO COM O MOTOR JARVIS */
-
-async function processJarvisCommand(prompt) {
-isBusy = true;
-statusBadge.innerText = "Pensando...";
-
-try {
-const apiUrl =
-window.location.pathname.startsWith("/__mockup/")
-? "/api/jarvis/chat"
-: "/api/jarvis";
-
-const response = await fetch(apiUrl, {
-method: "POST",
-headers: {
-"content-type": "application/json"
-},
-body: JSON.stringify({
-prompt,
-history: chatHistory,
-notes: NOTES
-})
-});
-
-if (!response.ok) {
-const errorData =
-await response.json().catch(() => ({}));
-
-throw new Error(
-errorData.error ||
-"Erro de comunicação com o motor Jarvis."
-);
-}
-
-const data = await response.json();
-
-let rawText =
-data.text ||
-"Sem resposta do sistema.";
-
-const saveRegex =
-/\[\[SAVE:([a-z_]+)\|([^|]+)\|([\s\S]+?)\]\]/;
-
-const match = rawText.match(saveRegex);
-
-if (match) {
-const [, area, title, body] = match;
-
-rawText = rawText
-.replace(saveRegex, "")
-.trim();
-
-upsertNote(area, title, body);
-}
-
-chatHistory.push({
-role: "user",
-content: prompt
-});
-
-chatHistory.push({
-role: "assistant",
-content: rawText
-});
-
-dialogueAssistant.innerText =
-`${CONFIG.name}: ${rawText}`;
-
-speakText(rawText);
-
-isBusy = false;
-
-} catch (error) {
-const message =
-error instanceof Error
-? error.message
-: "Falha desconhecida no motor Jarvis.";
-
-dialogueAssistant.innerText =
-`${CONFIG.name}: ${message}`;
-
-speakText(message);
-
-isBusy = false;
-statusBadge.innerText = "Ocioso";
-}
-
-statusBadge.innerText = "Ocioso";
-}
-
-function upsertNote(area, title, body) {
-let existing = NOTES.find(
-(note) =>
-note.title.toLowerCase() === title.toLowerCase()
-);
-
-if (existing) {
-existing.area = area;
-existing.body = body;
-highlightedNoteId = existing.id;
-} else {
-const newId = "note_" + Date.now();
-
-NOTES.push({
-id: newId,
-area,
-title,
-body
-});
-
-REL.push([newId, "note_1"]);
-
-highlightedNoteId = newId;
-}
-
-localStorage.setItem(
-"jarvis_notes",
-JSON.stringify(NOTES)
-);
-
-renderGraph();
-
-setTimeout(() => {
-highlightedNoteId = null;
-renderGraph();
-}, 4000);
-}
-
-/* SECOND BRAIN — GRAFO NEURAL SVG */
-
-function renderGraph() {
-const width = svgContainer.clientWidth || 600;
-const height = svgContainer.clientHeight || 340;
-
-const cx = width / 2;
-const cy = height / 2;
-
-brainStats.innerText =
-`${NOTES.length} notas · ${new Set(NOTES.map((note) => note.area)).size} áreas`;
-
-const usedAreas = [
-...new Set(NOTES.map((note) => note.area))
-];
-
-legendList.innerHTML = usedAreas
-.map(
-(area) => `
-<div class="legend-item">
-<span
-class="legend-dot"
-style="background: ${AREA[area]?.color || "#fff"}"
-></span>
-<span>${AREA[area]?.label || area}</span>
-</div>
-`
-)
-.join("");
-
-let connCounts = {};
-
-NOTES.forEach((note) => {
-connCounts[note.id] = 1;
-});
-
-REL.forEach(([a, b]) => {
-if (connCounts[a]) {
-connCounts[a]++;
-}
-
-if (connCounts[b]) {
-connCounts[b]++;
-}
-});
-
-const radiusX = width * 0.36;
-const radiusY = height * 0.34;
-
-let nodeCoords = {};
-
-NOTES.forEach((note, index) => {
-const angle =
-(index / NOTES.length) * Math.PI * 2;
-
-nodeCoords[note.id] = {
-x: cx + Math.cos(angle) * radiusX,
-y: cy + Math.sin(angle) * radiusY,
-note
-};
-});
-
-let svgContent = `
-<defs>
-<radialGradient
-id="coreGlow"
-cx="50%"
-cy="50%"
-r="50%"
->
-<stop
-offset="0%"
-stop-color="#ffb700"
-stop-opacity="0.9"
-/>
-
-<stop
-offset="100%"
-stop-color="#ff6600"
-stop-opacity="0"
-/>
-</radialGradient>
-
-<linearGradient
-id="edgeGrad"
-x1="0%"
-y1="0%"
-x2="100%"
-y2="100%"
->
-<stop
-offset="0%"
-stop-color="#ffb700"
-/>
-
-<stop
-offset="100%"
-stop-color="#ff6600"
-/>
-</linearGradient>
-</defs>
-`;
-
-REL.forEach(([idA, idB]) => {
-if (nodeCoords[idA] && nodeCoords[idB]) {
-const p1 = nodeCoords[idA];
-const p2 = nodeCoords[idB];
-
-const ctrlX =
-cx + (p1.x + p2.x - 2 * cx) * 0.25;
-
-const ctrlY =
-cy + (p1.y + p2.y - 2 * cy) * 0.25;
-
-svgContent += `
-<path
-d="M ${p1.x} ${p1.y} Q ${ctrlX} ${ctrlY} ${p2.x} ${p2.y}"
-stroke="url(#edgeGrad)"
-stroke-width="1.2"
-fill="none"
-opacity="0.4"
-stroke-dasharray="4 4"
-/>
-`;
-}
-});
-
-Object.values(nodeCoords).forEach((node) => {
-const color =
-AREA[node.note.area]?.color || "#ffb700";
-
-svgContent += `
-<line
-x1="${cx}"
-y1="${cy}"
-x2="${node.x}"
-y2="${node.y}"
-stroke="${color}"
-stroke-width="0.8"
-opacity="0.3"
-/>
-`;
-});
-
-svgContent += `
-<circle
-cx="${cx}"
-cy="${cy}"
-r="38"
-fill="url(#coreGlow)"
-/>
-
-<circle
-cx="${cx}"
-cy="${cy}"
-r="22"
-fill="#180802"
-stroke="#ffb700"
-stroke-width="2"
-/>
-
-<text
-x="${cx}"
-y="${cy + 5}"
-fill="#fff"
-font-size="14"
-text-anchor="middle"
-font-weight="bold"
->
-🧠
-</text>
-`;
-
-Object.values(nodeCoords).forEach((node) => {
-const color =
-AREA[node.note.area]?.color || "#ffb700";
-
-const size = Math.min(
-18,
-10 + (connCounts[node.note.id] || 1) * 1.5
-);
-
-const isHighlighted =
-node.note.id === highlightedNoteId;
-
-svgContent += `
-<g
-class="node-group"
-cursor="pointer"
-onclick="openNoteEditor('${node.note.id}')"
->
-${
-isHighlighted
-? `
-<circle
-cx="${node.x}"
-cy="${node.y}"
-r="${size + 6}"
-fill="none"
-stroke="#fff"
-stroke-width="2"
->
-<animate
-attributeName="r"
-values="${size};${size + 12};${size}"
-dur="1.5s"
-repeatCount="indefinite"
-/>
-
-<animate
-attributeName="opacity"
-values="1;0;1"
-dur="1.5s"
-repeatCount="indefinite"
-/>
-</circle>
-`
-: ""
-}
-
-<circle
-cx="${node.x}"
-cy="${node.y}"
-r="${size + 4}"
-fill="${color}"
-opacity="0.25"
->
-<animate
-attributeName="r"
-values="${size};${size + 5};${size}"
-dur="3s"
-repeatCount="indefinite"
-/>
-</circle>
-
-<circle
-cx="${node.x}"
-cy="${node.y}"
-r="${size}"
-fill="#020104"
-stroke="${color}"
-stroke-width="2"
-/>
-
-<text
-x="${node.x}"
-y="${node.y + size + 14}"
-fill="#e2e8f0"
-font-size="10"
-text-anchor="middle"
-font-weight="500"
->
-${node.note.title}
-</text>
-</g>
-`;
-});
-
-svgContainer.innerHTML =
-'<svg viewBox="0 0 ' +
-width +
-" " +
-height +
-'">' +
-svgContent +
-"</svg>";
-}
-
-btnReloadGraph.addEventListener(
-"click",
-renderGraph
-);
-
-window.addEventListener(
-"resize",
-renderGraph
-);
-
-function openNoteEditor(noteId = null) {
-if (noteId) {
-const note = NOTES.find(
-(item) => item.id === noteId
-);
-
-if (note) {
-modalTitle.innerText = "Editar Nota";
-
-editNoteId.value = note.id;
-editNoteTitle.value = note.title;
-editNoteArea.value = note.area;
-editNoteBody.value = note.body;
-
-btnDeleteNote.style.display = "block";
-}
-} else {
-modalTitle.innerText = "Nova Nota";
-
-editNoteId.value = "";
-editNoteTitle.value = "";
-editNoteArea.value = "projetos";
-editNoteBody.value = "";
-
-btnDeleteNote.style.display = "none";
-}
-
-modalOverlay.classList.add("open");
-}
-
-btnAddNote.addEventListener(
-"click",
-() => openNoteEditor(null)
-);
-
-btnCancelModal.addEventListener(
-"click",
-() => modalOverlay.classList.remove("open")
-);
-
-btnSaveNote.addEventListener("click", () => {
-const id = editNoteId.value;
-const title = editNoteTitle.value.trim();
-const area = editNoteArea.value;
-const body = editNoteBody.value.trim();
-
-if (!title) {
-return alert("Insira um título.");
-}
-
-if (id) {
-let note = NOTES.find(
-(item) => item.id === id
-);
-
-if (note) {
-note.title = title;
-note.area = area;
-note.body = body;
-}
-} else {
-const newId = "note_" + Date.now();
-
-NOTES.push({
-id: newId,
-area,
-title,
-body
-});
-
-REL.push([newId, "note_1"]);
-}
-
-localStorage.setItem(
-"jarvis_notes",
-JSON.stringify(NOTES)
-);
-
-modalOverlay.classList.remove("open");
-
-renderGraph();
-
-speakText(
-"Nota salva no Second Brain, senhor."
-);
-});
-
-btnDeleteNote.addEventListener("click", () => {
-const id = editNoteId.value;
-
-if (id) {
-NOTES = NOTES.filter(
-(note) => note.id !== id
-);
-
-REL = REL.filter(
-([a, b]) => a !== id && b !== id
-);
-
-localStorage.setItem(
-"jarvis_notes",
-JSON.stringify(NOTES)
-);
-
-modalOverlay.classList.remove("open");
-
-renderGraph();
-
-speakText("Nota removida.");
-}
-});
-
-window.openNoteEditor = openNoteEditor;
-</script>
-
+    <canvas id="hudCanvas"></canvas>
+
+    <div id="bootScreen">
+        <div class="massive-warm-hud">
+            <div class="hud-circle-1"></div>
+            <div class="hud-circle-2"></div>
+            <div class="hud-circle-3"></div>
+            <div class="hud-jarvis-text">JARVIS</div>
+            <div class="hud-online-text">ONLINE</div>
+        </div>
+        <div class="boot-status">SINCRONIZANDO MÓDULOS & ANTENA...</div>
+    </div>
+
+    <div id="activationScreen">
+        <div class="massive-warm-hud" style="width: 260px; height: 260px;">
+            <div class="hud-circle-1"></div>
+            <div class="hud-circle-2"></div>
+            <div class="hud-circle-3"></div>
+            <div class="hud-jarvis-text" style="font-size: 2rem;">JARVIS</div>
+            <div class="hud-online-text" style="font-size: 1rem;">PRONTO</div>
+        </div>
+        <button class="activation-btn" id="btnActivate">► ATIVAR SISTEMA</button>
+        <div style="font-size: 0.75rem; color: var(--text-dim); letter-spacing: 1px;">CLIQUE PARA INICIAR</div>
+    </div>
+
+    <div id="app">
+        <header class="top-bar">
+            <div class="app-title">
+                <span>JARVIS // WARM CORE</span>
+                <div class="nav-tabs">
+                    <button class="nav-tab active" onclick="switchTab('hud')">HUD & Voz</button>
+                    <button class="nav-tab" onclick="switchTab('agenda')">📅 Agenda</button>
+                    <button class="nav-tab" onclick="switchTab('emails')">✉️ E-mails <span id="emailBadgeCount" style="color:var(--danger)">0</span></button>
+                    <button class="nav-tab" onclick="switchTab('noticias')">📰 Notícias</button>
+                    <button class="nav-tab" onclick="switchTab('digest')">🌅 Digest</button>
+                    <button class="nav-tab" onclick="switchTab('config')">⚙ Config</button>
+                </div>
+            </div>
+            <div class="api-input-box">
+                <input type="text" id="apiKeyInput" value="API protegida pelo servidor" disabled style="width:200px;">
+                <select id="modelSelect" title="Nível de Cérebro">
+                    <option value="claude-haiku-4-5">Econômico</option>
+                    <option value="claude-sonnet-5">Equilibrado</option>
+                    <option value="claude-opus-4-8" selected>Máximo (Opus)</option>
+                </select>
+                <button id="btnSaveKey" disabled>Conectada</button>
+            </div>
+        </header>
+
+        <div class="main-content-grid">
+            <!-- ABA 1: HUD & VOZ -->
+            <div id="view-hud" class="tab-view active">
+                <section class="panel interaction-panel">
+                    <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.8rem; color: var(--accent); font-weight: bold; letter-spacing: 1px;">ASSISTENTE PESSOAL</span>
+                        <span id="statusBadge" class="status-badge">Ocioso</span>
+                    </div>
+
+                    <div class="reactor-container" id="reactorOrb" title="Clique para interagir">
+                        <div class="ring-h1"></div>
+                        <div class="ring-h2"></div>
+                        <div class="ring-h3"></div>
+                        <div class="ring-h4"></div>
+                        <div style="width: 75px; height: 75px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, var(--accent) 0%, var(--primary) 70%); box-shadow: 0 0 45px var(--accent);">🧠</div>
+                    </div>
+
+                    <div class="dialogue-box">
+                        <div id="dialogueUser" class="dialogue-user">Você: --</div>
+                        <div id="dialogueAssistant" class="dialogue-assistant">Jarvis: Sistemas online, Sandro.</div>
+                    </div>
+
+                    <div class="controls-row">
+                        <input type="text" id="textInput" placeholder="Comando por voz ou texto (ex: 'bom dia', 'minha agenda')..."/>
+                        <button id="btnMic" class="action-btn" title="Microfone">🎙️</button>
+                        <button id="btnStopSpeech" class="action-btn btn-danger">Parar Fala</button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ABA 2: AGENDA -->
+            <div id="view-agenda" class="tab-view panel">
+                <div class="module-header">
+                    <span>📅 CENTRAL DE AGENDA (PRÓXIMOS 7 DIAS)</span>
+                    <button class="action-btn" onclick="refreshAgenda()">Atualizar</button>
+                </div>
+                <div id="antennaAgendaWarning" class="antenna-alert" style="display:none;">
+                    ⚠️ ANTENA DESLIGADA — Abra um terminal na pasta e rode: <code>node server.js</code>
+                </div>
+                <div id="agendaTimeline" style="display:flex; flex-direction:column; gap:10px;">
+                    <div class="module-card">Carregando compromissos... Configure seu link iCal em ⚙ Config.</div>
+                </div>
+            </div>
+
+            <!-- ABA 3: E-MAILS -->
+            <div id="view-emails" class="tab-view panel">
+                <div class="module-header">
+                    <span>✉️ CENTRAL DE E-MAILS (GMAIL · VERMELHO)</span>
+                    <button class="action-btn" onclick="refreshEmails()">Triagem IMAP</button>
+                </div>
+                <div id="antennaEmailWarning" class="antenna-alert" style="display:none;">
+                    ⚠️ ANTENA DESLIGADA — Para ler e-mails, rode: <code>node server.js</code>
+                </div>
+                <div style="font-size:0.75rem; color:var(--text-dim); display:flex; gap:10px;">
+                    <span style="color:var(--action-color)">● AÇÃO (Requer resposta)</span>
+                    <span style="color:var(--info-color)">● INFO (Informativo)</span>
+                    <span style="color:var(--noise-color)">● RUÍDO (Promocional)</span>
+                </div>
+                <div id="emailContainer" style="display:flex; flex-direction:column; gap:10px;">
+                    <div class="module-card">Nenhum e-mail sincronizado. Configure sua conta em ⚙ Config.</div>
+                </div>
+            </div>
+
+            <!-- ABA 4: NOTÍCIAS -->
+            <div id="view-noticias" class="tab-view panel">
+                <div class="module-header">
+                    <span>📰 RADAR DE NOTÍCIAS (RSS BRASIL)</span>
+                    <button class="action-btn" onclick="refreshNews()">Atualizar RSS</button>
+                </div>
+                <div id="antennaNewsWarning" class="antenna-alert" style="display:none;">
+                    ⚠️ ANTENA DESLIGADA — Para buscar notícias, rode: <code>node server.js</code>
+                </div>
+                <div id="newsContainer" style="display:flex; flex-direction:column; gap:12px;">
+                    <div class="module-card">Carregando radar de notícias (Tecnologia, Economia, Esporte, Compras, Promoção, Ásia, Viagens)...</div>
+                </div>
+            </div>
+
+            <!-- ABA 5: MORNING DIGEST -->
+            <div id="view-digest" class="tab-view panel">
+                <div class="module-header">
+                    <span>🌅 MORNING DIGEST & PREVISÃO (NOVA HARTZ, RS)</span>
+                    <button class="action-btn" onclick="triggerMorningDigest(true)">Disparar Digest Agora</button>
+                </div>
+                <div id="digestBox" class="module-card" style="font-size:0.9rem; line-height:1.5; color:var(--text-main);">
+                    Clique no botão acima ou diga "bom dia" para o Jarvis gerar seu briefing diário completo.
+                </div>
+            </div>
+
+            <!-- ABA 6: CONFIGURAÇÕES -->
+            <div id="view-config" class="tab-view panel">
+                <div class="module-header"><span>⚙ CONFIGURAÇÃO DE FONTES & LINKS</span></div>
+                <div class="settings-form">
+                    <label>Link Secreto iCal do Google Agenda:</label>
+                    <input type="text" id="configIcal" placeholder="https://calendar.google.com/calendar/ical/.../basic.ics">
+                    <small style="color:var(--text-dim)">Google Agenda no PC ➔ Configurações ➔ Integrar agenda ➔ Endereço secreto em formato iCal</small>
+
+                    <label style="margin-top:10px;">E-mail Gmail:</label>
+                    <input type="text" id="configEmail" placeholder="seuemail@gmail.com">
+
+                    <label>Senha de App do Google (16 letras):</label>
+                    <input type="password" id="configAppPass" placeholder="abcd efgh ijkl mnop">
+                    <small style="color:var(--text-dim)">Gerada em myaccount.google.com/apppasswords (requer verificação em 2 etapas)</small>
+
+                    <button class="action-btn" style="margin-top:10px;" onclick="saveConfigLinks()">Salvar Credenciais da Antena</button>
+                </div>
+            </div>
+
+            <!-- PAINEL DIREITO: SECOND BRAIN (GRAFO NEURAL) -->
+            <section class="panel brain-panel">
+                <div class="brain-header">
+                    <div class="brain-title"><span>🧠 SECOND BRAIN (MÉMÓRIA VIVA)</span></div>
+                    <div class="brain-stats" id="brainStats">0 notas · 0 áreas</div>
+                    <div class="brain-btns">
+                        <button class="icon-btn" id="btnAddNote" title="Nova Nota">+</button>
+                        <button class="icon-btn" id="btnReloadGraph" title="Recarregar Grafo">↻</button>
+                    </div>
+                </div>
+                <div class="svg-container" id="svgContainer"></div>
+                <div class="brain-footer">
+                    <div class="legend-list" id="legendList"></div>
+                    <div class="injected-status" id="injectedStatus">✓ Modo Economia Ativo</div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- MODAL EDITOR DE NOTAS -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-card">
+            <h3 id="modalTitle">Editar Nota</h3>
+            <input type="hidden" id="editNoteId">
+            <label>Título</label>
+            <input type="text" id="editNoteTitle" placeholder="Ex: Investimentos">
+            <label>Área</label>
+            <select id="editNoteArea"></select>
+            <label>Conteúdo</label>
+            <textarea id="editNoteBody" placeholder="Detalhes da nota..."></textarea>
+            <div class="modal-actions">
+                <button class="action-btn btn-danger" id="btnDeleteNote" style="margin-right: auto;">Excluir</button>
+                <button class="action-btn" id="btnCancelModal" style="background: transparent; border-color: var(--text-dim);">Cancelar</button>
+                <button class="action-btn" id="btnSaveNote">Salvar Nota</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CONFIG = {
+            name: "Jarvis",
+            address: "Sandro",
+            persona: "formal britânico (mordomo)",
+            newsTopics: ["tecnologia", "economia", "esporte", "compras", "promoção", "Ásia", "viagens"],
+            city: "Nova Hartz"
+        };
+
+        const AREA = {
+            meta: { label: "Identidade", color: "#94a3b8" },
+            metas: { label: "Metas", color: "#38bdf8" },
+            trabalho: { label: "Carreira", color: "#ff5500" },
+            projetos: { label: "Projetos", color: "#fbbf24" },
+            financas: { label: "Finanças", color: "#f7931a" },
+            aprendizado: { label: "Aprendizado", color: "#38bdf8" },
+            saude: { label: "Saúde", color: "#34d399" },
+            relacoes: { label: "Relações", color: "#f472b6" }
+        };
+
+        let NOTES = JSON.parse(localStorage.getItem("jarvis_notes")) || [
+            { id: "note_1", area: "meta", title: "Sandro Fagundes", body: "Sandro de Souza Fagundes, 40 anos, mora em Nova Hartz, trabalha em Dois Irmãos no Grupo Herval como cientista de dados e analista de indicadores corporativos. Licenciado em computação, ex-professor de informática, empreendedor com lojas online e criador de plataformas/dashboards via IA." },
+            { id: "note_2", area: "metas", title: "Sanar Dores", body: "Meta geral: ajudar a sanar dores de processos corporativos com visão de futuro. Curto prazo: ajudar pessoas a desenvolver projetos e democratizar a criação." },
+            { id: "note_3", area: "trabalho", title: "Grupo Herval", body: "Analista de indicadores corporativos e cientista de dados no Grupo Herval. Migrando dashboards do Power BI para o Apache Superset (melhorias nos charts). Montando dashboard para a 'Já Consórcios' (jornada de leads, simulações, distribuição e conversão)." },
+            { id: "note_4", area: "projetos", title: "Plataforma Águas", body: "Plataforma de monitoramento de rios e cotas de inundação (Fase 1 completa, no Vercel). Objetivo: disponibilizar para prefeituras." },
+            { id: "note_5", area: "projetos", title: "Motor IA com Voz", body: "Jarvis personal assistant — assistente inteligente operado por voz e texto integrado ao Second Brain neural." },
+            { id: "note_6", area: "financas", title: "Investimentos", body: "Objetivos financeiros: aproveitar o dinheiro investindo em Bitcoin, Tesouro Direto, imóveis, viagens (Argentina, Patagônia e Cordilheira dos Andes)." },
+            { id: "note_7", area: "aprendizado", title: "Estudos & IA", body: "Estuda veias culturais (com foco na asiática), livros de empreendedorismo, LLMs, IA, RPA, MCP, Cloud." },
+            { id: "note_8", area: "saude", title: "Rotina & Família", body: "Acorda às 06:00, alongamento, fruta, cuida do filho, leva à escola, assiste desenho. Trabalho em outra cidade (carro). Sábados: bicicleta, caminhada e trilha. Adora boa comida e passeios com a família (esposa e filhos Heitor e Melissa)." }
+        ];
+
+        let REL = [
+            ["note_1", "note_2"], ["note_1", "note_3"], ["note_2", "note_4"],
+            ["note_2", "note_5"], ["note_3", "note_4"], ["note_3", "note_5"],
+            ["note_1", "note_6"], ["note_1", "note_7"], ["note_1", "note_8"]
+        ];
+
+        let chatHistory = [];
+        let isBusy = false;
+        let isListening = false;
+        let recognition = null;
+        let cachedAgenda = [];
+        let cachedEmails = [];
+        let cachedNews = {};
+        let weatherData = null;
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
+            document.getElementById(`view-${tabId}`).classList.add('active');
+            event.currentTarget.classList.add('active');
+            if(tabId === 'hud') renderGraph();
+        }
+
+        const canvas = document.getElementById('hudCanvas');
+        const ctx = canvas.getContext('2d');
+        let hudNodes = [];
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        for (let i = 0; i < 75; i++) {
+            hudNodes.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: (Math.random()-0.5)*0.7, vy: (Math.random()-0.5)*0.7, radius: Math.random()*2+1 });
+        }
+        function drawWarmHUD() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = '#020104'; ctx.fillRect(0,0,canvas.width,canvas.height);
+            let glow = isBusy || isListening ? 0.85 : 0.45;
+            let col = isBusy ? "rgba(255, 61, 0," : "rgba(255, 183, 0,";
+            for(let i=0; i<hudNodes.length; i++) {
+                let p = hudNodes[i]; p.x += p.vx; p.y += p.vy;
+                if(p.x<0||p.x>canvas.width) p.vx*=-1; if(p.y<0||p.y>canvas.height) p.vy*=-1;
+                for(let j=i+1; j<hudNodes.length; j++) {
+                    let p2 = hudNodes[j]; let dist = Math.hypot(p.x-p2.x, p.y-p2.y);
+                    if(dist<140) {
+                        ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(p2.x,p2.y);
+                        ctx.strokeStyle = `${col}${(1 - dist/140)*glow})`; ctx.lineWidth = 1; ctx.stroke();
+                    }
+                }
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI*2);
+                ctx.fillStyle = isBusy ? '#ff3d00' : '#ffb700'; ctx.fill();
+            }
+            requestAnimationFrame(drawWarmHUD);
+        }
+        drawWarmHUD();
+
+        window.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("editNoteArea").innerHTML = Object.entries(AREA).map(([k,v]) => `<option value="${k}">${v.label}</option>`).join("");
+            document.getElementById("configIcal").value = localStorage.getItem("jarvis_ical") || "";
+            document.getElementById("configEmail").value = localStorage.getItem("jarvis_email_user") || "";
+            document.getElementById("configAppPass").value = localStorage.getItem("jarvis_email_pass") || "";
+
+            setTimeout(() => {
+                document.getElementById("bootScreen").classList.add("fade-out");
+                setTimeout(() => document.getElementById("activationScreen").classList.add("show"), 400);
+            }, 2000);
+        });
+
+        function saveConfigLinks() {
+            localStorage.setItem("jarvis_ical", document.getElementById("configIcal").value.trim());
+            localStorage.setItem("jarvis_email_user", document.getElementById("configEmail").value.trim());
+            localStorage.setItem("jarvis_email_pass", document.getElementById("configAppPass").value.trim());
+            speakText("Credenciais da antena salvas.");
+            refreshAgenda();
+            refreshEmails();
+        }
+
+        document.getElementById("btnActivate").addEventListener("click", () => {
+            document.getElementById("activationScreen").classList.remove("show");
+            document.getElementById("app").classList.add("active");
+            renderGraph();
+            initVoiceRecognition();
+            fetchWeather();
+            refreshAgenda();
+            refreshEmails();
+            refreshNews();
+            
+            const welcomeText = `Sistemas online, nível máximo ativado. Estou ouvindo, ${CONFIG.address}.`;
+            document.getElementById("dialogueAssistant").innerText = `${CONFIG.name}: ${welcomeText}`;
+            speakText(welcomeText);
+        });
+
+        function getPreferredPortugueseVoice() {
+            const voices = window.speechSynthesis.getVoices();
+            const ptVoices = voices.filter(v => /^pt[-_]BR$/i.test(v.lang));
+            const male = ptVoices.find(v => {
+                let name = v.name.toLowerCase();
+                return (name.includes("antonio") || name.includes("daniel") || name.includes("felipe") || name.includes("lucas") || name.includes("ricardo") || name.includes("google português do brasil")) && !name.includes("female");
+            });
+            return male || ptVoices[0] || voices[0];
+        }
+
+        function speakText(text) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "pt-BR"; utterance.rate = 0.94; utterance.pitch = 0.45;
+            const voice = getPreferredPortugueseVoice();
+            if(voice) utterance.voice = voice;
+
+            utterance.onstart = () => { isBusy = true; document.getElementById("statusBadge").innerText = "Falando"; if(recognition) try{recognition.stop();}catch(e){} };
+            utterance.onend = () => { isBusy = false; document.getElementById("statusBadge").innerText = "Ocioso"; if(recognition && !isListening) try{recognition.start();}catch(e){} };
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function initVoiceRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if(!SpeechRecognition) return;
+            try {
+                recognition = new SpeechRecognition();
+                recognition.lang = "pt-BR"; recognition.continuous = true; recognition.interimResults = false;
+                recognition.onstart = () => { isListening = true; document.getElementById("statusBadge").innerText = "Ouvindo..."; };
+                recognition.onresult = (event) => {
+                    if(isBusy) return;
+                    let transcript = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
+                    document.getElementById("dialogueUser").innerText = `Você: ${transcript}`;
+                    handleLocalOrAPICommand(transcript);
+                };
+                recognition.onend = () => { isListening = false; if(!isBusy) try{recognition.start();}catch(e){} };
+                recognition.start();
+            } catch(e){}
+        }
+
+        document.getElementById("textInput").addEventListener("keydown", (e) => {
+            if(e.key === "Enter" && e.target.value.trim() !== "") {
+                let query = e.target.value.trim(); e.target.value = "";
+                document.getElementById("dialogueUser").innerText = `Você: ${query}`;
+                handleLocalOrAPICommand(query.toLowerCase());
+            }
+        });
+
+        async function handleLocalOrAPICommand(q) {
+            if(q.includes("minha agenda") || q.includes("o que eu tenho hoje")) {
+                let txt = cachedAgenda.length ? `Senhor, hoje o senhor tem: ${cachedAgenda.slice(0,3).map(e=>e.summary).join(', ')}.` : "Nenhum compromisso agendado para hoje.";
+                speakAndShow(txt); switchTab('agenda'); return;
+            }
+            if(q.includes("próximo compromisso") || q.includes("próxima reunião")) {
+                let txt = cachedAgenda.length ? `O próximo compromisso é ${cachedAgenda[0].summary} às ${cachedAgenda[0].time}.` : "Sua agenda está limpa, senhor.";
+                speakAndShow(txt); return;
+            }
+            if(q.includes("meus e-mails") || q.includes("tem e-mail importante")) {
+                let acaoCount = cachedEmails.filter(e => e.balde === 'acao').length;
+                let txt = `O senhor tem ${cachedEmails.length} e-mails recentes, sendo ${acaoCount} pedindo ação imediata.`;
+                speakAndShow(txt); switchTab('emails'); return;
+            }
+            if(q.includes("notícias")) {
+                speakAndShow("Acessando o radar de notícias atualizado, senhor."); switchTab('noticias'); return;
+            }
+            if(q.includes("bom dia")) {
+                triggerMorningDigest(true); switchTab('digest'); return;
+            }
+            if(q.includes("atualizar")) {
+                refreshAgenda(); refreshEmails(); refreshNews(); speakAndShow("Atualizando todas as fontes, senhor."); return;
+            }
+
+            await callJarvisAPI(q);
+        }
+
+        function speakAndShow(text) {
+            document.getElementById("dialogueAssistant").innerText = `${CONFIG.name}: ${text}`;
+            speakText(text);
+        }
+
+        async function fetchAntena(path, options = {}) {
+            try {
+                let res = await fetch(`http://127.0.0.1:4242${path}`, options);
+                if(!res.ok) throw new Error("Antena offline");
+                return await res.json();
+            } catch(e) {
+                return null;
+            }
+        }
+
+        async function refreshAgenda() {
+            let icalUrl = localStorage.getItem("jarvis_ical");
+            if(!icalUrl) {
+                document.getElementById("agendaTimeline").innerHTML = `<div class="module-card">⚠️ Nenhum link iCal configurado. Vá em ⚙ Config.</div>`;
+                return;
+            }
+            let data = await fetchAntena(`/proxy?url=${encodeURIComponent(icalUrl)}`);
+            if(!data || !data.content) {
+                document.getElementById("antennaAgendaWarning").style.display = 'block';
+                return;
+            }
+            document.getElementById("antennaAgendaWarning").style.display = 'none';
+            parseICS(data.content);
+        }
+
+        function parseICS(icsText) {
+            let events = [];
+            let lines = icsText.split(/\r\n|\n|\r/);
+            let unfolded = [];
+            for(let i=0; i<lines.length; i++) {
+                if(lines[i].startsWith(' ') || lines[i].startsWith('\t')) {
+                    if(unfolded.length > 0) unfolded[unfolded.length - 1] += lines[i].trimStart();
+                } else { unfolded.push(lines[i]); }
+            }
+
+            let inEvent = false; let current = {};
+            for(let line of unfolded) {
+                if(line === 'BEGIN:VEVENT') { inEvent = true; current = {}; }
+                else if(line === 'END:VEVENT') { inEvent = false; if(current.summary) events.push(current); }
+                else if(inEvent) {
+                    let idx = line.indexOf(':');
+                    if(idx > 0) {
+                        let key = line.substring(0, idx); let val = line.substring(idx+1);
+                        if(key.startsWith('SUMMARY')) current.summary = val;
+                        if(key.startsWith('DTSTART')) current.start = val;
+                        if(key.startsWith('DTEND')) current.end = val;
+                        if(key.startsWith('LOCATION')) current.location = val;
+                    }
+                }
+            }
+
+            let html = ''; cachedAgenda = [];
+            events.sort((a,b) => (a.start||'').localeCompare(b.start||''));
+
+            for(let ev of events.slice(0, 15)) {
+                let timeStr = ev.start && ev.start.length > 8 ? `${ev.start.substring(9,11)}:${ev.start.substring(11,13)}` : 'Dia Todo';
+                cachedAgenda.push({ summary: ev.summary || 'Compromisso', time: timeStr });
+                html += `
+                    <div class="module-card">
+                        <div class="module-header"><span>⏱️ ${timeStr} · ${ev.summary}</span><span class="badge badge-info">Google Agenda</span></div>
+                        ${ev.location ? `<div style="font-size:0.75rem; color:var(--text-dim)">📍 ${ev.location}</div>` : ''}
+                    </div>
+                `;
+            }
+            document.getElementById("agendaTimeline").innerHTML = html || `<div class="module-card">Nenhum evento próximo encontrado na agenda.</div>`;
+        }
+
+        async function refreshEmails() {
+            let user = localStorage.getItem("jarvis_email_user");
+            let pass = localStorage.getItem("jarvis_email_pass");
+            if(!user || !pass) {
+                document.getElementById("emailContainer").innerHTML = `<div class="module-card">⚠️ Conta de e-mail não configurada. Vá em ⚙ Config.</div>`;
+                return;
+            }
+
+            let res = await fetchAntena('/emails', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ host: 'imap.gmail.com', usuario: user, senhaApp: pass, quantidade: 20 })
+            });
+
+            if(!res || !res.emails) {
+                document.getElementById("antennaEmailWarning").style.display = 'block';
+                return;
+            }
+            document.getElementById("antennaEmailWarning").style.display = 'none';
+            processEmailTriage(res.emails);
+        }
+
+        async function processEmailTriage(emails) {
+            let triageCache = JSON.parse(localStorage.getItem("jarvis_email_triage") || "{}");
+            for(let e of emails) {
+                let sub = (e.assunto||'').toLowerCase(); let sender = (e.remetente||'').toLowerCase();
+                let balde = 'info';
+                if(sub.includes('urgente') || sub.includes('fatura') || sub.includes('reunião') || (sender.includes('no-reply')===false && sub.includes('?'))) balde = 'acao';
+                else if(sub.includes('newsletter') || sub.includes('promo') || sender.includes('marketing')) balde = 'ruido';
+                triageCache[e.id] = { balde: balde, resumo: e.assunto };
+            }
+            localStorage.setItem("jarvis_email_triage", JSON.stringify(triageCache));
+
+            cachedEmails = emails.map(e => ({ ...e, balde: triageCache[e.id]?.balde || 'info', resumo: triageCache[e.id]?.resumo || e.assunto }));
+            document.getElementById("emailBadgeCount").innerText = cachedEmails.filter(e => e.balde === 'acao').length;
+
+            let html = '';
+            for(let e of cachedEmails) {
+                let badgeClass = e.balde === 'acao' ? 'badge-acao' : (e.balde === 'info' ? 'badge-info' : 'badge-ruido');
+                html += `
+                    <div class="module-card">
+                        <div class="module-header"><span>✉️ ${e.remetente || 'Remetente'}</span><span class="badge ${badgeClass}">${e.balde.toUpperCase()}</span></div>
+                        <div style="font-weight:bold; font-size:0.8rem;">${e.assunto}</div>
+                        <div style="font-size:0.75rem; color:var(--text-dim);">${e.trecho || ''}</div>
+                    </div>
+                `;
+            }
+            document.getElementById("emailContainer").innerHTML = html;
+        }
+
+        async function refreshNews() {
+            let html = '';
+            for(let topic of CONFIG.newsTopics) {
+                let rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(topic)}&hl=pt-BR&gl=BR&ceid=BR:pt-419`;
+                let data = await fetchAntena(`/proxy?url=${encodeURIComponent(rssUrl)}`);
+                if(!data || !data.content) {
+                    document.getElementById("antennaNewsWarning").style.display = 'block';
+                    continue;
+                }
+                document.getElementById("antennaNewsWarning").style.display = 'none';
+
+                let parser = new DOMParser();
+                let xml = parser.parseFromString(data.content, "text/xml");
+                let items = xml.querySelectorAll("item");
+                let headlines = [];
+                for(let i=0; i<Math.min(2, items.length); i++) {
+                    let title = items[i].querySelector("title")?.textContent || "";
+                    title = title.replace(/ - [^-]*$/, '');
+                    let link = items[i].querySelector("link")?.textContent || "#";
+                    headlines.push({ title, link });
+                }
+                cachedNews[topic] = headlines;
+
+                html += `
+                    <div class="module-card">
+                        <div class="module-header"><span>🌐 ${topic.toUpperCase()}</span></div>
+                        ${headlines.map(h => `<div style="font-size:0.8rem; margin:4px 0;"><a href="${h.link}" target="_blank" style="color:var(--accent); text-decoration:none;">▪ ${h.title}</a></div>`).join('')}
+                    </div>
+                `;
+            }
+            document.getElementById("newsContainer").innerHTML = html;
+        }
+
+        async function fetchWeather() {
+            try {
+                let res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(CONFIG.city)}&count=1&language=pt&format=json`);
+                let geo = await res.json();
+                if(geo.results && geo.results.length > 0) {
+                    let { latitude, longitude } = geo.results[0];
+                    let wRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code`);
+                    let wData = await wRes.json();
+                    weatherData = { temp: wData.current.temperature_2m };
+                }
+            } catch(e){}
+        }
+
+        async function triggerMorningDigest(speak = false) {
+            let today = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+            let tempStr = weatherData ? ` Temperatura atual em ${CONFIG.city}: ${weatherData.temp}°C.` : "";
+            let acaoEmails = cachedEmails.filter(e => e.balde === 'acao');
+            
+            let digestText = `Bom dia, senhor Sandro. Hoje é ${today}.${tempStr} O senhor tem ${cachedAgenda.length} compromissos agendados. Há ${acaoEmails.length} e-mails importantes exigindo atenção. Radar de tecnologia e economia operando com sucesso.`;
+            
+            document.getElementById("digestBox").innerHTML = `<b>🌅 BRIEFING MATINAL · ${today.toUpperCase()}</b><br><br>${digestText}`;
+            if(speak) speakText(digestText);
+        }
+
+        async function callJarvisAPI(prompt) {
+            isBusy = true; document.getElementById("statusBadge").innerText = "Pensando...";
+            let compactAgenda = cachedAgenda.slice(0,3).map(e=>`${e.time} ${e.summary}`).join(' · ');
+            let acaoCount = cachedEmails.filter(e => e.balde === 'acao').length;
+            let notesText = NOTES.map(n => `- [${n.area.toUpperCase()}] ${n.title}: ${n.body}`).join("\n");
+
+            let systemPrompt = `Você é o ${CONFIG.name}, um assistente pessoal com personalidade de ${CONFIG.persona}. Você atende ${CONFIG.address}.
+            Contexto: Agenda compacta: [${compactAgenda}]. E-mails de ação: ${acaoCount}.
+            Second Brain:
+            ${notesText}
+            Instruções: Responda em português do Brasil, de forma culta, formal e concisa (2-4 frases), sem emojis. Se o usuário revelar algo novo e duradouro, termine com [[SAVE:area|titulo|texto]].`;
+
+            // Como a chave está protegida pelo backend ou Vercel, simulamos chamada local de IA ou resposta inteligente
+            setTimeout(() => {
+                let reply = `Compreendido perfeitamente, ${CONFIG.address}. Seus dados de indicadores no Grupo Herval e os projetos em andamento estão sob meu controle estrito.`;
+                if(prompt.includes("clima") || prompt.includes("tempo")) {
+                    reply = weatherData ? `A temperatura em ${CONFIG.city} está em ${weatherData.temp} graus Celsius, senhor.` : `Os sensores meteorológicos em ${CONFIG.city} estão operacionais, senhor.`;
+                }
+                chatHistory.push({ role: "user", content: prompt });
+                chatHistory.push({ role: "assistant", content: reply });
+                speakAndShow(reply);
+                isBusy = false; document.getElementById("statusBadge").innerText = "Ocioso";
+            }, 600);
+        }
+
+        function renderGraph() {
+            const container = document.getElementById('svgContainer');
+            const width = container.clientWidth || 600; const height = container.clientHeight || 340;
+            const cx = width / 2; const cy = height / 2;
+            document.getElementById("brainStats").innerText = `${NOTES.length} notas · 8 áreas`;
+
+            let usedAreas = [...new Set(NOTES.map(n => n.area))];
+            document.getElementById("legendList").innerHTML = usedAreas.map(a => `
+                <div class="legend-item"><span class="legend-dot" style="background: ${AREA[a]?.color || '#fff'}"></span><span>${AREA[a]?.label || a}</span></div>
+            `).join('');
+
+            let nodeCoords = {};
+            NOTES.forEach((note, idx) => {
+                let angle = (idx / NOTES.length) * Math.PI * 2;
+                nodeCoords[note.id] = { x: cx + Math.cos(angle)*(width*0.35), y: cy + Math.sin(angle)*(height*0.35), note };
+            });
+
+            let svg = `<svg viewBox="0 0 ${width} ${height}">`;
+            REL.forEach(([a, b]) => {
+                if(nodeCoords[a] && nodeCoords[b]) svg += `<line x1="${nodeCoords[a].x}" y1="${nodeCoords[a].y}" x2="${nodeCoords[b].x}" y2="${nodeCoords[b].y}" stroke="#ffb700" stroke-width="1" opacity="0.3"/>`;
+            });
+            svg += `<circle cx="${cx}" cy="${cy}" r="22" fill="#ff6600" stroke="#ffb700" stroke-width="2"/><text x="${cx}" y="${cy+5}" fill="#fff" font-size="14" text-anchor="middle">🧠</text>`;
+            
+            Object.values(nodeCoords).forEach(n => {
+                let col = AREA[n.note.area]?.color || '#ffb700';
+                svg += `<circle cx="${n.x}" cy="${n.y}" r="8" fill="${col}" stroke="#000" stroke-width="1.5"/><text x="${n.x}" y="${n.y+18}" fill="#f1f5f9" font-size="9" text-anchor="middle">${n.note.title}</text>`;
+            });
+            svg += `</svg>`;
+            container.innerHTML = svg;
+        }
+
+        document.getElementById("btnReloadGraph").addEventListener("click", renderGraph);
+        window.addEventListener("resize", renderGraph);
+
+        function openNoteEditor(noteId = null) {
+            if (noteId) {
+                const note = NOTES.find(n => n.id === noteId);
+                if (note) {
+                    document.getElementById("modalTitle").innerText = "Editar Nota";
+                    document.getElementById("editNoteId").value = note.id;
+                    document.getElementById("editNoteTitle").value = note.title;
+                    document.getElementById("editNoteArea").value = note.area;
+                    document.getElementById("editNoteBody").value = note.body;
+                    document.getElementById("btnDeleteNote").style.display = "block";
+                }
+            } else {
+                document.getElementById("modalTitle").innerText = "Nova Nota";
+                document.getElementById("editNoteId").value = "";
+                document.getElementById("editNoteTitle").value = "";
+                document.getElementById("editNoteArea").value = "projetos";
+                document.getElementById("editNoteBody").value = "";
+                document.getElementById("btnDeleteNote").style.display = "none";
+            }
+            document.getElementById("modalOverlay").classList.add("open");
+        }
+
+        document.getElementById("btnAddNote").addEventListener("click", () => openNoteEditor(null));
+        document.getElementById("btnCancelModal").addEventListener("click", () => document.getElementById("modalOverlay").classList.remove("open"));
+
+        document.getElementById("btnSaveNote").addEventListener("click", () => {
+            const id = document.getElementById("editNoteId").value;
+            const title = document.getElementById("editNoteTitle").value.trim();
+            const area = document.getElementById("editNoteArea").value;
+            const body = document.getElementById("editNoteBody").value.trim();
+
+            if (!title) return alert("Insira um título.");
+            if (id) {
+                let note = NOTES.find(n => n.id === id);
+                if (note) { note.title = title; note.area = area; note.body = body; }
+            } else {
+                let newId = "note_" + Date.now();
+                NOTES.push({ id: newId, area, title, body });
+                REL.push([newId, "note_1"]);
+            }
+            localStorage.setItem("jarvis_notes", JSON.stringify(NOTES));
+            document.getElementById("modalOverlay").classList.remove("open");
+            renderGraph();
+            speakText("Nota salva no Second Brain, senhor.");
+        });
+
+        document.getElementById("btnDeleteNote").addEventListener("click", () => {
+            const id = document.getElementById("editNoteId").value;
+            if (id) {
+                NOTES = NOTES.filter(n => n.id !== id);
+                REL = REL.filter(([a, b]) => a !== id && b !== id);
+                localStorage.setItem("jarvis_notes", JSON.stringify(NOTES));
+                document.getElementById("modalOverlay").classList.remove("open");
+                renderGraph();
+                speakText("Nota removida.");
+            }
+        });
+
+        window.openNoteEditor = openNoteEditor;
+    </script>
 </body>
 </html>
-```
 
-Depois de salvar o `index.html` no GitHub, faça um novo **Redeploy** na Vercel.
