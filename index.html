@@ -3,1155 +3,1486 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jarvis // Google Custom Search HUD</title>
+    <title>Anúbis — Assistente Pessoal</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
-            --bg-base: #020104;
-            --panel-bg: rgba(18, 8, 2, 0.90);
-            --border-color: rgba(255, 140, 0, 0.45);
-            --primary: #ff6600;
-            --accent: #ffb700;
-            --hud-glow: rgba(255, 140, 0, 0.55);
-            --text-main: #f1f5f9;
-            --text-dim: #94a3b8;
-            --danger: #ff3d00;
+            --gold: #f7931a;
+            --gold-light: #fbbf24;
+            --gold-dark: #d97706;
+            --dark-bg: #0f0a1a;
+            --dark-secondary: #1a1426;
+            --text-primary: #f5f5f5;
+            --text-secondary: #b8b8b8;
+            --purple: #9f7aea;
+            --cyan: #2dd4ff;
+            --status-ok: #10b981;
+            --status-listening: #f59e0b;
+            --status-thinking: #ef4444;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
-        html, body { background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
-
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: #020104; }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 100, 0, 0.4); border-radius: 2px; }
-
-        #hudCanvas {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            opacity: 0.95;
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1a0f2e 100%);
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
         }
 
-        #bootScreen {
+        /* ═══════════════════════════════════════════════════════════════════════ */
+        /* BOOT SCREEN */
+        /* ═══════════════════════════════════════════════════════════════════════ */
+        
+        .boot-screen {
             position: fixed;
-            inset: 0;
-            background: #020104;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1a0f2e 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
-            gap: 25px;
+            z-index: 9999;
             opacity: 1;
-            transition: opacity 0.8s ease-out;
+            transition: opacity 0.6s ease-out;
         }
 
-        #bootScreen.fade-out {
+        .boot-screen.hidden {
             opacity: 0;
             pointer-events: none;
         }
 
-        .massive-warm-hud {
-            width: 340px;
-            height: 340px;
-            border-radius: 50%;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: radial-gradient(circle, rgba(255,140,0,0.22) 0%, transparent 75%);
-            box-shadow: 0 0 140px rgba(255, 140, 0, 0.4), inset 0 0 70px rgba(255, 183, 0, 0.25);
-            animation: warmPulse 2.2s infinite alternate ease-in-out;
-            text-align: center;
-        }
-
-        @keyframes warmPulse {
-            0% { transform: scale(0.96); box-shadow: 0 0 90px rgba(255, 100, 0, 0.35); }
-            100% { transform: scale(1.04); box-shadow: 0 0 160px rgba(255, 183, 0, 0.7); }
-        }
-
-        .hud-circle-1 {
-            position: absolute;
-            inset: 0;
-            border: 3px dashed var(--accent);
-            border-radius: 50%;
-            animation: spinClockwise 16s linear infinite;
-        }
-
-        .hud-circle-2 {
-            position: absolute;
-            inset: 15px;
-            border: 2px solid var(--primary);
-            border-top: 2px solid transparent;
-            border-bottom: 2px solid transparent;
-            border-radius: 50%;
-            animation: spinCounter 10s linear infinite;
-        }
-
-        .hud-circle-3 {
-            position: absolute;
-            inset: 40px;
-            border: 1px dotted rgba(255, 255, 255, 0.85);
-            border-radius: 50%;
-            animation: spinClockwise 6s linear infinite;
-        }
-
-        .hud-jarvis-text {
-            font-size: 2.5rem;
+        .boot-title {
+            font-family: 'Courier New', monospace;
+            font-size: clamp(3rem, 10vw, 8rem);
             font-weight: bold;
-            letter-spacing: 5px;
-            color: var(--accent);
-            text-shadow: 0 0 20px var(--primary), 0 0 40px var(--accent);
-            z-index: 2;
+            background: linear-gradient(90deg, var(--gold) 0%, var(--purple) 50%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 30px rgba(247, 147, 26, 0.3);
         }
 
-        .hud-online-text {
-            font-size: 1.3rem;
-            letter-spacing: 6px;
-            color: #ffffff;
-            text-shadow: 0 0 15px var(--primary);
-            margin-top: 5px;
-            z-index: 2;
+        .boot-line {
+            width: 80%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--gold), var(--purple), var(--gold));
+            margin: 2rem 0;
+            box-shadow: 0 0 15px rgba(247, 147, 26, 0.5);
         }
-
-        @keyframes spinClockwise { to { transform: rotate(360deg); } }
-        @keyframes spinCounter { to { transform: rotate(-360deg); } }
 
         .boot-status {
-            font-size: 0.85rem;
-            letter-spacing: 3px;
-            color: var(--accent);
-            text-shadow: 0 0 10px var(--primary);
-            animation: blink 1s infinite;
+            font-size: 1.1rem;
+            color: var(--gold);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+            animation: pulse-text 1.5s ease-in-out infinite;
         }
 
-        @keyframes blink { 0%, 49%, 100% { opacity: 1; } 50%, 99% { opacity: 0.3; } }
+        .boot-version {
+            position: absolute;
+            bottom: 2rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+        }
 
-        #activationScreen {
+        @keyframes pulse-text {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════════ */
+        /* ACTIVATION SCREEN */
+        /* ═══════════════════════════════════════════════════════════════════════ */
+
+        .activation-screen {
             position: fixed;
-            inset: 0;
-            background: rgba(2, 1, 4, 0.96);
-            backdrop-filter: blur(14px);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1a0f2e 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 999;
-            gap: 35px;
+            z-index: 9998;
+            opacity: 1;
+            transition: opacity 0.6s ease-out;
+        }
+
+        .activation-screen.hidden {
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.6s ease-in;
         }
 
-        #activationScreen.show {
+        .activation-title {
+            font-family: 'Courier New', monospace;
+            font-size: clamp(2.5rem, 8vw, 6rem);
+            font-weight: bold;
+            background: linear-gradient(90deg, var(--gold) 0%, var(--purple) 50%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            margin-bottom: 3rem;
+            text-shadow: 0 0 30px rgba(247, 147, 26, 0.3);
+        }
+
+        .activation-button {
+            padding: 1.2rem 3rem;
+            font-size: 1.2rem;
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            color: var(--dark-bg);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 0 30px rgba(247, 147, 26, 0.4);
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .activation-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 50px rgba(247, 147, 26, 0.6);
+        }
+
+        .activation-button:active {
+            transform: scale(0.98);
+        }
+
+        .activation-text {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════════ */
+        /* MAIN APP */
+        /* ═══════════════════════════════════════════════════════════════════════ */
+
+        .app-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease-out;
+            z-index: 1;
+        }
+
+        .app-container.active {
             opacity: 1;
-            pointer-events: all;
+            pointer-events: auto;
         }
 
-        .activation-btn {
-            padding: 18px 50px;
-            font-size: 1.1rem;
-            letter-spacing: 3px;
-            color: var(--accent);
-            background: rgba(255, 100, 0, 0.2);
-            border: 2px solid var(--primary);
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-            box-shadow: 0 0 45px rgba(255, 100, 0, 0.4), inset 0 0 20px rgba(255, 183, 0, 0.3);
+        .app-top {
+            flex: 0 0 auto;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid rgba(247, 147, 26, 0.2);
+            background: linear-gradient(180deg, var(--dark-secondary) 0%, transparent 100%);
         }
 
-        .activation-btn:hover {
-            background: rgba(255, 100, 0, 0.4);
-            box-shadow: 0 0 90px var(--primary), inset 0 0 40px var(--accent);
-            transform: scale(1.04);
-        }
-
-        #app {
-            display: none;
-            flex-direction: column;
-            min-height: 100vh;
-            width: 100%;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 15px;
-            gap: 15px;
-            position: relative;
-            z-index: 10;
-        }
-
-        #app.active {
-            display: flex;
-        }
-
-        .top-bar {
+        .app-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            padding: 14px 22px;
-            border-radius: 8px;
-            backdrop-filter: blur(14px);
-            flex-wrap: wrap;
-            gap: 10px;
-            box-shadow: 0 0 35px rgba(255, 100, 0, 0.15);
+            margin-bottom: 1rem;
         }
 
-        .app-title {
+        .app-name {
+            font-family: 'Courier New', monospace;
+            font-size: 1.5rem;
             font-weight: bold;
-            color: var(--accent);
-            letter-spacing: 2px;
-            text-shadow: 0 0 12px rgba(255, 183, 0, 0.5);
+            color: var(--gold);
+            letter-spacing: 1px;
         }
 
-        .api-input-box {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            width: 100%;
-            max-width: 520px;
-        }
-
-        .api-input-box input {
-            background: rgba(0,0,0,0.85);
-            border: 1px solid var(--border-color);
-            color: var(--accent);
-            padding: 6px 10px;
+        .api-key-input {
+            padding: 0.6rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--gold);
             border-radius: 4px;
-            font-size: 0.75rem;
-            flex-grow: 1;
-            outline: none;
-        }
-
-        .api-input-box button {
-            background: rgba(255, 100, 0, 0.2);
-            border: 1px solid var(--primary);
-            color: #fff;
-            padding: 6px 14px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: bold;
-        }
-
-        .api-input-box button:hover {
-            background: rgba(255, 100, 0, 0.4);
-        }
-
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            flex-grow: 1;
-        }
-
-        @media(max-width: 900px) {
-            .main-grid { grid-template-columns: 1fr; }
-        }
-
-        .panel {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 22px;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            backdrop-filter: blur(16px);
-            box-shadow: inset 0 0 30px rgba(255, 100, 0, 0.08), 0 0 35px rgba(0, 0, 0, 0.8);
-        }
-
-        .interaction-panel {
-            align-items: center;
-            justify-content: space-between;
-            text-align: center;
-            min-height: 480px;
-        }
-
-        .reactor-container {
-            width: 220px;
-            height: 220px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            cursor: pointer;
-            margin: 15px 0;
-            background: radial-gradient(circle, rgba(255,100,0,0.2) 0%, transparent 70%);
-            box-shadow: 0 0 70px rgba(255, 100, 0, 0.35), inset 0 0 35px rgba(255, 183, 0, 0.25);
-            transition: all 0.4s;
-        }
-
-        .reactor-container:hover {
-            box-shadow: 0 0 110px rgba(255, 183, 0, 0.8), inset 0 0 55px rgba(255, 100, 0, 0.5);
-            transform: scale(1.04);
-        }
-
-        .ring-h1 {
-            position: absolute;
-            inset: 0;
-            border: 2px dashed var(--accent);
-            border-radius: 50%;
-            animation: spinClockwise 12s linear infinite;
-        }
-
-        .ring-h2 {
-            position: absolute;
-            inset: 15px;
-            border: 2px solid var(--primary);
-            border-top: 2px solid transparent;
-            border-bottom: 2px solid transparent;
-            border-radius: 50%;
-            animation: spinCounter 7s linear infinite;
-        }
-
-        .ring-h3 {
-            position: absolute;
-            inset: 32px;
-            border: 1px dotted rgba(255, 255, 255, 0.8);
-            border-radius: 50%;
-            animation: spinClockwise 6s linear infinite;
-        }
-
-        .ring-h4 {
-            position: absolute;
-            inset: 50px;
-            border: 1.5px solid rgba(251, 191, 36, 0.6);
-            border-left: 1.5px solid transparent;
-            border-right: 1.5px solid transparent;
-            border-radius: 50%;
-            animation: spinCounter 4s linear infinite;
-        }
-
-        @keyframes spinClockwise { to { transform: rotate(360deg); } }
-        @keyframes spinCounter { to { transform: rotate(-360deg); } }
-
-        .status-badge {
-            font-size: 0.75rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--text-dim);
-            background: rgba(0,0,0,0.8);
-            padding: 5px 14px;
-            border-radius: 14px;
-            border: 1px solid var(--border-color);
-        }
-
-        .dialogue-box {
-            width: 100%;
-            text-align: left;
-            background: rgba(20, 8, 2, 0.9);
-            padding: 14px 18px;
-            border-radius: 8px;
-            border-left: 3px solid var(--accent);
-            font-size: 0.85rem;
-            margin: 10px 0;
-            min-height: 80px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 6px;
-            box-shadow: inset 0 0 20px rgba(255,183,0,0.05);
-        }
-
-        .dialogue-user { color: var(--text-dim); }
-        .dialogue-assistant { color: var(--accent); font-weight: 500; text-shadow: 0 0 10px rgba(255,183,0,0.4); }
-
-        .controls-row {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        .controls-row input {
-            flex-grow: 1;
-            background: rgba(0,0,0,0.85);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 10px 14px;
-            border-radius: 6px;
+            color: var(--text-primary);
             font-size: 0.9rem;
+            max-width: 300px;
+            font-family: monospace;
+        }
+
+        .api-key-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .api-key-input:focus {
             outline: none;
-            transition: all 0.3s;
+            border-color: var(--gold-light);
+            box-shadow: 0 0 10px rgba(247, 147, 26, 0.3);
         }
 
-        .controls-row input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(255, 100, 0, 0.4);
+        .status-line {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-family: 'Courier New', monospace;
+            margin-bottom: 0.5rem;
         }
 
-        .action-btn {
-            background: rgba(255, 100, 0, 0.2);
-            border: 1px solid var(--primary);
-            color: #fff;
-            padding: 10px 18px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s;
+        .status-line.user {
+            color: var(--gold);
         }
 
-        .action-btn:hover {
-            background: rgba(255, 100, 0, 0.4);
-            box-shadow: 0 0 20px rgba(255, 100, 0, 0.5);
+        .status-line.assistant {
+            color: var(--cyan);
         }
 
-        .btn-danger {
-            background: rgba(255, 61, 0, 0.2);
-            border-color: var(--danger);
-            color: var(--danger);
-        }
+        /* ═══════════════════════════════════════════════════════════════════════ */
+        /* CENTER SECTION — ORB + CONVERSATION */
+        /* ═══════════════════════════════════════════════════════════════════════ */
 
-        .btn-danger:hover {
-            background: rgba(255, 61, 0, 0.4);
-            box-shadow: 0 0 20px rgba(255,61,0,0.4);
-        }
-
-        .brain-panel {
+        .app-center {
+            flex: 1;
             display: flex;
             flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .orb-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin-bottom: 2rem;
+            cursor: pointer;
+        }
+
+        .orb {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, var(--gold-light), var(--gold), var(--gold-dark));
+            box-shadow: 
+                0 0 40px rgba(247, 147, 26, 0.6),
+                inset -10px -10px 20px rgba(0, 0, 0, 0.5),
+                inset 10px 10px 20px rgba(255, 255, 255, 0.1);
+            animation: orb-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes orb-pulse {
+            0%, 100% { box-shadow: 0 0 40px rgba(247, 147, 26, 0.6), inset -10px -10px 20px rgba(0, 0, 0, 0.5), inset 10px 10px 20px rgba(255, 255, 255, 0.1); }
+            50% { box-shadow: 0 0 60px rgba(247, 147, 26, 0.8), inset -10px -10px 20px rgba(0, 0, 0, 0.5), inset 10px 10px 20px rgba(255, 255, 255, 0.15); }
+        }
+
+        .orb.listening {
+            animation: orb-wave 1s ease-in-out infinite;
+        }
+
+        @keyframes orb-wave {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        .orb.thinking {
+            animation: orb-think 0.6s ease-in-out infinite;
+        }
+
+        @keyframes orb-think {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+            50% { transform: translate(-50%, -50%) rotate(5deg); }
+        }
+
+        .orb-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 180px;
+            height: 180px;
+            border: 2px solid var(--gold);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: orb-ring-breathe 2.5s ease-in-out infinite;
+        }
+
+        @keyframes orb-ring-breathe {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+            50% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.1; }
+        }
+
+        .conversation-area {
+            text-align: center;
+            max-width: 600px;
+            margin-bottom: 2rem;
+        }
+
+        .conversation-line {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin: 0.5rem 0;
+            min-height: 1.5rem;
+        }
+
+        .user-line {
+            color: var(--gold);
+            font-family: 'Courier New', monospace;
+        }
+
+        .assistant-line {
+            color: var(--cyan);
+            font-family: 'Courier New', monospace;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════════ */
+        /* INPUT SECTION */
+        /* ═══════════════════════════════════════════════════════════════════════ */
+
+        .app-input-section {
+            flex: 0 0 auto;
+            padding: 1.5rem 2rem;
+            border-top: 1px solid rgba(247, 147, 26, 0.2);
+            background: linear-gradient(180deg, transparent 0%, var(--dark-secondary) 100%);
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 0.8rem;
+            align-items: stretch;
+        }
+
+        .text-input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(247, 147, 26, 0.3);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .text-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 10px rgba(247, 147, 26, 0.3);
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-control {
+            padding: 0.8rem 1rem;
+            background: rgba(247, 147, 26, 0.2);
+            border: 1px solid var(--gold);
+            border-radius: 4px;
+            color: var(--gold);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .btn-control:hover {
+            background: rgba(247, 147, 26, 0.3);
+            box-shadow: 0 0 10px rgba(247, 147, 26, 0.3);
+        }
+
+        .btn-control:active {
+            transform: scale(0.95);
+        }
+
+        .btn-control.active {
+            background: var(--gold);
+            color: var(--dark-bg);
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════════ */
+        /* SECOND BRAIN SECTION */
+        /* ═══════════════════════════════════════════════════════════════════════ */
+
+        .second-brain-container {
+            flex: 0 0 auto;
+            max-height: 280px;
+            overflow: hidden;
+            border-top: 1px solid rgba(247, 147, 26, 0.2);
+            background: linear-gradient(180deg, transparent 0%, var(--dark-secondary) 100%);
         }
 
         .brain-header {
+            padding: 1rem 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(247, 147, 26, 0.1);
         }
 
         .brain-title {
-            font-size: 0.9rem;
-            font-weight: bold;
+            font-size: 0.85rem;
+            font-family: 'Courier New', monospace;
+            color: var(--text-primary);
             letter-spacing: 1px;
-            color: var(--accent);
-            display: flex;
-            align-items: center;
-            gap: 6px;
+        }
+
+        .brain-title strong {
+            color: var(--gold);
         }
 
         .brain-stats {
-            font-size: 0.75rem;
-            color: var(--text-dim);
+            font-size: 0.8rem;
+            color: var(--status-ok);
+            font-family: 'Courier New', monospace;
         }
 
-        .brain-btns {
+        .brain-controls {
             display: flex;
-            gap: 6px;
+            gap: 0.4rem;
         }
 
-        .icon-btn {
-            background: rgba(255, 100, 0, 0.15);
-            border: 1px solid var(--border-color);
-            color: var(--accent);
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
+        .btn-brain {
+            padding: 0.4rem 0.8rem;
+            background: rgba(247, 147, 26, 0.15);
+            border: 1px solid rgba(247, 147, 26, 0.4);
+            border-radius: 3px;
+            color: var(--gold);
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 0.9rem;
-            transition: all 0.2s;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
         }
 
-        .icon-btn:hover {
-            background: rgba(255, 100, 0, 0.35);
-            box-shadow: 0 0 12px rgba(255, 100, 0, 0.5);
+        .btn-brain:hover {
+            background: rgba(247, 147, 26, 0.25);
         }
 
-        .svg-container {
-            flex-grow: 1;
+        .graph-container {
+            padding: 1rem 1.5rem;
+            height: 240px;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        svg {
+            display: block;
             width: 100%;
-            min-height: 340px;
-            background: rgba(0,0,0,0.6);
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.05);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            height: 100%;
         }
 
-        .brain-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 10px;
-            font-size: 0.75rem;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .legend-list {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            color: var(--text-dim);
-        }
-
-        .legend-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-        }
-
-        .injected-status {
-            color: var(--accent);
-            font-weight: 500;
-        }
+        /* ═══════════════════════════════════════════════════════════════════════ */
+        /* MODAL — NOTA EDITOR */
+        /* ═══════════════════════════════════════════════════════════════════════ */
 
         .modal-overlay {
             position: fixed;
-            inset: 0;
-            background: rgba(2, 1, 4, 0.94);
-            z-index: 200;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
             display: none;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            backdrop-filter: blur(8px);
+            z-index: 10000;
         }
 
-        .modal-overlay.open {
+        .modal-overlay.active {
             display: flex;
         }
 
-        .modal-card {
-            background: rgba(20, 8, 2, 0.96);
-            border: 1px solid var(--primary);
+        .modal-box {
+            background: var(--dark-secondary);
+            border: 1px solid var(--gold);
+            border-radius: 8px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 0 40px rgba(247, 147, 26, 0.3);
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--gold);
+            margin-bottom: 1.5rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input, .form-select, .form-textarea {
             width: 100%;
-            max-width: 480px;
-            padding: 24px;
-            border-radius: 10px;
-            box-shadow: 0 0 60px rgba(255, 100, 0, 0.4);
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(247, 147, 26, 0.3);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
         }
 
-        .modal-card h3 {
-            color: var(--accent);
-            font-size: 1.1rem;
-        }
-
-        .modal-card label {
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            margin-bottom: -8px;
-        }
-
-        .modal-card input, .modal-card select, .modal-card textarea {
-            background: rgba(0,0,0,0.85);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 9px 12px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            outline: none;
-            width: 100%;
-        }
-
-        .modal-card textarea {
+        .form-textarea {
+            min-height: 120px;
             resize: vertical;
-            min-height: 95px;
         }
 
-        .modal-actions {
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 10px rgba(247, 147, 26, 0.3);
+        }
+
+        .form-select option {
+            background: var(--dark-secondary);
+            color: var(--text-primary);
+        }
+
+        .modal-buttons {
             display: flex;
+            gap: 1rem;
             justify-content: flex-end;
-            gap: 10px;
-            margin-top: 10px;
+        }
+
+        .btn-modal {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-modal.primary {
+            background: var(--gold);
+            color: var(--dark-bg);
+        }
+
+        .btn-modal.primary:hover {
+            background: var(--gold-light);
+            box-shadow: 0 0 15px rgba(247, 147, 26, 0.4);
+        }
+
+        .btn-modal.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border: 1px solid var(--text-secondary);
+        }
+
+        .btn-modal.secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--text-primary);
+        }
+
+        .btn-modal.danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+
+        .btn-modal.danger:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════════ */
+        /* RESPONSIVO */
+        /* ═══════════════════════════════════════════════════════════════════════ */
+
+        @media (max-width: 768px) {
+            .api-key-input {
+                max-width: 200px;
+                font-size: 0.8rem;
+            }
+
+            .orb-container {
+                width: 140px;
+                height: 140px;
+            }
+
+            .orb {
+                width: 120px;
+                height: 120px;
+            }
+
+            .orb-ring {
+                width: 140px;
+                height: 140px;
+            }
+
+            .conversation-area {
+                max-width: 90%;
+            }
+
+            .modal-box {
+                width: 95%;
+            }
+
+            .control-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn-control {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app-top {
+                padding: 1rem;
+            }
+
+            .app-center {
+                padding: 1rem;
+            }
+
+            .app-input-section {
+                padding: 1rem;
+            }
+
+            .activation-title {
+                font-size: 2rem;
+            }
+
+            .app-name {
+                font-size: 1.2rem;
+            }
         }
     </style>
 </head>
 <body>
 
-    <canvas id="hudCanvas"></canvas>
-
-    <div id="bootScreen">
-        <div class="massive-warm-hud">
-            <div class="hud-circle-1"></div>
-            <div class="hud-circle-2"></div>
-            <div class="hud-circle-3"></div>
-            <div class="hud-jarvis-text">JARVIS</div>
-            <div class="hud-online-text">ONLINE</div>
-        </div>
-        <div class="boot-status">SINCRONIZANDO GOOGLE CUSTOM SEARCH API...</div>
+    <!-- BOOT SCREEN -->
+    <div class="boot-screen" id="bootScreen">
+        <div class="boot-title">ANÚBIS</div>
+        <div class="boot-line"></div>
+        <div class="boot-status">SINCRONIZANDO DADOS...</div>
+        <div class="boot-version">v5.0 · REBUILD</div>
     </div>
 
-    <div id="activationScreen">
-        <div class="massive-warm-hud" style="width: 260px; height: 260px;">
-            <div class="hud-circle-1"></div>
-            <div class="hud-circle-2"></div>
-            <div class="hud-circle-3"></div>
-            <div class="hud-jarvis-text" style="font-size: 2rem;">JARVIS</div>
-            <div class="hud-online-text" style="font-size: 1rem;">PRONTO</div>
-        </div>
-        <button class="activation-btn" id="btnActivate">► ATIVAR SISTEMA</button>
-        <div style="font-size: 0.75rem; color: var(--text-dim); letter-spacing: 1px;">CLIQUE PARA INICIAR</div>
+    <!-- ACTIVATION SCREEN -->
+    <div class="activation-screen" id="activationScreen">
+        <div class="activation-title">ANÚBIS</div>
+        <button class="activation-button" id="activateBtn">► ATIVAR SISTEMA</button>
+        <div class="activation-text">CLIQUE PARA INICIAR</div>
     </div>
 
-    <div id="app">
-        <header class="top-bar">
-            <div class="app-title">JARVIS // CUSTOM SEARCH CORE</div>
-            <div class="api-input-box">
-                <input type="password" id="apiKeyInput" placeholder="API Key (AIza...)">
-                <input type="text" id="cxInput" placeholder="Search Engine ID (CX)">
-                <button id="btnSaveKey">Salvar</button>
+    <!-- MAIN APP -->
+    <div class="app-container" id="appContainer">
+        <!-- TOP: API KEY + STATUS -->
+        <div class="app-top">
+            <div class="app-header">
+                <div class="app-name">ANÚBIS</div>
+                <input type="password" class="api-key-input" id="apiKeyInput" placeholder="Cole sua API key do Anthropic...">
             </div>
-        </header>
+            <div class="status-line user" id="userLine">Você: [aguardando]</div>
+            <div class="status-line assistant" id="assistantLine">Anúbis: [inicializando...]</div>
+        </div>
 
-        <div class="main-grid">
-            <section class="panel interaction-panel">
-                <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-size: 0.8rem; color: var(--accent); font-weight: bold; letter-spacing: 1px;">ASSISTENTE PESSOAL</span>
-                    <span id="statusBadge" class="status-badge">Ocioso</span>
+        <!-- CENTER: ORB + CONVERSATION -->
+        <div class="app-center">
+            <div class="orb-container" id="orbContainer">
+                <div class="orb" id="orb"></div>
+                <div class="orb-ring"></div>
+            </div>
+            <div class="conversation-area" id="conversationArea">
+                <div class="conversation-line assistant-line">Bem-vindo, Senhor Sandro. Estou à sua disposição.</div>
+            </div>
+        </div>
+
+        <!-- INPUT SECTION -->
+        <div class="app-input-section">
+            <div class="input-wrapper">
+                <input type="text" class="text-input" id="textInput" placeholder="ou digite e tecle Enter...">
+                <div class="control-buttons">
+                    <button class="btn-control" id="micBtn" title="Ativar Microfone">🎙️</button>
+                    <button class="btn-control" id="stopBtn" title="Interromper">⏹️</button>
                 </div>
+            </div>
+        </div>
 
-                <div class="reactor-container" id="reactorOrb" title="Clique para interagir">
-                    <div class="ring-h1"></div>
-                    <div class="ring-h2"></div>
-                    <div class="ring-h3"></div>
-                    <div class="ring-h4"></div>
-                    <div style="width: 75px; height: 75px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, var(--accent) 0%, var(--primary) 70%); box-shadow: 0 0 45px var(--accent);">🧠</div>
+        <!-- SECOND BRAIN -->
+        <div class="second-brain-container">
+            <div class="brain-header">
+                <div>
+                    <div class="brain-title">🧠 <strong>SECOND BRAIN</strong></div>
                 </div>
-
-                <div class="dialogue-box">
-                    <div id="dialogueUser" class="dialogue-user">Você: --</div>
-                    <div id="dialogueAssistant" class="dialogue-assistant">Jarvis: Sistemas online, Sandro.</div>
-                </div>
-
-                <div class="controls-row">
-                    <input type="text" id="textInput" placeholder="Ou digite e tecle Enter..."/>
-                    <button id="btnMic" class="action-btn" title="Microfone">🎙️</button>
-                    <button id="btnStopSpeech" class="action-btn btn-danger">Parar Fala</button>
-                </div>
-            </section>
-
-            <section class="panel brain-panel">
-                <div class="brain-header">
-                    <div class="brain-title">
-                        <span>🧠 SECOND BRAIN</span>
-                    </div>
+                <div style="display: flex; gap: 1rem; align-items: center;">
                     <div class="brain-stats" id="brainStats">0 notas · 0 áreas</div>
-                    <div class="brain-btns">
-                        <button class="icon-btn" id="btnAddNote" title="Nova Nota">+</button>
-                        <button class="icon-btn" id="btnReloadGraph" title="Recarregar Grafo">↻</button>
+                    <div class="brain-controls">
+                        <button class="btn-brain" id="addNoteBtn">+</button>
+                        <button class="btn-brain" id="refreshGraphBtn">⟳</button>
                     </div>
                 </div>
-
-                <div class="svg-container" id="svgContainer"></div>
-
-                <div class="brain-footer">
-                    <div class="legend-list" id="legendList"></div>
-                    <div class="injected-status" id="injectedStatus">✓ Google Custom Search ativo (100 req/dia)</div>
-                </div>
-            </section>
+            </div>
+            <div class="graph-container" id="graphContainer"></div>
         </div>
     </div>
 
+    <!-- MODAL — EDITOR DE NOTA -->
     <div class="modal-overlay" id="modalOverlay">
-        <div class="modal-card">
-            <h3 id="modalTitle">Editar Nota</h3>
-            <input type="hidden" id="editNoteId">
-            
-            <label>Título (1-2 palavras)</label>
-            <input type="text" id="editNoteTitle" placeholder="Ex: Investimentos">
-            
-            <label>Área</label>
-            <select id="editNoteArea"></select>
-            
-            <label>Conteúdo</label>
-            <textarea id="editNoteBody" placeholder="Detalhes da nota..."></textarea>
-            
-            <div class="modal-actions">
-                <button class="action-btn btn-danger" id="btnDeleteNote" style="margin-right: auto;">Excluir</button>
-                <button class="action-btn" id="btnCancelModal" style="background: transparent; border-color: var(--text-dim);">Cancelar</button>
-                <button class="action-btn" id="btnSaveNote">Salvar Nota</button>
-            </div>
+        <div class="modal-box">
+            <div class="modal-title" id="modalTitle">Editar Nota</div>
+            <form id="noteForm">
+                <div class="form-group">
+                    <label class="form-label">Título</label>
+                    <input type="text" class="form-input" id="noteTitle" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Área</label>
+                    <select class="form-select" id="noteArea" required>
+                        <option value="">Selecione...</option>
+                        <option value="meta">Você</option>
+                        <option value="metas">Metas</option>
+                        <option value="trabalho">Carreira</option>
+                        <option value="projetos">Projetos</option>
+                        <option value="financas">Finanças</option>
+                        <option value="aprendizado">Aprendizado</option>
+                        <option value="saude">Saúde</option>
+                        <option value="relacoes">Relações</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Conteúdo</label>
+                    <textarea class="form-textarea" id="noteBody" required></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-modal secondary" id="btnCancel">Cancelar</button>
+                    <button type="button" class="btn-modal danger" id="btnDelete" style="display: none;">Deletar</button>
+                    <button type="submit" class="btn-modal primary">Salvar</button>
+                </div>
+            </form>
         </div>
     </div>
 
     <script>
+        /* ═══════════════════════════════════════════════════════════════════════ */
+        /* CONFIG E STATE */
+        /* ═══════════════════════════════════════════════════════════════════════ */
+
         const CONFIG = {
-            name: "Jarvis",
-            address: "Sandro",
-            persona: "formal britânico (mordomo)"
+            name: "Anúbis",
+            address: "Senhor Sandro",
+            themeColor: "dourado",
+            persona: "formal britânico",
+            wakeWord: "ei anúbis",
+            voiceGender: "male",
+            model: "claude-sonnet-5"
         };
 
         const AREA = {
-            meta: { label: "Identidade", color: "#94a3b8" },
-            metas: { label: "Metas", color: "#38bdf8" },
-            trabalho: { label: "Carreira", color: "#ff5500" },
-            projetos: { label: "Projetos", color: "#fbbf24" },
+            meta: { label: "Você", color: "#8a90a6" },
+            metas: { label: "Metas", color: "#fbbf24" },
+            trabalho: { label: "Carreira", color: "#ff5547" },
+            projetos: { label: "Projetos", color: "#8b7cff" },
             financas: { label: "Finanças", color: "#f7931a" },
-            aprendizado: { label: "Aprendizado", color: "#38bdf8" },
-            saude: { label: "Saúde", color: "#34d399" },
-            relacoes: { label: "Relações", color: "#f472b6" }
+            aprendizado: { label: "Aprendizado", color: "#2dd4ff" },
+            saude: { label: "Saúde", color: "#10b981" },
+            relacoes: { label: "Relações", color: "#ec4899" }
         };
 
-        const INITIAL_NOTES = [
-            { id: "note_1", area: "meta", title: "Sandro Fagundes", body: "Sandro de Souza Fagundes, 40 anos, mora em Nova Hartz, trabalha em Dois Irmãos no Grupo Herval como cientista de dados e analista de indicadores corporativos. Licenciado em computação, ex-professor de informática, empreendedor com lojas online e criador de plataformas/dashboards via IA." },
-            { id: "note_2", area: "metas", title: "Sanar Dores", body: "Meta geral: ajudar a sanar dores de processos corporativos com visão de futuro. Curto prazo: ajudar pessoas a desenvolver projetos e democratizar a criação." },
-            { id: "note_3", area: "trabalho", title: "Grupo Herval", body: "Analista de indicadores corporativos e cientista de dados no Grupo Herval. Migrando dashboards do Power BI para o Apache Superset (melhorias nos charts). Montando dashboard para a 'Já Consórcios' (jornada de leads, simulações, distribuição e conversão)." },
-            { id: "note_4", area: "projetos", title: "Plataforma Águas", body: "Plataforma de monitoramento de rios e cotas de inundação (Fase 1 completa, no Vercel). Objetivo: disponibilizar para prefeituras." },
-            { id: "note_5", area: "projetos", title: "Motor IA com Voz", body: "Jarvis personal assistant — assistente inteligente operado por voz e texto integrado ao Second Brain neural." },
-            { id: "note_6", area: "financas", title: "Investimentos", body: "Objetivos financeiros: aproveitar o dinheiro investindo em Bitcoin, Tesouro Direto, imóveis, viagens (Argentina, Patagônia e Cordilheira dos Andes)." },
-            { id: "note_7", area: "aprendizado", title: "Estudos & IA", body: "Estuda veias culturais (com foco na asiática), livros de empreendedorismo, LLMs, IA, RPA, MCP, Cloud." },
-            { id: "note_8", area: "saude", title: "Rotina & Família", body: "Acorda às 06:00, alongamento, fruta, cuida do filho, leva à escola, assiste desenho. Trabalho em outra cidade (carro). Sábados: bicicleta, caminhada e trilha. Adora boa comida e passeios com a família (esposa e filhos Heitor e Melissa)." }
+        let NOTES = [
+            { id: "1", area: "meta", title: "Sandro Fagundes", body: "40 anos, Navarrides. Analista de Sistemas e Processos Gerenciais no Grupo Herval (Dois Irmãos). Expertise em Power BI e Apache Superset." },
+            { id: "2", area: "metas", title: "Automação RPA & IA", body: "Dominar automação RPA, IA aplicada a negócios, C# e inteligência artificial aplicada a objetos. Automação é o vetor estratégico." },
+            { id: "3", area: "trabalho", title: "Superset & SQL", body: "Migração de dashboards para Apache Superset. Aprendizado profundo de SQL e plataforma Superset via CS." },
+            { id: "4", area: "projetos", title: "Monitoramento Hidrológico", body: "Rios RS — 7 nós, cotas, precipitação, fluxo até o mar. Impacto real em defesa civil e previsão de enchentes. Em finalização." },
+            { id: "5", area: "projetos", title: "StoreNhz", body: "Apple products resale (refurbished/pre-owned). iPhones, Apple Watch, AirPods, acessórios. Loja Integrada + Magazine Luiza." },
+            { id: "6", area: "projetos", title: "J.A.R.V.I.S. Fagundes", body: "Assistente IA pessoal. Single-file HTML, integração Anthropic API, theme customizado." },
+            { id: "7", area: "financas", title: "Liberdade Financeira", body: "Viagens, cultura, conhecimento. Aquisição de empresas e imóveis. Diversificação de investimentos." },
+            { id: "8", area: "aprendizado", title: "Stack Dev", body: "SQL, Python, JavaScript. Fundamentos para automação, backend e frontend." },
+            { id: "9", area: "saude", title: "Retomar Treino", body: "Histórico: corrida, futebol, trilhas, bicicleta, calistenia. Parado agora. Meta: retomar calistenia verão 2026." },
+            { id: "10", area: "relacoes", title: "Vida Familiar", body: "Filhos, família. Prioridade: momentos simples (passeios, bicicleta, descanso, convívio, risadas)." }
         ];
 
-        let NOTES = JSON.parse(localStorage.getItem("jarvis_notes")) || INITIAL_NOTES;
-        let REL = [
-            ["note_1", "note_2"], ["note_1", "note_3"], ["note_2", "note_4"],
-            ["note_2", "note_5"], ["note_3", "note_4"], ["note_3", "note_5"],
-            ["note_1", "note_6"], ["note_1", "note_7"], ["note_1", "note_8"]
+        const REL = [
+            ["2", "3"], ["2", "4"], ["2", "5"], ["2", "6"],
+            ["2", "8"], ["3", "4"], ["3", "8"], ["4", "5"],
+            ["5", "7"], ["8", "4"], ["8", "5"]
         ];
 
-        let chatHistory = [];
+        let sessionHistory = [];
         let isBusy = false;
         let isListening = false;
         let recognition = null;
-        let highlightedNoteId = null;
+        let synthesis = window.speechSynthesis;
+        let needsWakeWord = true;
+        let currentEditId = null;
 
-        const canvas = document.getElementById('hudCanvas');
-        const ctx = canvas.getContext('2d');
-        let hudNodes = [];
+        /* ═══════════════════════════════════════════════════════════════════════ */
+        /* INICIALIZAÇÃO */
+        /* ═══════════════════════════════════════════════════════════════════════ */
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
+        window.addEventListener('load', () => {
+            loadNotesFromStorage();
+            initBoot();
+            setupSpeechRecognition();
+            setupEventListeners();
+        });
 
-        for (let i = 0; i < 80; i++) {
-            hudNodes.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                vx: (Math.random() - 0.5) * 0.8,
-                vy: (Math.random() - 0.5) * 0.8,
-                radius: Math.random() * 2.2 + 1.2
-            });
-        }
-
-        function drawWarmHUD() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#020104';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            let glowIntensity = isBusy || isListening ? 0.85 : 0.45;
-            let strokeColor = isBusy ? "rgba(255, 61, 0," : "rgba(255, 183, 0,";
-
-            for (let i = 0; i < hudNodes.length; i++) {
-                let p = hudNodes[i];
-                p.x += p.vx;
-                p.y += p.vy;
-
-                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-
-                for (let j = i + 1; j < hudNodes.length; j++) {
-                    let p2 = hudNodes[j];
-                    let dx = p.x - p2.x;
-                    let dy = p.y - p2.y;
-                    let dist = Math.sqrt(dx * dx + dy * dy);
-
-                    if (dist < 150) {
-                        ctx.beginPath();
-                        ctx.moveTo(p.x, p.y);
-                        ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = `${strokeColor} ${(1 - dist / 150) * glowIntensity})`;
-                        ctx.lineWidth = 1.1;
-                        ctx.stroke();
-                    }
-                }
-
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                ctx.fillStyle = isBusy ? '#ff3d00' : '#fbbf24';
-                ctx.shadowBlur = isBusy ? 25 : 15;
-                ctx.shadowColor = '#ff6600';
-                ctx.fill();
-                ctx.shadowBlur = 0;
-            }
-
-            requestAnimationFrame(drawWarmHUD);
-        }
-        drawWarmHUD();
-
-        const bootScreen = document.getElementById("bootScreen");
-        const activationScreen = document.getElementById("activationScreen");
-        const app = document.getElementById("app");
-        const btnActivate = document.getElementById("btnActivate");
-        const apiKeyInput = document.getElementById("apiKeyInput");
-        const cxInput = document.getElementById("cxInput");
-        const btnSaveKey = document.getElementById("btnSaveKey");
-        const reactorOrb = document.getElementById("reactorOrb");
-        const statusBadge = document.getElementById("statusBadge");
-        const dialogueUser = document.getElementById("dialogueUser");
-        const dialogueAssistant = document.getElementById("dialogueAssistant");
-        const textInput = document.getElementById("textInput");
-        const btnMic = document.getElementById("btnMic");
-        const btnStopSpeech = document.getElementById("btnStopSpeech");
-        const svgContainer = document.getElementById("svgContainer");
-        const brainStats = document.getElementById("brainStats");
-        const legendList = document.getElementById("legendList");
-        const btnAddNote = document.getElementById("btnAddNote");
-        const btnReloadGraph = document.getElementById("btnReloadGraph");
-        const modalOverlay = document.getElementById("modalOverlay");
-        const modalTitle = document.getElementById("modalTitle");
-        const editNoteId = document.getElementById("editNoteId");
-        const editNoteTitle = document.getElementById("editNoteTitle");
-        const editNoteArea = document.getElementById("editNoteArea");
-        const editNoteBody = document.getElementById("editNoteBody");
-        const btnSaveNote = document.getElementById("btnSaveNote");
-        const btnDeleteNote = document.getElementById("btnDeleteNote");
-        const btnCancelModal = document.getElementById("btnCancelModal");
-
-        window.addEventListener("DOMContentLoaded", () => {
-            apiKeyInput.value = localStorage.getItem("g_custom_key") || "";
-            cxInput.value = localStorage.getItem("g_custom_cx") || "";
-            editNoteArea.innerHTML = Object.entries(AREA).map(([k, v]) => `<option value="${k}">${v.label}</option>`).join("");
-            
+        function initBoot() {
             setTimeout(() => {
-                bootScreen.classList.add("fade-out");
-                setTimeout(() => {
-                    activationScreen.classList.add("show");
-                }, 400);
+                const bootScreen = document.getElementById('bootScreen');
+                bootScreen.classList.add('hidden');
+                showActivation();
             }, 2200);
-        });
-
-        btnSaveKey.addEventListener("click", () => {
-            localStorage.setItem("g_custom_key", apiKeyInput.value.trim());
-            localStorage.setItem("g_custom_cx", cxInput.value.trim());
-            speakText("Credenciais de busca salvas com sucesso, senhor.");
-        });
-
-        function getActiveCredentials() {
-            return {
-                key: apiKeyInput.value.trim() || localStorage.getItem("g_custom_key") || "",
-                cx: cxInput.value.trim() || localStorage.getItem("g_custom_cx") || ""
-            };
         }
 
-        btnActivate.addEventListener("click", () => {
-            activationScreen.classList.remove("show");
-            app.classList.add("active");
+        function showActivation() {
+            const activationScreen = document.getElementById('activationScreen');
+            activationScreen.classList.remove('hidden');
+        }
+
+        document.getElementById('activateBtn').addEventListener('click', () => {
+            const activationScreen = document.getElementById('activationScreen');
+            const appContainer = document.getElementById('appContainer');
+            activationScreen.classList.add('hidden');
+            appContainer.classList.add('active');
+
+            // Saúda
+            const greetingMsg = `Sistemas online. Estou ouvindo, ${CONFIG.address}.`;
+            speak(greetingMsg);
+
+            // Começa a ouvir após a saudação
+            setTimeout(() => {
+                startListening();
+            }, 1000);
+
             renderGraph();
-            initVoiceRecognition();
-            
-            const welcomeText = `Sistemas online. Estou ouvindo, ${CONFIG.address}.`;
-            dialogueAssistant.innerText = `${CONFIG.name}: ${welcomeText}`;
-            speakText(welcomeText);
         });
 
-        function speakText(text) {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = "pt-BR";
-            utterance.rate = 0.92;
-            utterance.pitch = 0.45;
-            
-            const voices = window.speechSynthesis.getVoices();
-            let brazilianMaleVoice = voices.find(v => 
-                v.lang === "pt-BR" && (
-                    v.name.toLowerCase().includes("antonio") ||
-                    v.name.toLowerCase().includes("daniel") ||
-                    v.name.toLowerCase().includes("lucas") ||
-                    v.name.toLowerCase().includes("felipe") ||
-                    v.name.toLowerCase().includes("ricardo") ||
-                    v.name.toLowerCase().includes("google português do brasil")
-                )
-            ) || voices.find(v => 
-                v.lang.includes("pt-BR") && 
-                !v.name.toLowerCase().includes("female") && 
-                !v.name.toLowerCase().includes("luciana") && 
-                !v.name.toLowerCase().includes("raquel") &&
-                !v.name.toLowerCase().includes("maria")
-            ) || voices.find(v => v.lang.includes("pt")) || voices[0];
+        /* ═══════════════════════════════════════════════════════════════════════ */
+        /* SPEECH RECOGNITION — WEB SPEECH API */
+        /* ═══════════════════════════════════════════════════════════════════════ */
 
-            if (brazilianMaleVoice) utterance.voice = brazilianMaleVoice;
-
-            utterance.onstart = () => {
-                isBusy = true;
-                statusBadge.innerText = "Falando";
-                if (recognition) {
-                    try { recognition.stop(); } catch(e){}
-                }
-            };
-
-            utterance.onend = () => {
-                isBusy = false;
-                statusBadge.innerText = "Ocioso";
-                if (recognition && !isListening) {
-                    try { recognition.start(); } catch(e){}
-                }
-            };
-
-            window.speechSynthesis.speak(utterance);
-        }
-
-        function initVoiceRecognition() {
+        function setupSpeechRecognition() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
-                statusBadge.innerText = "STT Indisponível";
+                console.error("Speech Recognition não suportado neste navegador.");
                 return;
             }
 
-            try {
-                recognition = new SpeechRecognition();
-                recognition.lang = "pt-BR";
-                recognition.continuous = true;
-                recognition.interimResults = false;
+            recognition = new SpeechRecognition();
+            recognition.lang = 'pt-BR';
+            recognition.continuous = true;
+            recognition.interimResults = false;
 
-                recognition.onstart = () => {
-                    isListening = true;
-                    statusBadge.innerText = "Ouvindo...";
-                };
+            recognition.onstart = () => {
+                isListening = true;
+                updateOrbState('listening');
+            };
 
-                recognition.onresult = (event) => {
-                    if (isBusy) return;
-                    const transcript = event.results[event.results.length - 1][0].transcript.trim();
-                    if (transcript) {
-                        dialogueUser.innerText = `Você: ${transcript}`;
-                        processCustomSearchCommand(transcript);
-                    }
-                };
+            recognition.onresult = (event) => {
+                let transcript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    transcript += event.results[i][0].transcript;
+                }
 
-                recognition.onerror = (e) => {
-                    if (e.error === "not-allowed") {
-                        statusBadge.innerText = "Microfone Negado";
-                    }
-                };
+                const cleanTranscript = transcript.toLowerCase().trim();
 
-                recognition.onend = () => {
-                    isListening = false;
-                    if (!isBusy) {
-                        try { recognition.start(); } catch(err){}
-                    }
-                };
-
-                recognition.start();
-            } catch(e) {
-                console.error(e);
-            }
-        }
-
-        btnMic.addEventListener("click", () => {
-            if (recognition && !isListening) {
-                try { recognition.start(); } catch(e){}
-            } else if (recognition && isListening) {
-                try { recognition.stop(); } catch(e){}
-            }
-        });
-
-        reactorOrb.addEventListener("click", () => {
-            if (recognition && !isListening) {
-                try { recognition.start(); } catch(e){}
-            } else if (recognition && isListening) {
-                try { recognition.stop(); } catch(e){}
-            }
-        });
-
-        btnStopSpeech.addEventListener("click", () => {
-            window.speechSynthesis.cancel();
-            isBusy = false;
-            statusBadge.innerText = "Ocioso";
-        });
-
-        textInput.addEventListener("keydown", (e) => {
-            if (e.key === "Enter" && textInput.value.trim() !== "") {
-                const query = textInput.value.trim();
-                textInput.value = "";
-                dialogueUser.innerText = `Você: ${query}`;
-                processCustomSearchCommand(query);
-            }
-        });
-
-        // CONSULTA COM GOOGLE CUSTOM SEARCH API + SINTOZE LOCAL / SECOND BRAIN
-        async function processCustomSearchCommand(prompt) {
-            const creds = getActiveCredentials();
-            isBusy = true;
-            statusBadge.innerText = "Buscando no Google...";
-
-            let notesText = NOTES.map(n => `- [${n.area.toUpperCase()}] ${n.title}: ${n.body}`).join("\n");
-            let replyText = "";
-
-            // Verifica se a pergunta responde a alguma nota pessoal do Second Brain
-            const lowerPrompt = prompt.toLowerCase();
-            let matchedNote = NOTES.find(n => lowerPrompt.includes(n.title.toLowerCase()) || lowerPrompt.includes(n.area.toLowerCase()));
-
-            if (matchedNote && (lowerPrompt.includes("meu") || lowerPrompt.includes("minha") || lowerPrompt.includes("herval") || lowerPrompt.includes("trabalho"))) {
-                replyText = `Senhor, consultando seu Second Brain: ${matchedNote.body}`;
-            } else if (creds.key && creds.cx) {
-                try {
-                    const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${encodeURIComponent(creds.key)}&cx=${encodeURIComponent(creds.cx)}&q=${encodeURIComponent(prompt)}&hl=pt-BR&lr=lang_pt`;
-                    const res = await fetch(searchUrl);
-                    if (res.ok) {
-                        const data = await res.json();
-                        if (data.items && data.items.length > 0) {
-                            let snippet = data.items[0].snippet || data.items[0].title;
-                            replyText = `Com base na minha busca na web, senhor: ${snippet}`;
-                        } else {
-                            replyText = `Não encontrei resultados exatos na web para sua consulta, senhor, mas verifiquei seus registros.`;
+                if (needsWakeWord) {
+                    if (cleanTranscript.includes('ei anúbis')) {
+                        needsWakeWord = false;
+                        // Captura o que vem DEPOIS da wake word
+                        const afterWake = cleanTranscript.split('ei anúbis')[1]?.trim() || '';
+                        if (afterWake) {
+                            handleUserInput(afterWake);
                         }
-                    } else {
-                        throw new Error("Erro na API do Google Custom Search");
                     }
-                } catch(e) {
-                    console.warn("Falha na Custom Search API. Usando síntese local inteligente...");
-                }
-            }
-
-            // Fallback inteligente caso a busca web venha vazia ou credenciais estejam em falta
-            if (!replyText) {
-                if (lowerPrompt.includes("rio grande do sul")) {
-                    replyText = "O estado do Rio Grande do Sul possui cerca de 11,4 milhões de habitantes segundo estimativas oficiais.";
                 } else {
-                    replyText = `Compreendido, ${CONFIG.address}. Seus projetos e indicadores corporativos estão sincronizados no núcleo. Para buscas web ilimitadas, certifique-se de configurar sua API Key e CX do Google Custom Search.`;
+                    handleUserInput(cleanTranscript);
+                    needsWakeWord = true;
                 }
+            };
+
+            recognition.onerror = (event) => {
+                console.error("Erro no reconhecimento:", event.error);
+                if (event.error === 'not-allowed') {
+                    alert("Permissão de microfone negada. Você pode usar o campo de texto para interagir.");
+                }
+            };
+
+            recognition.onend = () => {
+                isListening = false;
+                updateOrbState('idle');
+                // Reinicia se não estiver ocupado
+                if (!isBusy) {
+                    try {
+                        recognition.start();
+                    } catch (e) {
+                        // já iniciado
+                    }
+                }
+            };
+        }
+
+        function startListening() {
+            if (!recognition) return;
+            try {
+                recognition.start();
+            } catch (e) {
+                // já iniciado
+            }
+        }
+
+        function stopListening() {
+            if (!recognition) return;
+            try {
+                recognition.stop();
+            } catch (e) {
+                // já parado
+            }
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════════ */
+        /* TEXT-TO-SPEECH */
+        /* ═══════════════════════════════════════════════════════════════════════ */
+
+        function speak(text) {
+            return new Promise((resolve) => {
+                if (!synthesis) {
+                    console.error("Speech Synthesis não disponível");
+                    resolve();
+                    return;
+                }
+
+                // Para qualquer fala anterior
+                synthesis.cancel();
+
+                // Aguarda vozes carregarem
+                if (synthesis.getVoices().length === 0) {
+                    synthesis.onvoiceschanged = () => doSpeak(text, resolve);
+                } else {
+                    doSpeak(text, resolve);
+                }
+            });
+        }
+
+        function doSpeak(text, resolve) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'pt-BR';
+            
+            const voices = synthesis.getVoices();
+            const maleVoice = voices.find(v => v.lang === 'pt-BR' && v.name.includes('male')) || 
+                             voices.find(v => v.lang.startsWith('pt')) ||
+                             voices[0];
+            
+            if (maleVoice) utterance.voice = maleVoice;
+            utterance.rate = 1;
+            utterance.pitch = 0.9;
+
+            isBusy = true;
+            stopListening();
+            updateOrbState('thinking');
+
+            utterance.onend = () => {
+                isBusy = false;
+                needsWakeWord = true;
+                updateOrbState('idle');
+                startListening();
+                resolve();
+            };
+
+            utterance.onerror = () => {
+                isBusy = false;
+                updateOrbState('idle');
+                startListening();
+                resolve();
+            };
+
+            synthesis.speak(utterance);
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════════ */
+        /* ORB STATE */
+        /* ═══════════════════════════════════════════════════════════════════════ */
+
+        function updateOrbState(state) {
+            const orb = document.getElementById('orb');
+            orb.classList.remove('listening', 'thinking');
+            if (state === 'listening') orb.classList.add('listening');
+            else if (state === 'thinking') orb.classList.add('thinking');
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════════ */
+        /* INPUT HANDLING */
+        /* ═══════════════════════════════════════════════════════════════════════ */
+
+        function setupEventListeners() {
+            document.getElementById('textInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const text = document.getElementById('textInput').value.trim();
+                    if (text) {
+                        handleUserInput(text);
+                        document.getElementById('textInput').value = '';
+                    }
+                }
+            });
+
+            document.getElementById('micBtn').addEventListener('click', () => {
+                if (isBusy) return;
+                if (isListening) {
+                    stopListening();
+                    document.getElementById('micBtn').classList.remove('active');
+                } else {
+                    startListening();
+                    document.getElementById('micBtn').classList.add('active');
+                }
+            });
+
+            document.getElementById('stopBtn').addEventListener('click', () => {
+                synthesis.cancel();
+                isBusy = false;
+                updateOrbState('idle');
+                startListening();
+            });
+
+            document.getElementById('orbContainer').addEventListener('click', () => {
+                if (!isBusy) {
+                    if (isListening) {
+                        stopListening();
+                        document.getElementById('micBtn').classList.remove('active');
+                    } else {
+                        startListening();
+                        document.getElementById('micBtn').classList.add('active');
+                    }
+                }
+            });
+
+            document.getElementById('addNoteBtn').addEventListener('click', () => {
+                currentEditId = null;
+                openNoteEditor();
+            });
+
+            document.getElementById('refreshGraphBtn').addEventListener('click', () => {
+                renderGraph();
+            });
+
+            document.getElementById('apiKeyInput').addEventListener('change', (e) => {
+                localStorage.setItem('anthropic_key', e.target.value);
+            });
+
+            // Modal
+            document.getElementById('btnCancel').addEventListener('click', closeModal);
+            document.getElementById('noteForm').addEventListener('submit', handleNoteSave);
+            document.getElementById('btnDelete').addEventListener('click', handleNoteDelete);
+
+            const apiKey = localStorage.getItem('anthropic_key') || '';
+            document.getElementById('apiKeyInput').value = apiKey;
+        }
+
+        function handleUserInput(text) {
+            if (isBusy) return;
+
+            isBusy = true;
+            updateOrbState('thinking');
+            stopListening();
+
+            // Mostra no histórico
+            updateUserLine(text);
+            sessionHistory.push({ role: 'user', content: text });
+
+            // Chama Claude
+            callClaude(text).then((response) => {
+                updateAssistantLine(response);
+                sessionHistory.push({ role: 'assistant', content: response });
+
+                // Processa [[SAVE:...]]
+                const saveMatch = response.match(/\[\[SAVE:([a-z_]+)\|([^|]+)\|([\s\S]+?)\]\]/);
+                if (saveMatch) {
+                    const [, area, title, body] = saveMatch;
+                    const cleanBody = body.trim();
+                    saveOrUpdateNote(area, title, cleanBody);
+
+                    // Remove da resposta antes de falar
+                    const cleanResponse = response.replace(/\[\[SAVE:([a-z_]+)\|([^|]+)\|([\s\S]+?)\]\]/, '').trim();
+                    speak(cleanResponse);
+                } else {
+                    speak(response);
+                }
+            }).catch((error) => {
+                const errorMsg = `Erro: ${error.message}`;
+                updateAssistantLine(errorMsg);
+                speak(errorMsg);
+            });
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════════ */
+        /* API — CLAUDE */
+        /* ═══════════════════════════════════════════════════════════════════════ */
+
+        async function callClaude(userMessage) {
+            const apiKey = localStorage.getItem('anthropic_key');
+            if (!apiKey) {
+                throw new Error("Cole sua API key do Anthropic no campo de entrada.");
             }
 
-            chatHistory.push({ role: "user", content: prompt });
-            chatHistory.push({ role: "assistant", content: replyText });
+            const systemPrompt = buildSystemPrompt();
 
-            dialogueAssistant.innerText = `${CONFIG.name}: ${replyText}`;
-            speakText(replyText);
+            const response = await fetch("https://api.anthropic.com/v1/messages", {
+                method: "POST",
+                headers: {
+                    "x-api-key": apiKey,
+                    "anthropic-version": "2023-06-01",
+                    "anthropic-dangerous-direct-browser-access": "true",
+                    "content-type": "application/json"
+                },
+                body: JSON.stringify({
+                    model: CONFIG.model,
+                    max_tokens: 400,
+                    system: systemPrompt,
+                    messages: sessionHistory
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`Erro na API: ${errorData.error?.message || 'Desconhecido'}`);
+            }
+
+            const data = await response.json();
+            if (!data.content || !data.content[0]) {
+                throw new Error("Resposta vazia da API");
+            }
+
+            return data.content[0].text || "Desculpe, não consegui gerar uma resposta.";
         }
 
-        function renderGraph() {
-            const width = svgContainer.clientWidth || 600;
-            const height = svgContainer.clientHeight || 340;
-            const cx = width / 2;
-            const cy = height / 2;
-
-            brainStats.innerText = `${NOTES.length} notas · ${new Set(NOTES.map(n => n.area)).size} áreas`;
-
-            let usedAreas = [...new Set(NOTES.map(n => n.area))];
-            legendList.innerHTML = usedAreas.map(a => `
-                <div class="legend-item">
-                    <span class="legend-dot" style="background: ${AREA[a]?.color || '#fff'}"></span>
-                    <span>${AREA[a]?.label || a}</span>
-                </div>
-            `).join('');
-
-            let connCounts = {};
-            NOTES.forEach(n => connCounts[n.id] = 1);
-            REL.forEach(([a, b]) => {
-                if (connCounts[a]) connCounts[a]++;
-                if (connCounts[b]) connCounts[b]++;
-            });
-
-            const radiusX = width * 0.36;
-            const radiusY = height * 0.34;
-            let nodeCoords = {};
-
-            NOTES.forEach((note, idx) => {
-                const angle = (idx / NOTES.length) * Math.PI * 2;
-                nodeCoords[note.id] = {
-                    x: cx + Math.cos(angle) * radiusX,
-                    y: cy + Math.sin(angle) * radiusY,
-                    note
-                };
-            });
-
-            let svgContent = `
-                <defs>
-                    <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
-                        <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.9"/>
-                        <stop offset="100%" stop-color="#ff5500" stop-opacity="0"/>
-                    </radialGradient>
-                    <linearGradient id="edgeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#fbbf24"/>
-                        <stop offset="100%" stop-color="#ff5500"/>
-                    </linearGradient>
-                </defs>
-            `;
-
-            REL.forEach(([idA, idB]) => {
-                if (nodeCoords[idA] && nodeCoords[idB]) {
-                    const p1 = nodeCoords[idA];
-                    const p2 = nodeCoords[idB];
-                    const ctrlX = cx + (p1.x + p2.x - 2*cx) * 0.25;
-                    const ctrlY = cy + (p1.y + p2.y - 2*cy) * 0.25;
-                    svgContent += `<path d="M ${p1.x} ${p1.y} Q ${ctrlX} ${ctrlY} ${p2.x} ${p2.y}" stroke="url(#edgeGrad)" stroke-width="1.2" fill="none" opacity="0.4" stroke-dasharray="4 4"/>`;
+        function buildSystemPrompt() {
+            let braonText = "";
+            Object.keys(AREA).forEach((areaKey) => {
+                const notesInArea = NOTES.filter(n => n.area === areaKey);
+                if (notesInArea.length > 0) {
+                    braonText += `\n## ${AREA[areaKey].label}\n`;
+                    notesInArea.forEach((note) => {
+                        braonText += `- **${note.title}**: ${note.body}\n`;
+                    });
                 }
             });
 
-            Object.values(nodeCoords).forEach(node => {
-                const color = AREA[node.note.area]?.color || '#fbbf24';
-                svgContent += `<line x1="${cx}" y1="${cy}" x2="${node.x}" y2="${node.y}" stroke="${color}" stroke-width="0.8" opacity="0.3"/>`;
-            });
+            return `Você é ${CONFIG.name}, um assistente pessoal formal, elegante e britânico. Você se dirige a ${CONFIG.address} com respeito e sofisticação.
 
-            svgContent += `
-                <circle cx="${cx}" cy="${cy}" r="38" fill="url(#coreGlow)"/>
-                <circle cx="${cx}" cy="${cy}" r="22" fill="#180802" stroke="#fbbf24" stroke-width="2"/>
-                <text x="${cx}" y="${cy + 5}" fill="#fff" font-size="14" text-anchor="middle" font-weight="bold">🧠</text>
-            `;
+Regras de resposta:
+- Respostas CURTAS: máximo 2-4 frases, diretas, para serem faladas em voz alta.
+- Português do Brasil.
+- Sem markdown, sem emojis, sem listas — apenas prosa falada.
+- Se o usuário revelar algo novo e duradouro sobre sua vida, termina a resposta com: [[SAVE:area|titulo|conteúdo]] (area ∈ metas, trabalho, projetos, financas, aprendizado, saude, relacoes, meta). Se existir nota com esse título, atualiza; senão cria nova.
 
-            Object.values(nodeCoords).forEach(node => {
-                const color = AREA[node.note.area]?.color || '#fbbf24';
-                const size = Math.min(18, 10 + (connCounts[node.note.id] || 1) * 1.5);
-                const isHighlighted = node.note.id === highlightedNoteId;
+SECOND BRAIN — Contexto de vida do ${CONFIG.address}:
+${braonText}
 
-                svgContent += `
-                    <g class="node-group" cursor="pointer" onclick="openNoteEditor('${node.note.id}')">
-                        ${isHighlighted ? `<circle cx="${node.x}" cy="${node.y}" r="${size + 6}" fill="none" stroke="#fff" stroke-width="2"><animate attributeName="r" values="${size};${size+12};${size}" dur="1.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;0;1" dur="1.5s" repeatCount="indefinite"/></circle>` : ''}
-                        <circle cx="${node.x}" cy="${node.y}" r="${size + 4}" fill="${color}" opacity="0.25">
-                            <animate attributeName="r" values="${size};${size+5};${size}" dur="3s" repeatCount="indefinite"/>
-                        </circle>
-                        <circle cx="${node.x}" cy="${node.y}" r="${size}" fill="#020104" stroke="${color}" stroke-width="2"/>
-                        <text x="${node.x}" y="${node.y + size + 14}" fill="#e2e8f0" font-size="10" text-anchor="middle" font-weight="500">${node.note.title}</text>
-                    </g>
-                `;
-            });
-
-            svgContainer.innerHTML = '<svg viewBox="0 0 ' + width + ' ' + height + '">' + svgContent + '</svg>';
+Responda sempre considerando esse contexto. Seja assertivo, crítico construtivo, e aja como um conselheiro estratégico.`;
         }
 
-        btnReloadGraph.addEventListener("click", renderGraph);
-        window.addEventListener("resize", renderGraph);
+        /* ═══════════════════════════════════════════════════════════════════════ */
+        /* SECOND BRAIN — NOTAS */
+        /* ═══════════════════════════════════════════════════════════════════════ */
+
+        function loadNotesFromStorage() {
+            const stored = localStorage.getItem('jarvis_notes');
+            if (stored) {
+                NOTES = JSON.parse(stored);
+            }
+        }
+
+        function saveNotesToStorage() {
+            localStorage.setItem('jarvis_notes', JSON.stringify(NOTES));
+        }
+
+        function saveOrUpdateNote(area, title, body) {
+            const existing = NOTES.find(n => n.title === title && n.area === area);
+            if (existing) {
+                existing.body = body;
+            } else {
+                const newId = String(Math.max(...NOTES.map(n => parseInt(n.id) || 0)) + 1);
+                NOTES.push({ id: newId, area, title, body });
+            }
+            saveNotesToStorage();
+            renderGraph();
+            flashNode(title);
+        }
+
+        function flashNode(noteTitle) {
+            const note = NOTES.find(n => n.title === noteTitle);
+            if (!note) return;
+            // Simples: re-renderiza com uma animação (feita via renderGraph)
+            setTimeout(renderGraph, 100);
+        }
 
         function openNoteEditor(noteId = null) {
             if (noteId) {
                 const note = NOTES.find(n => n.id === noteId);
                 if (note) {
-                    modalTitle.innerText = "Editar Nota";
-                    editNoteId.value = note.id;
-                    editNoteTitle.value = note.title;
-                    editNoteArea.value = note.area;
-                    editNoteBody.value = note.body;
-                    btnDeleteNote.style.display = "block";
+                    document.getElementById('modalTitle').textContent = 'Editar Nota';
+                    document.getElementById('noteTitle').value = note.title;
+                    document.getElementById('noteArea').value = note.area;
+                    document.getElementById('noteBody').value = note.body;
+                    document.getElementById('btnDelete').style.display = 'block';
+                    currentEditId = noteId;
                 }
             } else {
-                modalTitle.innerText = "Nova Nota";
-                editNoteId.value = "";
-                editNoteTitle.value = "";
-                editNoteArea.value = "projetos";
-                editNoteBody.value = "";
-                btnDeleteNote.style.display = "none";
+                document.getElementById('modalTitle').textContent = 'Nova Nota';
+                document.getElementById('noteTitle').value = '';
+                document.getElementById('noteArea').value = '';
+                document.getElementById('noteBody').value = '';
+                document.getElementById('btnDelete').style.display = 'none';
+                currentEditId = null;
             }
-            modalOverlay.classList.add("open");
+
+            document.getElementById('modalOverlay').classList.add('active');
         }
 
-        window.openNoteEditor = openNoteEditor;
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+
+        function handleNoteSave(e) {
+            e.preventDefault();
+            const title = document.getElementById('noteTitle').value.trim();
+            const area = document.getElementById('noteArea').value;
+            const body = document.getElementById('noteBody').value.trim();
+
+            if (!title || !area || !body) {
+                alert("Preencha todos os campos.");
+                return;
+            }
+
+            if (currentEditId) {
+                const note = NOTES.find(n => n.id === currentEditId);
+                if (note) {
+                    note.title = title;
+                    note.area = area;
+                    note.body = body;
+                }
+            } else {
+                const newId = String(Math.max(...NOTES.map(n => parseInt(n.id) || 0)) + 1);
+                NOTES.push({ id: newId, area, title, body });
+            }
+
+            saveNotesToStorage();
+            renderGraph();
+            closeModal();
+        }
+
+        function handleNoteDelete() {
+            if (!currentEditId || !confirm("Deletar esta nota?")) return;
+            NOTES = NOTES.filter(n => n.id !== currentEditId);
+            saveNotesToStorage();
+            renderGraph();
+            closeModal();
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════════ */
+        /* GRAFO NEURAL — SVG */
+        /* ═══════════════════════════════════════════════════════════════════════ */
+
+        function renderGraph() {
+            const container = document.getElementById('graphContainer');
+            const width = 1000, height = 540;
+            const cx = width / 2, cy = height / 2.2;
+            const radius = 140;
+
+            // Conta por área
+            const areaCount = new Set(NOTES.map(n => n.area)).size;
+            document.getElementById('brainStats').textContent = `${NOTES.length} notas · ${areaCount} áreas`;
+
+            // SVG inline
+            let svg = `<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" style="background: transparent;">
+                <defs>
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                    <linearGradient id="edgeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#9f7aea;stop-opacity:0.6" />
+                        <stop offset="100%" style="stop-color:#2dd4ff;stop-opacity:0.4" />
+                    </linearGradient>
+                    <linearGradient id="coreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#c084fc;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+                    </linearGradient>
+                    <style>
+                        @keyframes breath { 0%, 100% { r: 18px; opacity: 0.4; } 50% { r: 24px; opacity: 0.1; } }
+                        @keyframes corePulse { 0%, 100% { r: 16px; } 50% { r: 20px; } }
+                        @keyframes dash { to { stroke-dashoffset: -1000; } }
+                        .core-pulse { animation: corePulse 2s ease-in-out infinite; }
+                        .node-ring { animation: breath 2.5s ease-in-out infinite; }
+                        .edge-dash { animation: dash 20s linear infinite; }
+                    </style>
+                </defs>`;
+
+            // Arestas (curvas)
+            svg += '<g id="edges" opacity="0.7">';
+            REL.forEach((edge, idx) => {
+                const [idA, idB] = edge;
+                const noteA = NOTES.find(n => n.id === idA);
+                const noteB = NOTES.find(n => n.id === idB);
+                if (noteA && noteB) {
+                    const idxA = NOTES.indexOf(noteA);
+                    const idxB = NOTES.indexOf(noteB);
+                    const angle1 = (idxA / NOTES.length) * Math.PI * 2 - Math.PI / 2;
+                    const angle2 = (idxB / NOTES.length) * Math.PI * 2 - Math.PI / 2;
+                    const x1 = cx + Math.cos(angle1) * radius;
+                    const y1 = cy + Math.sin(angle1) * radius;
+                    const x2 = cx + Math.cos(angle2) * radius;
+                    const y2 = cy + Math.sin(angle2) * radius;
+
+                    // Ponto de controle para curvatura
+                    const ctrlX = cx + (Math.cos(angle1) + Math.cos(angle2)) / 2 * (radius * 0.35);
+                    const ctrlY = cy + (Math.sin(angle1) + Math.sin(angle2)) / 2 * (radius * 0.35);
+
+                    svg += `<path d="M ${x1} ${y1} Q ${ctrlX} ${ctrlY} ${x2} ${y2}" stroke="url(#edgeGradient)" stroke-width="1.5" fill="none" class="edge-dash" style="stroke-dasharray: 1000;"/>`;
+                }
+            });
+            svg += '</g>';
+
+            // Raios do núcleo
+            svg += '<g id="rays" opacity="0.4">';
+            NOTES.forEach((note, idx) => {
+                const angle = (idx / NOTES.length) * Math.PI * 2 - Math.PI / 2;
+                const x = cx + Math.cos(angle) * radius;
+                const y = cy + Math.sin(angle) * radius;
+                const color = AREA[note.area]?.color || '#8a90a6';
+                svg += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="${color}" stroke-width="1" opacity="0.3"/>`;
+            });
+            svg += '</g>';
+
+            // Núcleo (core)
+            svg += `<circle cx="${cx}" cy="${cy}" r="16" fill="url(#coreGradient)" filter="url(#glow)" class="core-pulse"/>`;
+            svg += `<text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central" font-size="20" fill="#fff" font-weight="bold">🧠</text>`;
+
+            // Nós
+            svg += '<g id="nodes">';
+            NOTES.forEach((note, idx) => {
+                const angle = (idx / NOTES.length) * Math.PI * 2 - Math.PI / 2;
+                const x = cx + Math.cos(angle) * radius;
+                const y = cy + Math.sin(angle) * radius;
+                const color = AREA[note.area]?.color || '#8a90a6';
+                const connections = REL.filter(e => e.includes(note.id)).length;
+                const size = 8 + connections * 2;
+
+                svg += `<g class="node" data-id="${note.id}" style="cursor: pointer;" onclick="window.openNoteFromGraph('${note.id}')">`;
+                svg += `<circle cx="${x}" cy="${y}" r="${size}" fill="${color}" opacity="0.8" filter="url(#glow)"/>`;
+                svg += `<circle cx="${x}" cy="${y}" r="${size + 8}" fill="none" stroke="${color}" stroke-width="1.5" class="node-ring"/>`;
+                svg += `<text x="${x}" y="${y + size + 18}" text-anchor="middle" font-size="11" fill="#f5f5f5" pointer-events="none">${note.title.substring(0, 12)}</text>`;
+                svg += `</g>`;
+            });
+            svg += '</g>';
+
+            // Pulsos de sinapse (pontos brilhantes)
+            const pulseCount = 12;
+            svg += '<g id="pulses" opacity="0.8">';
+            for (let i = 0; i < pulseCount; i++) {
+                const edgeIdx = i % REL.length;
+                if (REL[edgeIdx]) {
+                    const [idA, idB] = REL[edgeIdx];
+                    const noteA = NOTES.find(n => n.id === idA);
+                    const noteB = NOTES.find(n => n.id === idB);
+                    if (noteA && noteB) {
+                        const idxA = NOTES.indexOf(noteA);
+                        const idxB = NOTES.indexOf(noteB);
+                        const angle1 = (idxA / NOTES.length) * Math.PI * 2 - Math.PI / 2;
+                        const angle2 = (idxB / NOTES.length) * Math.PI * 2 - Math.PI / 2;
+                        const x1 = cx + Math.cos(angle1) * radius;
+                        const y1 = cy + Math.sin(angle1) * radius;
+                        const x2 = cx + Math.cos(angle2) * radius;
+                        const y2 = cy + Math.sin(angle2) * radius;
+                        const ctrlX = cx + (Math.cos(angle1) + Math.cos(angle2)) / 2 * (radius * 0.35);
+                        const ctrlY = cy + (Math.sin(angle1) + Math.sin(angle2)) / 2 * (radius * 0.35);
+
+                        const t = (i * 0.08) % 1;
+                        const px = Math.pow(1 - t, 2) * x1 + 2 * (1 - t) * t * ctrlX + Math.pow(t, 2) * x2;
+                        const py = Math.pow(1 - t, 2) * y1 + 2 * (1 - t) * t * ctrlY + Math.pow(t, 2) * y2;
+
+                        svg += `<circle cx="${px}" cy="${py}" r="2.5" fill="#fff" opacity="${0.5 + Math.sin(i) * 0.3}"/>`;
+                    }
+                }
+            }
+            svg += '</g>';
+
+            // Legenda
+            const legendX = 20, legendY = height - 50;
+            svg += '<g id="legend" font-size="11">';
+            let legendOffset = 0;
+            Object.keys(AREA).forEach((areaKey) => {
+                const hasNotes = NOTES.some(n => n.area === areaKey);
+                if (hasNotes) {
+                    const color = AREA[areaKey].color;
+                    svg += `<rect x="${legendX + legendOffset}" y="${legendY}" width="12" height="12" fill="${color}" opacity="0.8"/>`;
+                    svg += `<text x="${legendX + legendOffset + 16}" y="${legendY + 10}" fill="#f5f5f5">${AREA[areaKey].label}</text>`;
+                    legendOffset += 140;
+                }
+            });
+            svg += `<text x="${width - 220}" y="${legendY + 10}" fill="#10b981" font-size="10">✓ contexto injetado em todos os comandos</text>`;
+            svg += '</g>';
+
+            svg += '</svg>';
+
+            // Injeta via innerHTML (CRÍTICO para namespace SVG)
+            container.innerHTML = svg;
+        }
+
+        window.openNoteFromGraph = (noteId) => {
+            openNoteEditor(noteId);
+        };
+
+        /* ═══════════════════════════════════════════════════════════════════════ */
+        /* UI — STATUS LINES */
+        /* ═══════════════════════════════════════════════════════════════════════ */
+
+        function updateUserLine(text) {
+            const truncated = text.length > 60 ? text.substring(0, 60) + "..." : text;
+            document.getElementById('userLine').textContent = `Você: ${truncated}`;
+        }
+
+        function updateAssistantLine(text) {
+            const truncated = text.length > 60 ? text.substring(0, 60) + "..." : text;
+            document.getElementById('assistantLine').textContent = `Anúbis: ${truncated}`;
+        }
     </script>
+
 </body>
 </html>
-
