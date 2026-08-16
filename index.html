@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Jarvis — Assistente Pessoal</title>
     <style>
         * {
@@ -31,9 +31,11 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: radial-gradient(ellipse at center, #1a0f0f 0%, var(--dark-bg) 100%);
             color: var(--text-primary);
-            overflow: hidden;
-            height: 100vh;
+            overflow-x: hidden;
+            min-height: 100vh;
             width: 100vw;
+            display: flex;
+            flex-direction: column;
         }
 
         /* ═══════════════════════════════════════════════════════════════════════ */
@@ -41,7 +43,7 @@
         /* ═══════════════════════════════════════════════════════════════════════ */
 
         .neural-net-container {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -75,6 +77,8 @@
             z-index: 9999;
             opacity: 1;
             transition: opacity 0.6s ease-out;
+            padding: 1.5rem;
+            text-align: center;
         }
 
         .boot-screen.hidden {
@@ -84,7 +88,7 @@
 
         .boot-title {
             font-family: 'Courier New', monospace;
-            font-size: clamp(3rem, 10vw, 8rem);
+            font-size: clamp(2.5rem, 10vw, 8rem);
             font-weight: bold;
             background: linear-gradient(90deg, var(--gold) 0%, var(--fire) 50%, var(--neon-pink) 100%);
             -webkit-background-clip: text;
@@ -92,47 +96,47 @@
             background-clip: text;
             letter-spacing: 3px;
             margin-bottom: 1rem;
-            text-shadow: 0 0 60px rgba(247, 147, 26, 0.8), 0 0 120px rgba(255, 69, 0, 0.6);
-            filter: drop-shadow(0 0 30px rgba(255, 69, 0, 0.5));
+            text-shadow: 0 0 40px rgba(247, 147, 26, 0.8), 0 0 80px rgba(255, 69, 0, 0.6);
+            filter: drop-shadow(0 0 20px rgba(255, 69, 0, 0.5));
             animation: title-glow 2s ease-in-out infinite;
         }
 
         @keyframes title-glow {
-            0%, 100% { text-shadow: 0 0 60px rgba(247, 147, 26, 0.8), 0 0 120px rgba(255, 69, 0, 0.6); }
-            50% { text-shadow: 0 0 100px rgba(247, 147, 26, 1), 0 0 160px rgba(255, 69, 0, 0.8); }
+            0%, 100% { text-shadow: 0 0 40px rgba(247, 147, 26, 0.8), 0 0 80px rgba(255, 69, 0, 0.6); }
+            50% { text-shadow: 0 0 70px rgba(247, 147, 26, 1), 0 0 120px rgba(255, 69, 0, 0.8); }
         }
 
         .boot-line {
-            width: 80%;
+            width: min(80%, 400px);
             height: 3px;
             background: linear-gradient(90deg, var(--gold), var(--fire), var(--neon-pink), var(--gold));
-            margin: 2rem 0;
-            box-shadow: 0 0 30px rgba(247, 147, 26, 0.8), 0 0 60px rgba(255, 69, 0, 0.6);
+            margin: 1.5rem 0;
+            box-shadow: 0 0 20px rgba(247, 147, 26, 0.8), 0 0 40px rgba(255, 69, 0, 0.6);
             animation: line-pulse 1.5s ease-in-out infinite;
         }
 
         @keyframes line-pulse {
-            0%, 100% { box-shadow: 0 0 30px rgba(247, 147, 26, 0.8), 0 0 60px rgba(255, 69, 0, 0.6); }
-            50% { box-shadow: 0 0 50px rgba(247, 147, 26, 1), 0 0 100px rgba(255, 69, 0, 0.8); }
+            0%, 100% { box-shadow: 0 0 20px rgba(247, 147, 26, 0.8), 0 0 40px rgba(255, 69, 0, 0.6); }
+            50% { box-shadow: 0 0 35px rgba(247, 147, 26, 1), 0 0 70px rgba(255, 69, 0, 0.8); }
         }
 
         .boot-status {
-            font-size: 1.1rem;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
             color: var(--gold);
             font-family: 'Courier New', monospace;
             letter-spacing: 2px;
             animation: pulse-text 1.5s ease-in-out infinite;
-            text-shadow: 0 0 20px rgba(247, 147, 26, 0.6);
+            text-shadow: 0 0 15px rgba(247, 147, 26, 0.6);
         }
 
         .boot-version {
             position: absolute;
-            bottom: 2rem;
-            font-size: 0.9rem;
+            bottom: 1.5rem;
+            font-size: 0.8rem;
             color: var(--neon-cyan);
             font-family: 'Courier New', monospace;
             letter-spacing: 1px;
-            text-shadow: 0 0 15px rgba(45, 212, 255, 0.5);
+            text-shadow: 0 0 10px rgba(45, 212, 255, 0.5);
         }
 
         @keyframes pulse-text {
@@ -158,6 +162,8 @@
             z-index: 9998;
             opacity: 1;
             transition: opacity 0.6s ease-out;
+            padding: 1.5rem;
+            text-align: center;
         }
 
         .activation-screen.hidden {
@@ -167,22 +173,22 @@
 
         .activation-title {
             font-family: 'Courier New', monospace;
-            font-size: clamp(2.5rem, 8vw, 6rem);
+            font-size: clamp(2.2rem, 8vw, 6rem);
             font-weight: bold;
             background: linear-gradient(90deg, var(--gold) 0%, var(--fire) 50%, var(--neon-pink) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             letter-spacing: 3px;
-            margin-bottom: 3rem;
-            text-shadow: 0 0 60px rgba(247, 147, 26, 0.8);
-            filter: drop-shadow(0 0 30px rgba(255, 69, 0, 0.5));
+            margin-bottom: 2rem;
+            text-shadow: 0 0 40px rgba(247, 147, 26, 0.8);
+            filter: drop-shadow(0 0 20px rgba(255, 69, 0, 0.5));
             animation: title-glow 2s ease-in-out infinite;
         }
 
         .activation-button {
-            padding: 1.5rem 3.5rem;
-            font-size: 1.2rem;
+            padding: 1.2rem 2.5rem;
+            font-size: clamp(1rem, 3.5vw, 1.2rem);
             font-family: 'Courier New', monospace;
             background: linear-gradient(135deg, var(--gold) 0%, var(--fire) 100%);
             color: var(--dark-bg);
@@ -191,27 +197,25 @@
             cursor: pointer;
             font-weight: bold;
             letter-spacing: 2px;
-            box-shadow: 0 0 40px rgba(247, 147, 26, 0.6), 0 0 80px rgba(255, 69, 0, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 30px rgba(247, 147, 26, 0.6), 0 0 60px rgba(255, 69, 0, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             text-transform: uppercase;
+            width: 100%;
+            max-width: 320px;
         }
 
         .activation-button:hover {
-            transform: scale(1.08);
-            box-shadow: 0 0 60px rgba(247, 147, 26, 0.8), 0 0 120px rgba(255, 69, 0, 0.6), inset 0 0 30px rgba(255, 255, 255, 0.2);
-        }
-
-        .activation-button:active {
-            transform: scale(0.96);
+            transform: scale(1.05);
+            box-shadow: 0 0 50px rgba(247, 147, 26, 0.8), 0 0 100px rgba(255, 69, 0, 0.6);
         }
 
         .activation-text {
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: var(--neon-cyan);
             font-family: 'Courier New', monospace;
             letter-spacing: 2px;
-            text-shadow: 0 0 15px rgba(45, 212, 255, 0.5);
+            text-shadow: 0 0 10px rgba(45, 212, 255, 0.5);
             animation: pulse-text 1.5s ease-in-out infinite;
         }
 
@@ -240,42 +244,44 @@
 
         .app-top {
             flex: 0 0 auto;
-            padding: 1.5rem 2rem;
+            padding: 1rem 1.5rem;
             border-bottom: 2px solid var(--gold);
-            background: linear-gradient(180deg, rgba(26, 26, 46, 0.9) 0%, transparent 100%);
-            box-shadow: 0 0 30px rgba(247, 147, 26, 0.2);
+            background: linear-gradient(180deg, rgba(26, 26, 46, 0.95) 0%, rgba(26, 26, 46, 0.7) 100%);
+            box-shadow: 0 0 20px rgba(247, 147, 26, 0.2);
+            backdrop-filter: blur(5px);
         }
 
         .app-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
+            gap: 1rem;
+            margin-bottom: 0.8rem;
+            flex-wrap: wrap;
         }
 
         .app-name {
             font-family: 'Courier New', monospace;
-            font-size: 1.8rem;
+            font-size: clamp(1.4rem, 4vw, 1.8rem);
             font-weight: bold;
             background: linear-gradient(90deg, var(--gold), var(--fire));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             letter-spacing: 2px;
-            text-shadow: 0 0 30px rgba(247, 147, 26, 0.6);
-            filter: drop-shadow(0 0 15px rgba(255, 69, 0, 0.3));
+            text-shadow: 0 0 20px rgba(247, 147, 26, 0.6);
         }
 
         .api-key-input {
-            padding: 0.8rem 1.2rem;
-            background: rgba(26, 26, 46, 0.8);
+            padding: 0.6rem 1rem;
+            background: rgba(26, 26, 46, 0.9);
             border: 2px solid var(--gold);
             border-radius: 6px;
             color: var(--text-primary);
-            font-size: 0.9rem;
-            max-width: 300px;
+            font-size: 0.85rem;
+            width: min(100%, 260px);
             font-family: monospace;
-            box-shadow: 0 0 15px rgba(247, 147, 26, 0.2);
+            box-shadow: 0 0 10px rgba(247, 147, 26, 0.2);
         }
 
         .api-key-input::placeholder {
@@ -285,25 +291,27 @@
         .api-key-input:focus {
             outline: none;
             border-color: var(--neon-cyan);
-            box-shadow: 0 0 25px rgba(247, 147, 26, 0.4), 0 0 15px rgba(45, 212, 255, 0.3);
+            box-shadow: 0 0 20px rgba(247, 147, 26, 0.4), 0 0 10px rgba(45, 212, 255, 0.3);
         }
 
         .status-line {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
+            font-size: 0.8rem;
             font-family: 'Courier New', monospace;
-            margin-bottom: 0.5rem;
-            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            margin-bottom: 0.3rem;
+            text-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .status-line.user {
             color: var(--neon-cyan);
-            text-shadow: 0 0 10px rgba(45, 212, 255, 0.4);
+            text-shadow: 0 0 8px rgba(45, 212, 255, 0.4);
         }
 
         .status-line.assistant {
             color: var(--gold);
-            text-shadow: 0 0 10px rgba(247, 147, 26, 0.4);
+            text-shadow: 0 0 8px rgba(247, 147, 26, 0.4);
         }
 
         /* ═══════════════════════════════════════════════════════════════════════ */
@@ -316,17 +324,18 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
+            padding: 1.5rem;
             overflow-y: auto;
             position: relative;
         }
 
         .orb-container {
             position: relative;
-            width: 200px;
-            height: 200px;
-            margin-bottom: 2rem;
+            width: clamp(140px, 30vw, 200px);
+            height: clamp(140px, 30vw, 200px);
+            margin-bottom: 1.5rem;
             cursor: pointer;
+            flex-shrink: 0;
         }
 
         .orb {
@@ -334,22 +343,22 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 160px;
-            height: 160px;
+            width: clamp(110px, 24vw, 160px);
+            height: clamp(110px, 24vw, 160px);
             border-radius: 50%;
             background: radial-gradient(circle at 30% 30%, var(--gold-light), var(--gold), var(--fire));
             box-shadow: 
-                0 0 60px rgba(247, 147, 26, 0.8),
-                0 0 120px rgba(255, 69, 0, 0.6),
-                inset -10px -10px 20px rgba(0, 0, 0, 0.7),
-                inset 10px 10px 20px rgba(255, 255, 255, 0.15);
+                0 0 40px rgba(247, 147, 26, 0.8),
+                0 0 80px rgba(255, 69, 0, 0.6),
+                inset -8px -8px 15px rgba(0, 0, 0, 0.7),
+                inset 8px 8px 15px rgba(255, 255, 255, 0.15);
             animation: orb-pulse 2s ease-in-out infinite;
-            filter: drop-shadow(0 0 40px rgba(255, 69, 0, 0.5));
+            filter: drop-shadow(0 0 30px rgba(255, 69, 0, 0.5));
         }
 
         @keyframes orb-pulse {
-            0%, 100% { box-shadow: 0 0 60px rgba(247, 147, 26, 0.8), 0 0 120px rgba(255, 69, 0, 0.6), inset -10px -10px 20px rgba(0, 0, 0, 0.7), inset 10px 10px 20px rgba(255, 255, 255, 0.15); }
-            50% { box-shadow: 0 0 100px rgba(247, 147, 26, 1), 0 0 160px rgba(255, 69, 0, 0.8), inset -10px -10px 20px rgba(0, 0, 0, 0.7), inset 10px 10px 20px rgba(255, 255, 255, 0.2); }
+            0%, 100% { box-shadow: 0 0 40px rgba(247, 147, 26, 0.8), 0 0 80px rgba(255, 69, 0, 0.6), inset -8px -8px 15px rgba(0, 0, 0, 0.7), inset 8px 8px 15px rgba(255, 255, 255, 0.15); }
+            50% { box-shadow: 0 0 70px rgba(247, 147, 26, 1), 0 0 120px rgba(255, 69, 0, 0.8), inset -8px -8px 15px rgba(0, 0, 0, 0.7), inset 8px 8px 15px rgba(255, 255, 255, 0.2); }
         }
 
         .orb.listening {
@@ -375,13 +384,13 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 180px;
-            height: 180px;
+            width: clamp(130px, 27vw, 180px);
+            height: clamp(130px, 27vw, 180px);
             border: 2px solid var(--gold);
             border-radius: 50%;
             opacity: 0.4;
             animation: orb-ring-breathe 2.5s ease-in-out infinite;
-            box-shadow: 0 0 20px rgba(247, 147, 26, 0.4);
+            box-shadow: 0 0 15px rgba(247, 147, 26, 0.4);
         }
 
         .orb-ring-2 {
@@ -389,18 +398,18 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 220px;
-            height: 220px;
+            width: clamp(160px, 33vw, 220px);
+            height: clamp(160px, 33vw, 220px);
             border: 2px dashed var(--fire);
             border-radius: 50%;
             opacity: 0.3;
             animation: orb-ring-rotate 4s linear infinite;
-            box-shadow: 0 0 25px rgba(255, 69, 0, 0.3);
+            box-shadow: 0 0 20px rgba(255, 69, 0, 0.3);
         }
 
         @keyframes orb-ring-breathe {
             0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
-            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.2; }
+            50% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.2; }
         }
 
         @keyframes orb-ring-rotate {
@@ -410,27 +419,28 @@
 
         .conversation-area {
             text-align: center;
+            width: 100%;
             max-width: 600px;
-            margin-bottom: 2rem;
+            padding: 0 1rem;
         }
 
         .conversation-line {
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin: 0.5rem 0;
-            min-height: 1.5rem;
+            font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+            line-height: 1.5;
+            margin: 0.4rem 0;
+            min-height: 1.4rem;
         }
 
         .user-line {
             color: var(--neon-cyan);
             font-family: 'Courier New', monospace;
-            text-shadow: 0 0 10px rgba(45, 212, 255, 0.3);
+            text-shadow: 0 0 8px rgba(45, 212, 255, 0.3);
         }
 
         .assistant-line {
             color: var(--gold);
             font-family: 'Courier New', monospace;
-            text-shadow: 0 0 10px rgba(247, 147, 26, 0.3);
+            text-shadow: 0 0 8px rgba(247, 147, 26, 0.3);
         }
 
         /* ═══════════════════════════════════════════════════════════════════════ */
@@ -439,29 +449,33 @@
 
         .app-input-section {
             flex: 0 0 auto;
-            padding: 1.5rem 2rem;
+            padding: 1rem 1.5rem;
             border-top: 2px solid var(--gold);
-            background: linear-gradient(180deg, transparent 0%, rgba(26, 26, 46, 0.9) 100%);
-            box-shadow: 0 0 30px rgba(247, 147, 26, 0.2);
+            background: linear-gradient(180deg, rgba(26, 26, 46, 0.7) 0%, rgba(26, 26, 46, 0.95) 100%);
+            box-shadow: 0 0 20px rgba(247, 147, 26, 0.2);
+            backdrop-filter: blur(5px);
         }
 
         .input-wrapper {
             display: flex;
-            gap: 0.8rem;
+            gap: 0.6rem;
             align-items: stretch;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
         .text-input {
             flex: 1;
-            padding: 1rem;
-            background: rgba(26, 26, 46, 0.8);
+            padding: 0.8rem;
+            background: rgba(26, 26, 46, 0.9);
             border: 2px solid var(--gold);
             border-radius: 6px;
             color: var(--text-primary);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-family: 'Courier New', monospace;
             transition: all 0.3s ease;
-            box-shadow: 0 0 15px rgba(247, 147, 26, 0.15);
+            box-shadow: 0 0 10px rgba(247, 147, 26, 0.15);
+            min-width: 0;
         }
 
         .text-input::placeholder {
@@ -471,31 +485,34 @@
         .text-input:focus {
             outline: none;
             border-color: var(--neon-cyan);
-            box-shadow: 0 0 25px rgba(247, 147, 26, 0.3), 0 0 15px rgba(45, 212, 255, 0.2);
+            box-shadow: 0 0 20px rgba(247, 147, 26, 0.3), 0 0 10px rgba(45, 212, 255, 0.2);
         }
 
         .control-buttons {
             display: flex;
             gap: 0.5rem;
+            flex-shrink: 0;
         }
 
         .btn-control {
-            padding: 1rem 1.2rem;
+            padding: 0.8rem 1rem;
             background: linear-gradient(135deg, var(--gold), var(--fire));
             border: 2px solid var(--neon-pink);
             border-radius: 6px;
             color: var(--dark-bg);
             cursor: pointer;
-            font-size: 1.1rem;
+            font-size: 1rem;
             transition: all 0.3s ease;
             font-weight: bold;
-            box-shadow: 0 0 20px rgba(247, 147, 26, 0.3), 0 0 10px rgba(255, 69, 0, 0.2);
+            box-shadow: 0 0 15px rgba(247, 147, 26, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .btn-control:hover {
-            background: linear-gradient(135deg, var(--gold-light), var(--fire));
-            box-shadow: 0 0 40px rgba(247, 147, 26, 0.5), 0 0 20px rgba(255, 69, 0, 0.4);
             transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(247, 147, 26, 0.5);
         }
 
         .btn-control:active {
@@ -504,7 +521,7 @@
 
         .btn-control.active {
             background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
-            box-shadow: 0 0 40px rgba(45, 212, 255, 0.5), 0 0 20px rgba(255, 0, 110, 0.3);
+            box-shadow: 0 0 30px rgba(45, 212, 255, 0.5);
         }
 
         /* ═══════════════════════════════════════════════════════════════════════ */
@@ -513,39 +530,40 @@
 
         .second-brain-container {
             flex: 0 0 auto;
-            max-height: 280px;
+            max-height: 240px;
             overflow: hidden;
             border-top: 2px solid var(--gold);
-            background: linear-gradient(180deg, transparent 0%, rgba(26, 26, 46, 0.9) 100%);
-            box-shadow: 0 0 30px rgba(247, 147, 26, 0.15);
+            background: rgba(18, 18, 32, 0.95);
+            box-shadow: 0 0 20px rgba(247, 147, 26, 0.15);
         }
 
         .brain-header {
-            padding: 1rem 1.5rem;
+            padding: 0.8rem 1.2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid rgba(247, 147, 26, 0.2);
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
         .brain-title {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-family: 'Courier New', monospace;
             color: var(--text-primary);
             letter-spacing: 1px;
-            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
 
         .brain-title strong {
             color: var(--gold);
-            text-shadow: 0 0 10px rgba(247, 147, 26, 0.3);
+            text-shadow: 0 0 8px rgba(247, 147, 26, 0.3);
         }
 
         .brain-stats {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--neon-cyan);
             font-family: 'Courier New', monospace;
-            text-shadow: 0 0 10px rgba(45, 212, 255, 0.3);
+            text-shadow: 0 0 8px rgba(45, 212, 255, 0.3);
         }
 
         .brain-controls {
@@ -554,34 +572,37 @@
         }
 
         .btn-brain {
-            padding: 0.5rem 1rem;
+            padding: 0.4rem 0.8rem;
             background: rgba(247, 147, 26, 0.15);
             border: 2px solid var(--gold);
             border-radius: 4px;
             color: var(--gold);
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: bold;
             transition: all 0.2s ease;
-            box-shadow: 0 0 10px rgba(247, 147, 26, 0.15);
         }
 
         .btn-brain:hover {
             background: rgba(247, 147, 26, 0.25);
-            box-shadow: 0 0 20px rgba(247, 147, 26, 0.3);
+            box-shadow: 0 0 15px rgba(247, 147, 26, 0.3);
         }
 
         .graph-container {
-            padding: 1rem 1.5rem;
-            height: 240px;
+            padding: 0.5rem;
+            height: 150px;
             overflow-x: auto;
             overflow-y: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        svg {
+        svg#brainSvg {
             display: block;
             width: 100%;
             height: 100%;
+            max-width: 1000px;
         }
 
         /* ═══════════════════════════════════════════════════════════════════════ */
@@ -594,12 +615,13 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.85);
             display: none;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             z-index: 10000;
+            padding: 1rem;
+            backdrop-filter: blur(4px);
         }
 
         .modal-overlay.active {
@@ -607,63 +629,62 @@
         }
 
         .modal-box {
-            background: radial-gradient(ellipse at top, rgba(26, 26, 46, 0.95), var(--dark-bg));
+            background: radial-gradient(ellipse at top, rgba(26, 26, 46, 0.98), var(--dark-bg));
             border: 2px solid var(--gold);
             border-radius: 8px;
-            padding: 2rem;
-            width: 90%;
+            padding: 1.5rem;
+            width: 100%;
             max-width: 500px;
-            box-shadow: 0 0 60px rgba(247, 147, 26, 0.4), 0 0 30px rgba(255, 69, 0, 0.2);
+            box-shadow: 0 0 40px rgba(247, 147, 26, 0.4), 0 0 20px rgba(255, 69, 0, 0.2);
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .modal-title {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: bold;
             background: linear-gradient(90deg, var(--gold), var(--fire));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem;
             font-family: 'Courier New', monospace;
-            text-shadow: 0 0 15px rgba(247, 147, 26, 0.3);
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
 
         .form-label {
             display: block;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--neon-cyan);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
             font-family: 'Courier New', monospace;
             letter-spacing: 0.5px;
-            text-shadow: 0 0 10px rgba(45, 212, 255, 0.2);
         }
 
         .form-input, .form-select, .form-textarea {
             width: 100%;
-            padding: 0.8rem;
+            padding: 0.7rem;
             background: rgba(26, 26, 46, 0.8);
             border: 2px solid var(--gold);
             border-radius: 4px;
             color: var(--text-primary);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-family: 'Courier New', monospace;
             transition: all 0.3s ease;
-            box-shadow: 0 0 10px rgba(247, 147, 26, 0.1);
         }
 
         .form-textarea {
-            min-height: 120px;
+            min-height: 90px;
             resize: vertical;
         }
 
         .form-input:focus, .form-select:focus, .form-textarea:focus {
             outline: none;
             border-color: var(--neon-cyan);
-            box-shadow: 0 0 20px rgba(247, 147, 26, 0.2), 0 0 10px rgba(45, 212, 255, 0.2);
+            box-shadow: 0 0 15px rgba(247, 147, 26, 0.2);
         }
 
         .form-select option {
@@ -673,19 +694,21 @@
 
         .modal-buttons {
             display: flex;
-            gap: 1rem;
+            gap: 0.8rem;
             justify-content: flex-end;
+            margin-top: 1.2rem;
+            flex-wrap: wrap;
         }
 
         .btn-modal {
-            padding: 0.7rem 1.5rem;
+            padding: 0.6rem 1.2rem;
             border: 2px solid transparent;
             border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
             font-family: 'Courier New', monospace;
             transition: all 0.3s ease;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
         }
 
@@ -693,11 +716,7 @@
             background: linear-gradient(135deg, var(--gold), var(--fire));
             color: var(--dark-bg);
             border-color: var(--neon-pink);
-            box-shadow: 0 0 20px rgba(247, 147, 26, 0.3);
-        }
-
-        .btn-modal.primary:hover {
-            box-shadow: 0 0 40px rgba(247, 147, 26, 0.5), 0 0 20px rgba(255, 69, 0, 0.3);
+            box-shadow: 0 0 15px rgba(247, 147, 26, 0.3);
         }
 
         .btn-modal.secondary {
@@ -706,73 +725,29 @@
             border: 2px solid var(--text-secondary);
         }
 
-        .btn-modal.secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: var(--text-primary);
-        }
-
         .btn-modal.danger {
             background: rgba(239, 68, 68, 0.2);
             color: #ff6b6b;
             border: 2px solid #ff6b6b;
         }
 
-        .btn-modal.danger:hover {
-            background: rgba(239, 68, 68, 0.3);
-            box-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
-        }
-
         /* ═══════════════════════════════════════════════════════════════════════ */
-        /* RESPONSIVO */
+        /* MEDIA QUERIES PARA CELULARES E TELAS MENORES */
         /* ═══════════════════════════════════════════════════════════════════════ */
 
-        @media (max-width: 768px) {
-            .api-key-input {
-                max-width: 200px;
-                font-size: 0.8rem;
-            }
-
-            .orb-container {
-                width: 140px;
-                height: 140px;
-            }
-
-            .orb {
-                width: 120px;
-                height: 120px;
-            }
-
-            .orb-ring {
-                width: 140px;
-                height: 140px;
-            }
-
-            .orb-ring-2 {
-                width: 180px;
-                height: 180px;
-            }
-
-            .conversation-area {
-                max-width: 90%;
-            }
-
-            .modal-box {
-                width: 95%;
-            }
-
-            .control-buttons {
-                flex-direction: column;
-                width: 100%;
-            }
-
-            .btn-control {
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 480px) {
+        @media (max-width: 600px) {
             .app-top {
-                padding: 1rem;
+                padding: 0.8rem 1rem;
+            }
+
+            .app-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .api-key-input {
+                width: 100%;
+                max-width: none;
             }
 
             .app-center {
@@ -780,15 +755,24 @@
             }
 
             .app-input-section {
-                padding: 1rem;
+                padding: 0.8rem 1rem;
             }
 
-            .activation-title {
-                font-size: 2rem;
+            .input-wrapper {
+                flex-direction: column;
             }
 
-            .app-name {
-                font-size: 1.4rem;
+            .control-buttons {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .second-brain-container {
+                max-height: 200px;
+            }
+
+            .graph-container {
+                height: 120px;
             }
         }
     </style>
@@ -805,7 +789,7 @@
         <div class="boot-title">JARVIS</div>
         <div class="boot-line"></div>
         <div class="boot-status">SINCRONIZANDO DADOS...</div>
-        <div class="boot-version">v5.0 · REBUILD</div>
+        <div class="boot-version">v5.1 · RESPONSIVE</div>
     </div>
 
     <!-- ACTIVATION SCREEN -->
@@ -856,7 +840,7 @@
                 <div>
                     <div class="brain-title">🧠 <strong>SECOND BRAIN</strong></div>
                 </div>
-                <div style="display: flex; gap: 1rem; align-items: center;">
+                <div style="display: flex; gap: 0.8rem; align-items: center;">
                     <div class="brain-stats" id="brainStats">0 notas · 0 áreas</div>
                     <div class="brain-controls">
                         <button class="btn-brain" id="addNoteBtn">+</button>
@@ -915,32 +899,31 @@
                 this.ctx = this.canvas.getContext('2d');
                 this.resizeCanvas();
                 this.nodes = [];
-                this.connections = [];
                 this.initNodes();
                 this.animate();
                 window.addEventListener('resize', () => this.resizeCanvas());
             }
 
             resizeCanvas() {
-                this.canvas.width = this.canvas.offsetWidth;
-                this.canvas.height = this.canvas.offsetHeight;
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
             }
 
             initNodes() {
-                const nodeCount = 15;
+                const nodeCount = window.innerWidth < 768 ? 10 : 18;
                 for (let i = 0; i < nodeCount; i++) {
                     this.nodes.push({
                         x: Math.random() * this.canvas.width,
                         y: Math.random() * this.canvas.height,
-                        vx: (Math.random() - 0.5) * 0.5,
-                        vy: (Math.random() - 0.5) * 0.5,
+                        vx: (Math.random() - 0.5) * 0.4,
+                        vy: (Math.random() - 0.5) * 0.4,
                         size: Math.random() * 2 + 1
                     });
                 }
             }
 
             animate() {
-                this.ctx.fillStyle = 'rgba(10, 10, 10, 0.05)';
+                this.ctx.fillStyle = 'rgba(10, 10, 10, 0.08)';
                 this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
                 this.nodes.forEach((node) => {
@@ -968,8 +951,8 @@
                             const dy = node2.y - node1.y;
                             const dist = Math.sqrt(dx * dx + dy * dy);
 
-                            if (dist < 200) {
-                                const opacity = (1 - dist / 200) * 0.4;
+                            if (dist < 160) {
+                                const opacity = (1 - dist / 160) * 0.35;
                                 this.ctx.strokeStyle = `rgba(247, 147, 26, ${opacity})`;
                                 this.ctx.lineWidth = 1;
                                 this.ctx.beginPath();
@@ -1089,11 +1072,9 @@
             activationScreen.classList.add('hidden');
             appContainer.classList.add('active');
 
-            // Saúda
             const greetingMsg = `Sistemas online. Estou ouvindo, ${CONFIG.address}.`;
             speak(greetingMsg);
 
-            // Começa a ouvir após a saudação
             setTimeout(() => {
                 startListening();
             }, 1000);
@@ -1146,9 +1127,6 @@
 
             recognition.onerror = (event) => {
                 console.error("Erro no reconhecimento:", event.error);
-                if (event.error === 'not-allowed') {
-                    alert("Permissão de microfone negada. Você pode usar o campo de texto para interagir.");
-                }
             };
 
             recognition.onend = () => {
@@ -1183,7 +1161,6 @@
         function speak(text) {
             return new Promise((resolve) => {
                 if (!synthesis) {
-                    console.error("Speech Synthesis não disponível");
                     resolve();
                     return;
                 }
@@ -1203,8 +1180,6 @@
             utterance.lang = 'pt-BR';
             
             const voices = synthesis.getVoices();
-            
-            // Prioridade: voz masculina PT-BR
             let selectedVoice = voices.find(v => v.lang === 'pt-BR' && (v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('homem') || v.name.toLowerCase().includes('brazilian'))) ||
                                voices.find(v => v.lang === 'pt-BR' && !v.name.toLowerCase().includes('female')) ||
                                voices.find(v => v.lang === 'pt-BR') ||
@@ -1361,19 +1336,19 @@
 
             const systemPrompt = buildSystemPrompt();
 
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
                 method: "POST",
                 headers: {
                     "content-type": "application/json"
                 },
                 body: JSON.stringify({
-                    system_instruction: { parts: { text: systemPrompt } },
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
                     contents: sessionHistory.map(msg => ({
                         role: msg.role,
-                        parts: msg.parts
+                        parts: [typeof msg.parts === 'string' ? { text: msg.parts } : msg.parts]
                     })),
-                    generation_config: {
-                        max_output_tokens: 400
+                    generationConfig: {
+                        maxOutputTokens: 400
                     }
                 })
             });
@@ -1384,11 +1359,12 @@
             }
 
             const data = await response.json();
-            if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
+            const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (!text) {
                 throw new Error("Resposta vazia da API");
             }
 
-            return data.candidates[0].content.parts[0].text || "Desculpe, não consegui gerar uma resposta.";
+            return text;
         }
 
         function buildSystemPrompt() {
@@ -1442,13 +1418,6 @@ Responda sempre considerando esse contexto. Seja assertivo, crítico construtivo
             }
             saveNotesToStorage();
             renderGraph();
-            flashNode(title);
-        }
-
-        function flashNode(noteTitle) {
-            const note = NOTES.find(n => n.title === noteTitle);
-            if (!note) return;
-            setTimeout(renderGraph, 100);
         }
 
         function openNoteEditor(noteId = null) {
@@ -1485,7 +1454,6 @@ Responda sempre considerando esse contexto. Seja assertivo, crítico construtivo
             const body = document.getElementById('noteBody').value.trim();
 
             if (!title || !area || !body) {
-                alert("Preencha todos os campos.");
                 return;
             }
 
@@ -1507,7 +1475,7 @@ Responda sempre considerando esse contexto. Seja assertivo, crítico construtivo
         }
 
         function handleNoteDelete() {
-            if (!currentEditId || !confirm("Deletar esta nota?")) return;
+            if (!currentEditId) return;
             NOTES = NOTES.filter(n => n.id !== currentEditId);
             saveNotesToStorage();
             renderGraph();
@@ -1520,14 +1488,14 @@ Responda sempre considerando esse contexto. Seja assertivo, crítico construtivo
 
         function renderGraph() {
             const container = document.getElementById('graphContainer');
-            const width = 1000, height = 540;
+            const width = 1000, height = 500;
             const cx = width / 2, cy = height / 2.2;
-            const radius = 140;
+            const radius = 130;
 
             const areaCount = new Set(NOTES.map(n => n.area)).size;
             document.getElementById('brainStats').textContent = `${NOTES.length} notas · ${areaCount} áreas`;
 
-            let svg = `<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" style="background: transparent;">
+            let svg = `<svg id="brainSvg" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" style="background: transparent;">
                 <defs>
                     <filter id="glow">
                         <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
@@ -1545,17 +1513,13 @@ Responda sempre considerando esse contexto. Seja assertivo, crítico construtivo
                         <stop offset="100%" style="stop-color:#ff4500;stop-opacity:1" />
                     </linearGradient>
                     <style>
-                        @keyframes breath { 0%, 100% { r: 18px; opacity: 0.5; } 50% { r: 26px; opacity: 0.2; } }
                         @keyframes corePulse { 0%, 100% { r: 16px; } 50% { r: 22px; } }
-                        @keyframes dash { to { stroke-dashoffset: -1000; } }
                         .core-pulse { animation: corePulse 2s ease-in-out infinite; }
-                        .node-ring { animation: breath 2.5s ease-in-out infinite; }
-                        .edge-dash { animation: dash 20s linear infinite; }
                     </style>
                 </defs>`;
 
             svg += '<g id="edges" opacity="0.8">';
-            REL.forEach((edge, idx) => {
+            REL.forEach((edge) => {
                 const [idA, idB] = edge;
                 const noteA = NOTES.find(n => n.id === idA);
                 const noteB = NOTES.find(n => n.id === idB);
@@ -1572,18 +1536,8 @@ Responda sempre considerando esse contexto. Seja assertivo, crítico construtivo
                     const ctrlX = cx + (Math.cos(angle1) + Math.cos(angle2)) / 2 * (radius * 0.35);
                     const ctrlY = cy + (Math.sin(angle1) + Math.sin(angle2)) / 2 * (radius * 0.35);
 
-                    svg += `<path d="M ${x1} ${y1} Q ${ctrlX} ${ctrlY} ${x2} ${y2}" stroke="url(#edgeGradient)" stroke-width="2" fill="none" class="edge-dash" style="stroke-dasharray: 1000; filter: drop-shadow(0 0 5px rgba(247, 147, 26, 0.4));"/>`;
+                    svg += `<path d="M ${x1} ${y1} Q ${ctrlX} ${ctrlY} ${x2} ${y2}" stroke="url(#edgeGradient)" stroke-width="2" fill="none" style="filter: drop-shadow(0 0 5px rgba(247, 147, 26, 0.4));"/>`;
                 }
-            });
-            svg += '</g>';
-
-            svg += '<g id="rays" opacity="0.5">';
-            NOTES.forEach((note, idx) => {
-                const angle = (idx / NOTES.length) * Math.PI * 2 - Math.PI / 2;
-                const x = cx + Math.cos(angle) * radius;
-                const y = cy + Math.sin(angle) * radius;
-                const color = AREA[note.area]?.color || '#8a90a6';
-                svg += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="${color}" stroke-width="1.5" opacity="0.4" style="filter: drop-shadow(0 0 3px ${color});"/>`;
             });
             svg += '</g>';
 
@@ -1597,59 +1551,27 @@ Responda sempre considerando esse contexto. Seja assertivo, crítico construtivo
                 const y = cy + Math.sin(angle) * radius;
                 const color = AREA[note.area]?.color || '#8a90a6';
                 const connections = REL.filter(e => e.includes(note.id)).length;
-                const size = 10 + connections * 2;
+                const size = 10 + connections * 1.5;
 
                 svg += `<g class="node" data-id="${note.id}" style="cursor: pointer;" onclick="window.openNoteFromGraph('${note.id}')">`;
-                svg += `<circle cx="${x}" cy="${y}" r="${size}" fill="${color}" opacity="0.9" filter="url(#glow)" style="filter: drop-shadow(0 0 10px ${color});"/>`;
-                svg += `<circle cx="${x}" cy="${y}" r="${size + 10}" fill="none" stroke="${color}" stroke-width="2" class="node-ring" opacity="0.6"/>`;
-                svg += `<text x="${x}" y="${y + size + 18}" text-anchor="middle" font-size="11" fill="#f5f5f5" pointer-events="none" style="text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);">${note.title.substring(0, 12)}</text>`;
+                svg += `<circle cx="${x}" cy="${y}" r="${size}" fill="${color}" opacity="0.9" filter="url(#glow)" style="filter: drop-shadow(0 0 8px ${color});"/>`;
+                svg += `<text x="${x}" y="${y + size + 16}" text-anchor="middle" font-size="11" fill="#f5f5f5" pointer-events="none" style="text-shadow: 0 0 5px rgba(0, 0, 0, 0.9);">${note.title.substring(0, 12)}</text>`;
                 svg += `</g>`;
             });
             svg += '</g>';
 
-            const pulseCount = 16;
-            svg += '<g id="pulses" opacity="0.9">';
-            for (let i = 0; i < pulseCount; i++) {
-                const edgeIdx = i % REL.length;
-                if (REL[edgeIdx]) {
-                    const [idA, idB] = REL[edgeIdx];
-                    const noteA = NOTES.find(n => n.id === idA);
-                    const noteB = NOTES.find(n => n.id === idB);
-                    if (noteA && noteB) {
-                        const idxA = NOTES.indexOf(noteA);
-                        const idxB = NOTES.indexOf(noteB);
-                        const angle1 = (idxA / NOTES.length) * Math.PI * 2 - Math.PI / 2;
-                        const angle2 = (idxB / NOTES.length) * Math.PI * 2 - Math.PI / 2;
-                        const x1 = cx + Math.cos(angle1) * radius;
-                        const y1 = cy + Math.sin(angle1) * radius;
-                        const x2 = cx + Math.cos(angle2) * radius;
-                        const y2 = cy + Math.sin(angle2) * radius;
-                        const ctrlX = cx + (Math.cos(angle1) + Math.cos(angle2)) / 2 * (radius * 0.35);
-                        const ctrlY = cy + (Math.sin(angle1) + Math.sin(angle2)) / 2 * (radius * 0.35);
-
-                        const t = (i * 0.08) % 1;
-                        const px = Math.pow(1 - t, 2) * x1 + 2 * (1 - t) * t * ctrlX + Math.pow(t, 2) * x2;
-                        const py = Math.pow(1 - t, 2) * y1 + 2 * (1 - t) * t * ctrlY + Math.pow(t, 2) * y2;
-
-                        svg += `<circle cx="${px}" cy="${py}" r="3" fill="#2dd4ff" opacity="${0.6 + Math.sin(i) * 0.3}" style="filter: drop-shadow(0 0 5px rgba(45, 212, 255, 0.8));"/>`;
-                    }
-                }
-            }
-            svg += '</g>';
-
-            const legendX = 20, legendY = height - 50;
+            const legendX = 20, legendY = height - 40;
             svg += '<g id="legend" font-size="11">';
             let legendOffset = 0;
             Object.keys(AREA).forEach((areaKey) => {
                 const hasNotes = NOTES.some(n => n.area === areaKey);
                 if (hasNotes) {
                     const color = AREA[areaKey].color;
-                    svg += `<rect x="${legendX + legendOffset}" y="${legendY}" width="12" height="12" fill="${color}" opacity="0.9" style="filter: drop-shadow(0 0 3px ${color});"/>`;
-                    svg += `<text x="${legendX + legendOffset + 16}" y="${legendY + 10}" fill="#f5f5f5" style="text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);">${AREA[areaKey].label}</text>`;
-                    legendOffset += 140;
+                    svg += `<rect x="${legendX + legendOffset}" y="${legendY}" width="10" height="10" fill="${color}" opacity="0.9"/>`;
+                    svg += `<text x="${legendX + legendOffset + 14}" y="${legendY + 9}" fill="#b8b8b8" font-size="10">${AREA[areaKey].label}</text>`;
+                    legendOffset += 120;
                 }
             });
-            svg += `<text x="${width - 220}" y="${legendY + 10}" fill="#2dd4ff" font-size="10" style="text-shadow: 0 0 5px rgba(45, 212, 255, 0.6);">✓ contexto injetado</text>`;
             svg += '</g>';
 
             svg += '</svg>';
@@ -1666,15 +1588,16 @@ Responda sempre considerando esse contexto. Seja assertivo, crítico construtivo
         /* ═══════════════════════════════════════════════════════════════════════ */
 
         function updateUserLine(text) {
-            const truncated = text.length > 60 ? text.substring(0, 60) + "..." : text;
+            const truncated = text.length > 50 ? text.substring(0, 50) + "..." : text;
             document.getElementById('userLine').textContent = `Você: ${truncated}`;
         }
 
         function updateAssistantLine(text) {
-            const truncated = text.length > 60 ? text.substring(0, 60) + "..." : text;
+            const truncated = text.length > 50 ? text.substring(0, 50) + "..." : text;
             document.getElementById('assistantLine').textContent = `Jarvis: ${truncated}`;
         }
     </script>
 
 </body>
 </html>
+
